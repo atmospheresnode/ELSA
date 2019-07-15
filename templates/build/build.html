@@ -1,0 +1,120 @@
+{% extends 'base-k-se.html' %}
+{% load static %}
+
+
+
+
+{% block title_block %}
+Build A Bundle
+{% endblock %}
+
+
+
+
+{% block main_header_block %}
+So you want to build a bundle?
+{% endblock %}
+
+{% block about_header_block %}
+ELSA builds PDS4 compliant labels for your data.
+{% endblock %}
+
+{% block standards_reference_block %}
+2A.1
+ Bundles 
+A 
+bundle
+ is the default logical construct for archiving digital data in the PDS.
+ (Recall that 
+terms 
+such as bundle, collection, and basic product are defined in the glossary of the 
+PDS4 Concepts
+document.) 
+Bundles have a simple hierarchical structure.  A bundle has one or more member 
+collections
+, 
+each of which has one or more member 
+basic
+products
+ (Figure 2A-1).  PDS does not impose 
+requirements on how bundles are defined except that (1) bundles must be distinct (their 
+LIDs/LIDVID
+s must be distinct) within the overall holdings of PDS, and (2) each bundle must 
+be approved by a PDS peer review. 
+Fig
+ure 2A-1: Archive structure. 
+Members of a bundle are listed in a Product_Bundle, an XML file which serves as both a label 
+and the bundle inventory.  Product_Bundle is described and uniquely identified using the 
+Product_Bundle class definition (see Section 9D for information on constructing 
+Product_Bundle).   
+An optional “readme” file may be included as part of Product_Bundle; it is described by the 
+bundle label so is not a separate product.  The “readme” file provides a general overview of the 
+bundle contents and organization in human readable format.  
+It may also contain general 
+instructions for use of the bundle and contact information for data provider or discipline node 
+personnel.  The “readme” file must be formatted either as 7-
+bit ASCII text o
+r as UTF
+-8 text
+.   
+{% endblock %}
+
+
+
+{% block body_block %}
+<script src="{% static 'js/build_a_bundle.js' %}" language="Javascript" type="text/javascript"></script>
+<!--Third row-->
+<div class="row pt-2">
+    <!--First column-->
+    <div class="col-md-12">
+        <h3 class="card-header elegant-color white-text text-center z-depth-2">Provide Bundle Information</h3><br/>
+    </div>
+    <!--/.First column-->
+</div>
+<!--/.Third row-->
+<!--First row-->
+<div class="row pt-2">
+    <!--First column-->
+    <div class="col-md-8">
+        <form id="query01" method="post" action="{% url 'build:build' %}">
+             {% csrf_token %}
+             <div id="form_bundle">
+                 {{ form_bundle.as_p }}
+             </div>
+             <br/>
+             <div id="form_collections">
+                 Pick and assign collections for your bundle: <br/>
+                 {{ form_collections.as_p }}
+             </div>
+             <br />
+ 
+            <input type="submit" value="Submit" />
+        </form>       
+    </div>
+    <!--/.First column-->
+    <!--Second column-->
+    <div class="help  col-md-4">
+        <div class="form_bundle">
+            <p>The name of your bundle is the unique name you would like your bundle to be archived as.
+            </p>
+            <p>The version of your bundle should be the most up-to-date version unless otherwise noted by your node personnel.
+            </p>
+            <p>The type of bundle depends on your data.  If your bundle is meant to be archived, choose archive.  This option is what most bundle types are.  If your bundle contains supplemental data to an already archived bundle, choose supplemental.
+            </p>
+        </div>  
+
+        <div class="form_collections">
+            <p>Each bundle contains a document, context, and xml_schema collection.
+            </p>
+            <p>All other collections contained in your bundle will be decided between you, {{ user.first_name }}, and your node personnel.
+            </p>
+            <p>If you are working directly with Atmos and are unsure of which collections are in your bundle, <a href="{% url 'main:contact' %}">send a message to ELSA</a> and someone from Atmos will get back to you shortly.  If you are working with another node, please contact your node.
+            </p>
+        </div>   
+    </div>          
+    <!--/.Column-->
+</div>
+<!--/.Row-->
+{% endblock %}
+
+

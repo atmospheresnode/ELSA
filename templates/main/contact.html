@@ -1,0 +1,177 @@
+{% extends 'main/base-k.html' %}
+{% load staticfiles %}
+
+{% block title_block %}
+Contact Atmospheres Node
+{% endblock %}
+
+{% block main_header_block %}
+
+{% endblock %}
+
+{% block body_block %}
+
+<!--Section: Team v.1-->
+<section class="section team-section pb-5">
+
+
+    <!--Section heading-->
+    <h2 class="section-heading h1 pt-4">Planetary Atmospheres Node</h2>
+    <p class="section-description">Below are the top four contacts listed for the PDS Atmospheres Node.  If you would like to send a message to the entire team, feel free to use the contact form below.</p>
+    <!--Grid row-->
+    <div class="row text-center">
+
+        <!--Grid column-->
+        <div class="col-lg-3 col-md-6 mb-r">
+
+            <div class="avatar">
+                <img src="{% static 'images/female.jpg' %}" class="rounded-circle z-depth-1" alt="First sample avatar image">
+            </div>
+            <h4>Nancy Chanover</h4>
+            <h6 class="font-bold blue-text">Position Here</h6>
+            <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Quod eos id officiis hic tenetur.</p>
+
+            <!--Facebook-->
+            <a class="icons-sm fb-ic"><i class="fa fa-facebook"> </i></a>
+            <!--Twitter-->
+            <a class="icons-sm tw-ic"><i class="fa fa-twitter"> </i></a>
+            <!--Instagram-->
+            <a class="icons-sm ins-ic"><i class="fa fa-instagram"> </i></a>
+
+        </div>
+        <!--Grid column-->
+
+        <!--Grid column-->
+        <div class="col-lg-3 col-md-6 mb-r">
+
+            <div class="avatar">
+                <img src="{% static 'images/male.png' %}" class="rounded-circle z-depth-1" alt="Second sample avatar image">
+            </div>
+            <h4>Lynn Neakrase</h4>
+            <h6 class="font-bold blue-text">Position Here</h6>
+            <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Quod eos id officiis hic tenetur.</p>
+
+            <!--Linkedin-->
+            <a class="icons-sm li-ic"><i class="fa fa-linkedin"> </i></a>
+            <!--Facebook-->
+            <a class="icons-sm fb-ic"><i class="fa fa-facebook"> </i></a>
+            <!--Dribbble-->
+            <a class="icons-sm dribbble-ic"><i class="fa fa-dribbble"> </i></a>
+            
+        </div>
+        <!--Grid column-->
+
+        <!--Grid column-->
+        <div class="col-lg-3 col-md-6 mb-r">
+
+            <div class="avatar">
+                <img src="{% static 'images/male.png' %}" class="rounded-circle z-depth-1" alt="Third sample avatar image">
+            </div>
+            <h4>Lyle Huber</h4>
+            <h6 class="font-bold blue-text">Position Here</h6>
+            <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Quod eos id officiis hic tenetur.</p>
+
+            <!--Facebook-->
+            <a class="icons-sm fb-ic"><i class="fa fa-facebook"> </i></a>
+            <!--Pinterest-->
+            <a class="icons-sm tw-ic"><i class="fa fa-twitter"> </i></a>
+            <!--Email-->
+           <a class="icons-sm email-ic"><i class="fa fa-envelope-o"> </i></a>
+
+        </div>
+        <!--Grid column-->
+
+        <!--Grid column-->
+        <div class="col-lg-3 col-md-6 mb-r">
+
+            <div class="avatar">
+                <img src="{% static 'images/female.jpg' %}" class="rounded-circle z-depth-1" alt="Fourth sample avatar image">
+            </div>
+            <h4>Reta Beebe</h4>
+            <h6 class="font-bold blue-text">Position Here</h6>
+            <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Quod eos id officiis hic tenetur.</p>
+
+            <!--Google +-->
+            <a class="icons-sm gplus-ic"><i class="fa fa-google-plus"> </i></a>
+            <!--Facebook-->
+            <a class="icons-sm fb-ic"><i class="fa fa-facebook"> </i></a>
+            <!--GitHub-->
+            <a class="icons-sm git-ic"><i class="fa fa-github"> </i></a>
+
+        </div>
+        <!--Grid column-->
+
+    </div>
+    <!--Grid row-->
+
+</section>
+<!--Section: Team v.1-->
+            
+
+<!-- Purple Header -->
+<div class="edge-header elegant-color"></div>
+<!-- Main Container -->
+<div class="container free-bird">
+    <!--Row-->
+    <div class="row">
+
+
+{% if email_sent %}
+
+        <!--Column-->
+        <div class="col-md-12 col-lg-7 mx-auto float-none white z-depth-1 py-2 px-2">
+
+            <!--Naked Form-->
+            <div class="card-body">
+
+                <h3 class="h3-responsive"><strong>Your message has been sent to ELSA <i class="fa fa-snowflake-o"></i>.</strong></h3>
+
+                <p class="pb-4">
+                    Please allow 48 hours for a response.
+                </p>
+            </div>
+            <!--Naked Form-->
+        </div>
+        <!--Column-->
+
+
+{% else %}
+        <!--Column-->
+        <div class="col-md-12 col-lg-7 mx-auto float-none white z-depth-1 py-2 px-2">
+
+            <!--Naked Form-->
+            <div class="card-body">
+
+                <h3 class="h3-responsive">Send a message to ELSA <i class="fa fa-snowflake-o"></i></h3>
+
+                <p class="pb-4">
+
+                    <form role="form" action="" method="post">
+                        {% csrf_token %}
+                        {% if user_logged_in %}
+                            {{ user_contact_form.as_p }}
+                        {% else %}
+                            {{ contact_form.as_p }}
+                        {% endif %}
+                        <button type="submit" class="btn btn-default">Submit</button>
+                    </form>
+                    
+                </p>
+            </div>
+            <!--Naked Form-->
+        </div>
+        <!--Column-->
+
+{% endif %}
+
+    </div>
+    <!--Row-->
+</div>
+<!-- /.Main Container -->
+
+
+
+
+
+
+{% endblock %}

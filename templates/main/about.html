@@ -1,0 +1,163 @@
+{% extends 'main/base-k.html' %}
+{% load staticfiles %}
+
+
+
+
+{% block title_block %}
+About
+{% endblock %}
+
+
+{% block main_header_block %}
+Educational Labeling System @Atmospheres
+{% endblock %}
+
+{% block about_header_block %}
+<div id="thatnewnew">
+    <div id="secretmessage">
+    
+    </div>
+</div>
+{% endblock %}
+
+
+
+
+{% block body_block %}
+
+<!--Section: Blog v.1-->
+<section class="section pb-3 text-center text-lg-left">
+
+
+    <!--Grid row-->
+    <div class="row">
+
+        <!--Grid column-->
+        <div class="col-lg-5 ml-auto col-xl-4 pb-3">
+            <!--Featured image-->
+            <div class="view overlay hm-white-slight z-depth-1-half">
+                <img src="{% static 'images/Snowflake.png' %}" class="img-fluid">
+                <a>
+                    <div class="mask"></div>
+                </a>
+            </div>
+        </div>
+        <!--Grid column-->
+
+        <!--Grid column-->
+        <div class="col-lg-7 mr-auto col-xl-6">
+            <!--Excerpt-->
+            <a href="" class="green-text"><h6 class="font-bold pb-1"><i class="fa fa-snowflake-o"></i> ELSA</h6></a>
+            <h4 class="mb-4"><strong>Introduction.</strong></h4>
+            <p>The Educational Labeling System for Atmospheres (ELSA) is designed to help data providers create PDS4 compliant labels.  Many data providers have little or no experience submitting data to the Planetary Data Systems (PDS), regardless whether the standard is PDS3 or PDS4.  ELSA's goal is to provide an online environment where data providers can learn about PDS4, build PDS4 bundles, submit completed bundles to Atmos, and manage the reviews/lien resolutions.</p>
+            <p>In addition to catering to data providers of new data, ELSA would like to cater to those with PDS3 data labels needing to be migrated into PDS4 compliant labels.  The Atmos team plans to begin development of the Migrate app within upcoming months.  As this idea becomes further progressed, we will release more information about the app.</p>
+            
+        </div>
+        <!--Grid column-->
+
+    </div>
+    <!--Grid row-->
+
+    <hr class="hr-width mb-5 mt-5 pb-3">
+
+
+    <!--Grid row-->
+    <div class="row pb-5">
+
+        <!--Grid column-->
+        <div class="col-lg-5 ml-auto col-xl-4 pb-3">
+            <!--Featured image-->
+            <div class="view overlay hm-white-slight z-depth-1-half">
+                <img src="{% static 'images/PDS_Planets.png' %}" alt="Thrid image in the blog listing." class="img-fluid">
+                <a>
+                    <div class="mask"></div>
+                </a>
+            </div>
+        </div>
+        <!--Grid column-->
+
+        <!--Grid column-->
+        <div class="col-lg-7 mr-auto col-xl-6">
+            <!--Excerpt-->
+            <a href="" class="indigo-text"><h6 class="font-bold pb-1"><i class="fa fa-suitcase"></i> PDS4 Standard</h6></a>
+           <h4 class="mb-4"><strong>Introduction to PDS4.</strong></h4>
+            <p>Labels describe data, so labels are metadata.  PDS4 is the most current archiving standard for labels.  Its predecessor was PDS3.  PDS3 described metadata using ODL format.  PDS4 describes metadata using XML, eXtensible Markup Language.  XML is a more widely available language for metadata management than ODL.  In plain English this means that PDS4 labels are written in XML.</p>
+            <a class="btn btn-indigo mb-3">Read more</a>
+        </div>
+        <!--Grid column-->
+
+    </div>
+    <!--Grid row-->
+
+    <hr class="hr-width mb-5 mt-5 pb-3"/>
+    <!--Grid row-->
+    <div class="row pb-5">
+
+        <!--Grid column-->
+        <div class="col-lg-5 ml-auto col-xl-4 pb-3">
+            <!--Featured image-->
+            <div class="view overlay hm-white-slight z-depth-1-half">
+                <img src="{% static 'images/top-down.png' %}" alt="Arrow pointing from a top going down." class="img-fluid">
+                <a>
+                    <div class="mask"></div>
+                </a>
+            </div>
+        </div>
+        <!--Grid column-->
+
+        <!--Grid column-->
+        <div class="col-lg-7 mr-auto col-xl-6">
+            <!--Excerpt-->
+            <a href="" class="green-text"><h6 class="font-bold pb-1"><i class="fa fa-snowflake-o"></i> ELSA</h6></a>
+           <h4 class="mb-4"><strong>We like the Top-Down.</strong></h4>
+            <p>At Atmospheres, we chose the Top-Down approach because it gives data providers the big picture of what a Bundle is at the very beginning of their PDS4 journey.  The Top-Down approach allows Logical Identifiers (LIDs) to be created in the natural way (<a href="https://pds.jpl.nasa.gov/pds4/doc/dph/current/PDS4_DataProvidersHandbook_1.7.0_170517.pdf">Data Provider's Handbook 1.7.0.0, Section 5.2</a>).  The PDS4 standard's immense power to archive and organize large data sets revolve around LIDs.</p>
+            <p>Upon registration with ELSA, the user is asked which agency they work for--NASA, ESA, etc.  This creates the agency identifier for each LID throughout the Bundle.  When a user begins creating a Bundle, they are asked for the Bundle's name and which Collections their Bundle has.  ELSA prevents Bundles of the same name to be created to ensure that Bundles created within ELSA are unique.  This provides for an area of improvement within ELSA in which one day we may expand to ensure that the Bundle in creation is unique across all registered products.  Until then, data providers should consult their Node to ensure the name is allowed.  Once the Bundle name is unique, then regardless of all else that follows, the entire LID is unique.</p>
+          
+            <a class="btn btn-indigo mb-3">Read more</a>
+        </div>
+        <!--Grid column-->
+
+    </div>
+    <!--Grid row-->
+
+    <!--Grid row-->
+    <div class="row pb-5">
+
+        <!--Grid column-->
+        <div class="col-lg-5 ml-auto col-xl-4 pb-3">
+            <!--Featured image-->
+            <div class="view overlay hm-white-slight z-depth-1-half">
+                <img src="{% static 'images/MercEm.jpg' %}" alt="Thrid image in the blog listing." class="img-fluid">
+                <a>
+                    <div class="mask"></div>
+                </a>
+            </div>
+        </div>
+        <!--Grid column-->
+
+        <!--Grid column-->
+        <div class="col-lg-7 mr-auto col-xl-6">
+            <!--Excerpt-->
+            <a href="" class="green-text"><h6 class="font-bold pb-1"><i class="fa fa-snowflake-o"></i> ELSA</h6></a>
+           <h4 class="mb-4"><strong>ELSA: For Software Developers</strong></h4>
+            <p>Build A Bundle is written in Python using the Django framework.  There are no dependencies or additional libraries used within the Build A Bundle app currently.</p>
+          
+            <a class="btn btn-indigo mb-3">Read more</a>
+        </div>
+        <!--Grid column-->
+
+    </div>
+    <!--Grid row-->
+
+
+</section>
+<!--Section: Blog v.1-->
+            
+
+{% endblock %}
+
+
+{% block footie_block %}    
+{% endblock %}
+
