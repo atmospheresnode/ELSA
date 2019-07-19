@@ -109,7 +109,7 @@ class Investigation(models.Model):
         # Traverse labels
         for xml_path in xml_path_list:
             print xml_path
-
+	    '''
 	    fil = open('/home/tpagan/older ELSAs/elsa_kays_current/ELSA-online-master/archive/tpagan/testingxml_bundle/document/collection_document.xml','r')
 
 	    fileText = fil.read()
@@ -117,7 +117,7 @@ class Investigation(models.Model):
 	    fil.close()
 	
 	    print fileText
-
+	    '''
     
             # Create Parser
             parser = etree.XMLParser(remove_blank_text=True, remove_comments=True)

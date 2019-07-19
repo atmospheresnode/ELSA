@@ -3,6 +3,7 @@ from __future__ import unicode_literals
 
 from .forms import *
 from .models import *
+from context.models import *
 from django.contrib.auth.decorators import login_required
 from django.db.models import Q
 from django.http import HttpResponse
@@ -10,6 +11,7 @@ from django.shortcuts import render, redirect
 from django.template import RequestContext
 from django import forms
 from django.forms import modelformset_factory
+
 
 
 
@@ -656,10 +658,11 @@ def context_search_investigation(request, pk_bundle):
         # so we can notify the user it has been added
         if request.method == 'POST':
             if form_investigation.is_valid():
+		print Investigation.objects.all()
                 i = Investigation.objects.get(name=form_investigation.cleaned_data['investigation'])
                 context_dict['investigation'] = i
                 bundle.investigations.add(i)
-
+		'''
 	        fil = open('/home/tpagan/older ELSAs/elsa_kays_current/ELSA-online-master/archive/tpagan/jacobtest_bundle/document/collection_document.xml','r')
 
 	        fileText = fil.read()
@@ -667,8 +670,8 @@ def context_search_investigation(request, pk_bundle):
 	        fil.close()
 	
 	        print fileText
-
-#                i.fill_label(bundle)
+		'''
+		i.fill_label(bundle)
 
 
         return render(request, 'build/context/context_search_investigation.html', context_dict)
@@ -720,7 +723,7 @@ def context_search_instrument_host(request, pk_bundle, pk_investigation):
                 i = Instrument_Host.objects.get(name=form_instrument_host.cleaned_data['instrument_host'])
                 context_dict['instrument_host'] = i
                 bundle.instrument_hosts.add(i)
-#                i.fill_label(bundle)    
+                i.fill_label(bundle)    
             
                 
                         
@@ -775,7 +778,7 @@ def context_search_target(request, pk_bundle, pk_investigation, pk_instrument_ho
                 i = Target.objects.get(name=form_target.cleaned_data['target'])
                 context_dict['target'] = i
                 bundle.targets.add(i)
-#                i.fill_label(bundle)
+                i.fill_label(bundle)
                 
                         
 
@@ -829,7 +832,7 @@ def context_search_instrument(request, pk_bundle, pk_investigation, pk_instrumen
                 i = Instrument.objects.get(name=form_instrument.cleaned_data['instrument'])
                 context_dict['instrument'] = i
                 bundle.instruments.add(i)
-#                i.fill_label(bundle)
+                i.fill_label(bundle)
                 
                         
 
@@ -875,8 +878,11 @@ def context_search_facility(request, pk_bundle):
             if form_facility.is_valid():
                 i = Facility.objects.get(name=form_facility.cleaned_data['facility'])
                 context_dict['facility'] = i
+		
+		
+
                 bundle.facilities.add(i)
-#                i.fill_label(bundle)
+                i.fill_label(bundle)
 
 
         return render(request, 'build/context/context_search_facility.html', context_dict)
@@ -923,7 +929,7 @@ def context_search_facility_instrument(request, pk_bundle, pk_facility):
                 i = Instrument.objects.get(name=form_instrument.cleaned_data['instrument'])
                 context_dict['instrument'] = i
                 bundle.instruments.add(i)
-#                i.fill_label(bundle)
+                i.fill_label(bundle)
                 
                         
 
@@ -1296,7 +1302,7 @@ def Table_Creation(request, pk_bundle):
 	    if table.data_type == "Table Binary":
 		TB_iterator = TB_iterator + 1
 	    if table.data_type == "Table Fixed-Width":
-		TFW_iterator = TFWS_iterator + 1
+		TFW_iterator = TFW_iterator + 1
 
 
         TableDelimitedFormSet = modelformset_factory(Table_Delimited, exclude=('bundle','name',) , extra=TD_iterator)
@@ -1333,8 +1339,11 @@ def Table_Creation(request, pk_bundle):
 		for form in TFW_formset:
 		    table_form = form.save()
 
-	
-	pass
+	print "\n"	
+	print settings.TEMPLATE_DIR	
+	print "\n"
+
+	return render(request, '/build/data/Table_Creation.html', context_dict)
     else:
 	print 'unauthorized user attempting to access a restricted area.'
         return redirect('main:restricted_access')

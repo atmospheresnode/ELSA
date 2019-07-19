@@ -299,6 +299,7 @@ Inherited Association	none
 Referenced from	Context_Area	 	 	 
         	Observation_Area	 	 	 
 """
+'''
 class Investigation(models.Model):
     INVESTIGATION_TYPES = [
         ('Individual Investigation','Individual Investigation'),
@@ -308,7 +309,7 @@ class Investigation(models.Model):
     ]
     name = models.CharField(max_length=MAX_CHAR_FIELD)
     type_of = models.CharField(max_length=MAX_CHAR_FIELD, choices=INVESTIGATION_TYPES)
-
+'''
 
 
 
