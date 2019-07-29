@@ -43,6 +43,10 @@ urlpatterns = [
     url(r'^(?P<pk_bundle>\d+)/contextsearch/facility/$', views.context_search_facility, name='context_search_facility'),
     url(r'^(?P<pk_bundle>\d+)/contextsearch/facility/(?P<pk_facility>\d+)/instrument/$', views.context_search_facility_instrument, name='context_search_facility_instrument'),
     url(r'^(?P<pk_bundle>\d+)/contextsearch/telescope/$', views.context_search_telescope, name='context_search_telescope'),
+    url(r'^$', views.context, name='context'),
+    url(r'^investigations/$', views.investigations, name='investigations'),
+    url(r'^instruments/$', views.instruments, name='instruments'),
+    url(r'^instrument_hosts/$', views.instrument_hosts, name='instrument_hosts'),
 
 
 

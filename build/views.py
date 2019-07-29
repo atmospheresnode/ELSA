@@ -3,7 +3,7 @@ from __future__ import unicode_literals
 
 from .forms import *
 from .models import *
-from context.models import *
+#from context.models import *
 from django.contrib.auth.decorators import login_required
 from django.db.models import Q
 from django.http import HttpResponse
@@ -344,6 +344,18 @@ of all of ELSAs bundles is a mystery to me. -J
 		if data_form.name[:5] != "data_":
 		    data_form.name = "data_"+data_form.name
 		data_form.bundle = bundle
+
+		#Create the actual data entries in the databasae
+		print data_form.data_type
+		if data_form.data_type == 'Table Delimited':
+		    actual_data = Table_Delimited(name = data_form.name, bundle=bundle)
+		    actual_data.save()
+		elif data_form.data_type == 'Table Binary':
+		    actual_data = Table_Binary(name = data_form.name, bundle=bundle)
+		    actual_data.save()
+		elif data_form.data_type == 'Table Fixed-Width':
+		    actual_data = Table_Fixed_Width(name = data_form.name, bundle=bundle)
+		    actual_data.save()
 
 		# Create the data stubs
 		data_form.build_data_directory()
@@ -1339,11 +1351,9 @@ def Table_Creation(request, pk_bundle):
 		for form in TFW_formset:
 		    table_form = form.save()
 
-	print "\n"	
-	print settings.TEMPLATE_DIR	
-	print "\n"
+	
 
-	return render(request, '/build/data/Table_Creation.html', context_dict)
+	return render(request, 'build/data/table_creation.html', context_dict)
     else:
 	print 'unauthorized user attempting to access a restricted area.'
         return redirect('main:restricted_access')
@@ -1375,10 +1385,43 @@ def Field_Creation(request, pk_bundle, pk_table, table_type):
     
 
 
+"""
+    Context Views
+"""
 
 
+@login_required
+def context(request):
+    context_dict = {
+    }
+
+    return render(request, 'context/repository/repository.html', context_dict)
 
 
+#@login_required
+def investigations(request):
+    context_dict = {
+        'investigations':Investigation.objects.all(),
+    }
+
+    return render(request, 'context/repository/investigations.html', context_dict)
+
+
+#@login_required
+def instrument_hosts(request):
+    context_dict = {
+        'instrument_hosts':Instrument_Host.objects.all(),
+    }
+
+    return render(request, 'context/repository/instrument_hosts.html', context_dict)
+
+#@login_required
+def instruments(request):
+    context_dict = {
+        'instruments':Instrument.objects.all(),
+    }
+
+    return render(request, 'context/repository/instruments.html', context_dict)
 
 
 

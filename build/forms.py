@@ -8,7 +8,7 @@ import urllib2, urllib
 import datetime
 
 from .models import *
-from context.models import *
+#from context.models import *
 # ------------------------------------------------------------------------------------------------------ #
 # ------------------------------------------------------------------------------------------------------ #
 #
@@ -420,6 +420,107 @@ class TableForm(forms.ModelForm):
     class Meta:
         model = Table
         exclude = ('product_observational', 'observational_type', 'local_identifier')
+
+
+
+"""
+    Context Forms 
+"""
+
+
+'''
+"""
+    Instrument_Host
+"""
+class InstrumentHostForm(forms.ModelForm):
+    class Meta:
+        model = Instrument_Host
+        exclude = ('',)
+
+
+
+
+
+
+
+
+
+
+
+"""
+    Instrument
+"""
+class InstrumentForm(forms.ModelForm):
+    class Meta:
+        model = Instrument
+        exclude = ('',)
+
+
+
+
+
+
+
+
+
+
+
+"""
+    Mission
+"""
+class MissionForm(forms.ModelForm):
+    class Meta:
+        model = Mission
+        exclude = ('',)
+
+
+
+
+
+
+
+
+
+
+
+
+
+"""
+    Target
+"""
+class TargetForm(forms.ModelForm):
+    class Meta:
+        model = Target
+        exclude = ('',)
+
+
+
+
+
+
+
+
+
+
+
+
+"""
+    Facility
+"""
+class Facility(forms.ModelForm):
+    class Meta:
+        model = Facility
+        exclude = ('',)
+
+'''
+
+
+
+
+
+
+
+
 
 
 
