@@ -136,7 +136,6 @@ INSTALLED_APPS = [
     'main',
     'review',
     'tutorial',
-    'context',
 ]
 
 MIDDLEWARE = [

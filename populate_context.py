@@ -6,7 +6,7 @@ os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'elsa.settings')
 import django
 django.setup()
 
-from context.models import *
+from build.models import *
 from lxml import etree
 import time
 import urllib2
