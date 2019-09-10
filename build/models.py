@@ -3233,33 +3233,32 @@ The vertical_display_direction attribute
         displayed.
     """
     #Color_Display_Settings = models.CharField(max_length=MAX_CHAR_FIELD)
-    color_display_axis = models.IntegerField(min_value=1, max_value=255)#ASCII short string collapsed
+    color_display_axis = models.PositiveIntegerField() # max value 255
     comment_color_display = models.CharField(max_length=MAX_CHAR_FIELD)
-    red_channel_band = models.BigIntegerField(min_value=1)
-    green_channel_band = models.BigIntegerField(min_value=1)
-    blue_channel_band = models.BigIntegerField(min_value=1)
+    red_channel_band = models.PositiveIntegerField() # Big integer is better for
+    green_channel_band = models.PositiveIntegerField() # pds4 specs for these
+    blue_channel_band = models.PositiveIntegerField() # bands
 
     #Display_Direction
     comment_display_direction = models.CharField(max_length=MAX_CHAR_FIELD)
-    horizontal_display_axis = models.IntegerField(min_value=1, max_value=255)
-    horizontal_display_direction = models.IntegerField(min_value=1, max_value=255)
-    vertical_display_axis = models.IntegerField(min_value=1, max_value=255)
-    vertical_display_direction = models.IntegerField(min_value=1, max_value=255)
+    horizontal_display_axis = models.PositiveIntegerField() # max value 255
+    horizontal_display_direction = models.PositiveIntegerField() # max value 255
+    vertical_display_axis = models.PositiveIntegerField() # max value 255
+    vertical_display_direction = models.PositiveIntegerField() # max value 255
 
     #Display_Settings
-    Local_Internal_Reference = models.CharField(max_length=MAX_CHAR_FIELD)
-    Display_Direction = models.CharField(max_length=MAX_CHAR_FIELD)
-    Color_Display_Settings = models.CharField(max_length=MAX_CHAR_FIELD)
-    Movie_Display_Settings = models.CharField(max_length=MAX_CHAR_FIELD)
+    #Local_Internal_Reference = models.CharField(max_length=MAX_CHAR_FIELD)
+    #Display_Direction = models.CharField(max_length=MAX_CHAR_FIELD)
+    #Color_Display_Settings = models.CharField(max_length=MAX_CHAR_FIELD)
+    #Movie_Display_Settings = models.CharField(max_length=MAX_CHAR_FIELD)
     
     #Movie_Display_Settings
-
-    time_display_axis = models.IntegerField(min_value=1, max_value=255)
+    time_display_axis = models.PositiveIntegerField() # max 255
     comment = models.CharField(max_length=MAX_CHAR_FIELD)
-    frame_rate = models.FloatField(min_value=1.0)
+    frame_rate = models.FloatField() # min_value=1.0
     loop_flag = models.BooleanField()
-    loop_count = models.IntegerField(min_value=1)
-    loop_delay = models.FloatField(min_length=0.0)
+    loop_count = models.PositiveIntegerField()
+    loop_delay = models.FloatField() # min_length=0.0
     loop_back_and_forth_flag = models.BooleanField()
 
     #Color_Display_Settings
