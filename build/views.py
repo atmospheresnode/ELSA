@@ -1105,6 +1105,69 @@ def data_depricated(request, pk_bundle):
 
 
 
+@login_required
+def display_dictionary(request, pk_bundle):
+    print ' \n\n \n\n-------------------------------------------------------------------------'
+    print '\n\n------------------- Add Display Dictionary with ELSA --------------------------'
+    print '------------------------------ DEBUGGER ---------------------------------'
+
+    # Get Bundle
+    bundle = Bundle.objects.get(pk=pk_bundle)
+#    collections = Collections.objects.get(bundle=bundle)
+
+    # Secure ELSA by seeing if the user logged in is the same user associated with the Bundle
+    if request.user == bundle.user:
+        print 'authorized user: {}'.format(request.user)
+
+        # ELSA's current user is the bundle user so begin view logic
+        # Get forms
+        form_display_dictionary = DisplayDictionaryForm(request.POST or None)
+
+        # Declare context_dict for templating language used in ELSAs templates
+        context_dict = {
+            'form_display_dictionary':form_display_dictionary,
+            'bundle':bundle,
+
+        }
+
+        # After ELSAs friend hits submit, if the forms are completed correctly, we should enter
+        # this conditional.
+        print '\n\n------------------------ DISPLAY DICTIONARY INFO ----------------------------'
+        print '\nCurrently awaiting user input...\n\n'
+        if form_display_dictionary.is_valid():
+            print 'form_display_dictionary is valid for {}.'.format(bundle.user)
+            # Create DisplayDictionary model object
+            display_dictionary = form_display_dictionary.save(commit=False)
+            display_dictionary.bundle = bundle
+            display_dictionary.save()
+            print 'Display Dictionary model object: {}'.format(display_dictionary)
+
+            # Find appropriate label(s).
+            print '---------------- End Build Display Dictionary ------------------------------'  
+	
+
+        # Get current Display Dictionary object associated with the user's Bundle
+        #alias_list = Alias.objects.filter(bundle=bundle)
+        #context_dict['alias_list'] = alias_list
+        return render(request, 'build/alias/alias.html',context_dict)
+    else:
+        print 'unauthorized user attempting to access a restricted area.'
+        return redirect('main:restricted_access')
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 def document(request, pk_bundle):
     print '\n\n'
