@@ -1149,7 +1149,7 @@ def display_dictionary(request, pk_bundle):
         # Get current Display Dictionary object associated with the user's Bundle
         #alias_list = Alias.objects.filter(bundle=bundle)
         #context_dict['alias_list'] = alias_list
-        return render(request, 'build/alias/alias.html',context_dict)
+        return render(request, 'build/dictionary/display.html',context_dict)
     else:
         print 'unauthorized user attempting to access a restricted area.'
         return redirect('main:restricted_access')

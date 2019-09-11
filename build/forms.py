@@ -178,6 +178,12 @@ class DataForm(forms.ModelForm):
 
 
 
+class DisplayDictionaryForm(forms.ModelForm):
+    class Meta:
+        model = DisplayDictionary
+        exclude = ('bundle',)
+
+
 
 
 """
