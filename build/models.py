@@ -1667,7 +1667,9 @@ class Bundle(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     version = models.CharField(max_length=4, choices=VERSION_CHOICES,)
     #version = models.ForeignKey(Version, on_delete=models.CASCADE, default=get_most_current_version())
-    data_enum = models.PositiveIntegerField(null=True, default = 0)
+    raw_enum = models.PositiveIntegerField(null=True, default = 0)
+    calibrated_enum = models.PositiveIntegerField(null=True, default = 0)
+    derived_enum = models.PositiveIntegerField(null=True, default = 0)
    # Context Attributes
     investigations = models.ManyToManyField(Investigation)
     instrument_hosts = models.ManyToManyField(Instrument_Host)
@@ -1853,9 +1855,11 @@ class Collections(models.Model):
     bundle = models.OneToOneField(Bundle, on_delete=models.CASCADE)
     has_document = models.BooleanField(default=True)
     has_context = models.BooleanField(default=True)
-    has_xml_schema = models.BooleanField(default=True)
-    has_data = models.BooleanField(default=False)
-    data_enum = models.PositiveIntegerField(default = 0)
+    #has_xml_schema = models.BooleanField(default=True)
+    has_raw_data = models.BooleanField(default=False)
+    has_calibrated_data = models.BooleanField(default=False)
+    has_derived_data = models.BooleanField(default=False)
+    #data_enum = models.PositiveIntegerField(default = 0)
 
 
     # Cleaners
@@ -1865,11 +1869,15 @@ class Collections(models.Model):
             collections_list.append("document")
         if self.has_context:
             collections_list.append("context")
-        if self.has_xml_schema:
-            collections_list.append("xml_schema")
-        if self.has_data:
-            collections_list.append("data")
-	    collections_list.append("data_enum")
+        #if self.has_xml_schema:
+            #collections_list.append("xml_schema")
+        if self.has_raw_data:
+            collections_list.append("data_raw")
+        if self.has_calibrated_data:
+            collections_list.append("data_calibrated")
+        if self.has_derived_data:
+            collections_list.append("data_derived")
+	    #collections_list.append("data_enum")
         return collections_list
 
 
@@ -1877,7 +1885,7 @@ class Collections(models.Model):
     #     Note: When we call on Collections, we want to be able to have a list of all collections 
     #           pertaining to a bundle.
     def __str__(self):
-        return '{0} Bundle has document={1}, context={2}, xml_schema={3}, data={4}, data_enum={5}'.format(self.bundle, self.has_document, self.has_context, self.has_xml_schema, self.has_data, self.data_enum)
+        return '{0} Bundle has document={1}, context={2}, raw={3}, calibrated={4}, derived={5}'.format(self.bundle, self.has_document, self.has_context, self.has_raw_data, self.has_calibrated_data, self.has_derived_data)
     class Meta:
         verbose_name_plural = 'Collections'        
 
@@ -1894,6 +1902,10 @@ class Collections(models.Model):
                 # point, ELSA will build the data_<processing_level> folder if it does not already 
                 # exist. The model object that creates the data collection folders is the Data model 
                 # object.
+
+    def build_data_directories(self, data):
+	collection_directory = os.path.join(self.bundle.directory(), data)
+	make_directory(collection_directory)
 
 
 @python_2_unicode_compatible
@@ -1958,8 +1970,6 @@ class Data_Prep(models.Model):
     
 
 
-
-
 """
 """
 @python_2_unicode_compatible
@@ -2016,47 +2026,47 @@ class Table_Delimited(models.Model):
 	('Vertical Bar','Vertical Bar'),
     )
 
-    name = models.CharField(max_length=256)
+    name = models.CharField(max_length=256, blank=True)
     offset = models.IntegerField(default=-1)
     object_length = models.IntegerField(default=-1)
     description = models.CharField(max_length=5000, default="unset")
     records = models.IntegerField(default=-1)
-    field_delimiter = models.CharField(max_length=256, choices=DELIMITER_CHOICES, default="Comma")
+    field_delimiter = models.CharField(max_length=256, choices=DELIMITER_CHOICES, default="Comma", blank=True)
     fields = models.IntegerField(default=-1)
     bundle = models.ForeignKey(Bundle, on_delete=models.CASCADE,null=True)
 
     def __str__(self):
-        pass
+        return str(self.id)
 
 @python_2_unicode_compatible
 class Table_Binary(models.Model):
-    name = models.CharField(max_length=256)
+    name = models.CharField(max_length=256, blank=True)
     offset = models.IntegerField(default=-1)
     records = models.IntegerField(default=-1)
     fields = models.IntegerField(default=-1)
     bundle = models.ForeignKey(Bundle, on_delete=models.CASCADE, null=True)
 
     def __str__(self):
-        pass
+        return str(self.id)
 
 @python_2_unicode_compatible
 class Table_Fixed_Width(models.Model):
 
     RECORD_CHOICES = (
-
+	('Sample Choice','Sample Choice'),
     )
 
-    name = models.CharField(max_length=256)
+    name = models.CharField(max_length=256, blank=True)
     offset = models.IntegerField(default=-1)
     object_length = models.IntegerField(default=-1)
     description = models.CharField(max_length=5000, default="unset")
     records = models.IntegerField(default=-1)
-    record_delimiter = models.CharField(max_length=256, choices=RECORD_CHOICES, default="Comma")
+    record_delimiter = models.CharField(max_length=256, choices=RECORD_CHOICES, default="Sample Choice", blank=True)
     fields = models.IntegerField(default=-1)
     bundle = models.ForeignKey(Bundle, on_delete=models.CASCADE, null=True)
 
     def __str__(self):
-        pass
+        return str(self.id)
 
 @python_2_unicode_compatible
 class Field_Delimited(models.Model):
