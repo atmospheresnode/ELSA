@@ -1996,7 +1996,29 @@ class Data(models.Model):
         data_directory = os.path.join(self.bundle.directory(), data_collection_name)
         return data_directory  
 
+@python_2_unicode_compatible
+class Processing_Level(models.Model):
+    CHOICES = [
+        ('Derived','Derived'),
+        ('Calibrated','Calibrated'),
+        ('Raw','Raw'),
+        ('Reduced','Reduced'),
+    ]
+    bundle = models.ForeignKey(Bundle, on_delete=models.CASCADE)
+    level = models.CharField(max_length=30, choices=CHOICES)
+    name = models.CharField(max_length=MAX_CHAR_FIELD)
 
+    def __str__(self):
+        return 'Level: {0},    Name: {1}'.format(self.level, self.name)
+
+
+@python_2_unicode_compatible
+class Data_Reduced(models.Model):
+    bundle = models.ForeignKey(Bundle, on_delete=models.CASCADE)
+
+
+@python_2_unicode_compatible
+class Table_Delimited(models.Model):
 """
 Table and Field Objects
 
@@ -2005,10 +2027,7 @@ Table and Field Objects
 
     -Field Objects belong to Table objects. Their quantity is deterined by the fields atribute of their 
 	parent Table object.
-"""
-@python_2_unicode_compatible
-class Table_Delimited(models.Model):
-    
+"""    
     DELIMITER_CHOICES = (
 	('Comma','Comma'),
 	('Horizontal Tab','Horizontal Tab'),
@@ -2103,6 +2122,9 @@ class Field_Character(models.Model):
 
 
 
+
+@python_2_unicode_compatible
+class Product_Bundle(models.Model):
 """
 15.1  Product_Bundle
 
@@ -2131,8 +2153,6 @@ Association	        context_area	        0..1	Context_Area
 Inherited Association	has_identification_area	1	Identification_Area	 
 Referenced from	none	 	 	 
 """
-@python_2_unicode_compatible
-class Product_Bundle(models.Model):
     bundle = models.OneToOneField(Bundle, on_delete=models.CASCADE)
 
     def __str__(self):
@@ -2145,17 +2165,18 @@ class Product_Bundle(models.Model):
         return name_edit
 
     
+
+    def label(self):
     """
         label gives the physical location of the label on atmos (or wherever).  Since Product_Bundle is located within the bundle directory, our path is .../user_directory_here/bundle_directory_here/product_bundle_label_here.xml.
     """
-    def label(self):
         return os.path.join(self.bundle.directory(), self.name_file_case())
 
 
+    def build_base_case(self):
     """
         build_base_case copies the base case product_bundle template (versionless) into bundle dir
     """
-    def build_base_case(self):
 
         
         # Locate base case Product_Bundle template found in templates/pds4_labels/base_case/product_bundle
@@ -2174,6 +2195,8 @@ class Product_Bundle(models.Model):
         
         return
         
+
+    def fill_base_case(self, root):
     """
         fill_base_case is the initial fill given the bundle name, version, and collections.
 
@@ -2192,7 +2215,6 @@ class Product_Bundle(models.Model):
                   self (like itself).
    
     """
-    def fill_base_case(self, root):
         Product_Bundle = root
 
         # Fill in Identification_Area
@@ -2217,6 +2239,8 @@ class Product_Bundle(models.Model):
         
         return Product_Bundle
 
+
+    def build_internal_reference(self, root, relation):
     """
         build_internal_reference builds and fills the Internal_Reference information within the 
         Reference_List of Product_Bundle.  The relation is used within reference_type to associate what 
@@ -2224,8 +2248,6 @@ class Product_Bundle(models.Model):
         ELSA, like Document.  The possible relations as of V1A00 are errata, document, investigation, 
         instrument, instrument_host, target, resource, associate.
     """
-    def build_internal_reference(self, root, relation):
-
         Reference_List = root.find('{}Reference_List'.format(NAMESPACE))
 
         Internal_Reference = etree.SubElement(Reference_List, 'Internal_Reference')
@@ -2249,6 +2271,9 @@ class Product_Bundle(models.Model):
 
 
 
+
+@python_2_unicode_compatible
+class Product_Collection(models.Model):
 """
 15.2  Product_Collection
 
@@ -2285,8 +2310,6 @@ Inherited Association	has_identification_area	1	Identification_Area
 
 Referenced from	none	 	 	 
 """
-@python_2_unicode_compatible
-class Product_Collection(models.Model):
     COLLECTION_CHOICES = (
 
         ('Document','Document'),
@@ -2309,11 +2332,12 @@ class Product_Collection(models.Model):
 
 #        return "{0}\nProduct Collection for {1} Collection".format(self.collections.bundle, self.collection)
 
+
+    def directory(self):
     """
         This returns the directory path of all collections but the data collection.
         To return any of the data collection directory paths, see directory_data.
     """
-    def directory(self):
         name_edit = self.collection.lower()
         collection_directory = os.path.join(self.bundle.directory(), name_edit)
         return collection_directory
@@ -2324,12 +2348,12 @@ class Product_Collection(models.Model):
         collection_directory = os.path.join(self.bundle.directory(), name_edit)
         return collection_directory
 
+       
+    def name_label_case(self):
     """
        name_label_case returns the name in label case with the proper .xml extension.
 
-    """        
-    def name_label_case(self):
-
+    """ 
         # Append cleaned collection name to name edit for Product_Collection xml label
         name_edit = self.collection.lower()
         name_edit = 'collection_{}.xml'.format(name_edit)
@@ -2340,16 +2364,17 @@ class Product_Collection(models.Model):
         name_edit = '{0}_{1}.xml'.format(self.collection.lower(), data.processing_level.lower())
         return name_edit
 
+
+    def label(self):
     """
        label returns the physical label location in ELSAs archive
     """
-    def label(self):
         return os.path.join(self.directory(), self.name_label_case())
 
 
-    """
-    """
     def build_base_case(self):
+    """
+    """
         
         # Locate base case Product_Collection template found in templates/pds4_labels/base_case/
         source_file = os.path.join(PDS4_LABEL_TEMPLATE_DIRECTORY, 'base_case')
@@ -2386,6 +2411,7 @@ class Product_Collection(models.Model):
         return
 
 
+    def fill_base_case(self, root):
     """
         Fillers follow a set flow.
             1. Input the root element of an XML label.
@@ -2400,7 +2426,7 @@ class Product_Collection(models.Model):
                 - Fill is easy.  Just fill it.. with the information from the model it was called on,
                   self (like itself).
     """
-    def fill_base_case(self, root):
+
         Product_Collection = root
          
         # Fill in Identification_Area
@@ -2425,11 +2451,11 @@ class Product_Collection(models.Model):
         
         return Product_Collection
 
+
+    def build_internal_reference(self, root, relation):
     """
         build_internal_reference builds and fills the Internal_Reference information within the Reference_List of Product_Collection.  The relation is used within reference_type to associate what the collection is related to, like collection_to_document.  Therefore, relation is a model object in ELSA, like Document.  The possible relations as of V1A00 are resource, associate, calibration, geometry, spice kernel, document, browse, context, data, ancillary, schema, errata, bundle, personnel, investigation, instrument, instrument_host, target.
     """
-
-    def build_internal_reference(self, root, relation):
 
         Reference_List = root.find('{}Reference_List'.format(NAMESPACE))
 
@@ -2458,6 +2484,8 @@ class Product_Collection(models.Model):
 
 
 
+@python_2_unicode_compatible
+class Product_Observational(models.Model):
 """
 8.3  Product_Observational
 
@@ -2486,8 +2514,7 @@ Inherited Association	has_identification_area	1	Identification_Area
 
 Referenced from	none	 	 	 
 """
-@python_2_unicode_compatible
-class Product_Observational(models.Model):
+
     DOMAIN_TYPES = [
         ('Atmosphere','Atmosphere'),
         ('Dynamics','Dynamics'),
@@ -2544,27 +2571,30 @@ class Product_Observational(models.Model):
 
 
 
+
+    def name_label_case(self):
     """
         name_label_case returns the title of the Product Observational in lowercase with underscores rather than spaces
     """
-    def name_label_case(self):
         edit_name = self.title.lower()
         edit_name = replace_all(edit_name, ' ', '_')
         return edit_name
 
+
+    def lid(self):
     """
        lid returns the lid associated with the Product_Observational label
     """
-    def lid(self):
         edit_name = self.name_label_case()
         lid = 'urn:{0}:{1}:data_{2}:{3}'.format(self.bundle.user.userprofile.agency, self.bundle.name_lid_case(), self.processing_level.lower(), self.name_label_case())
         return lid
         
 
+
+    def label(self):
     """
        label returns the physical label location in ELSAs archive
     """
-    def label(self):
         edit_name = '{}.xml'.format(self.name_label_case())
         return os.path.join(self.data.directory(), edit_name)
 
@@ -2589,6 +2619,7 @@ class Product_Observational(models.Model):
 
 
     # Fillers
+    def fill_base_case(self, root):
     """
         Fillers follow a set flow.
             1. Input the root element of an XML label.
@@ -2603,8 +2634,6 @@ class Product_Observational(models.Model):
                 - Fill is easy.  Just fill it.. with the information from the model it was called on,
                   self (like itself).
     """
-    def fill_base_case(self, root):
-
         Identification_Area = root.find('{}Identification_Area'.format(NAMESPACE))
 
 
@@ -2629,6 +2658,8 @@ class Product_Observational(models.Model):
 
         return root
 
+
+    def fill_observational(self, label_root, observational):
     """
         Fillers follow a set flow.
             1. Input the root element of an XML label.
@@ -2643,7 +2674,6 @@ class Product_Observational(models.Model):
                 - Fill is easy.  Just fill it.. with the information from the model it was called on,
                   self (like itself).
     """
-    def fill_observational(self, label_root, observational):
         Product_Observational = label_root
 
         File_Area_Observational = Product_Observational.find('{}File_Area_Observational'.format(NAMESPACE))
@@ -2692,17 +2722,20 @@ class Product_Observational(models.Model):
         # End
         return Product_Observational
         
-    """
-    """
+
     # Meta
     def __str__(self):
-        
+    """
+    """        
         return "Product_Observational at: {}".format(self.title)
 
 
 
 
 
+
+@python_2_unicode_compatible
+class Product_Document(models.Model):
 """
 12.1  Document
 
@@ -2740,8 +2773,6 @@ Association	        data_object	        1	Digital_Object
 Inherited Association	none	 	 	 
 Referenced from	Product_Document	 	 	 
 """
-@python_2_unicode_compatible
-class Product_Document(models.Model):
 
     # Attributes
     bundle = models.ForeignKey(Bundle, on_delete=models.CASCADE)
@@ -2763,12 +2794,13 @@ class Product_Document(models.Model):
 
 
     # Accessors
+    def absolute_url(self):
     """
     - absolute_url
       Returns the url to the Product Document Detail page.
     """
-    def absolute_url(self):
         return reverse('build:product_document', args=[str(self.bundle.id),str(self.id)])
+
     def collection(self):
         return 'document'
 
@@ -2825,6 +2857,8 @@ class Product_Document(models.Model):
             
         return
 
+
+    def fill_base_case(self, root):
     """
         Fillers follow a set flow.
             1. Input the root element of an XML label.
@@ -2839,8 +2873,6 @@ class Product_Document(models.Model):
                 - Fill is easy.  Just fill it.. with the information from the model it was called on,
                   self (like itself).
     """
-
-    def fill_base_case(self, root):
 
         Product_Document = root
 
@@ -2909,6 +2941,9 @@ class Product_Document(models.Model):
 
 
 
+
+@python_2_unicode_compatible
+class Alias(models.Model):
 """
 10.1  Alias
 
@@ -2937,9 +2972,6 @@ Inherited Association	none
 
 Referenced from	Alias_List	 	 	 
 """
-@python_2_unicode_compatible
-class Alias(models.Model):
-
     bundle = models.ForeignKey(Bundle, on_delete=models.CASCADE)
     alternate_id = models.CharField(max_length=MAX_CHAR_FIELD)
     alternate_title = models.CharField(max_length=MAX_CHAR_FIELD)
@@ -3035,6 +3067,9 @@ class Alias(models.Model):
 
 
 
+
+@python_2_unicode_compatible
+class Citation_Information(models.Model):
 """
 10.3  Citation_Information
 
@@ -3065,9 +3100,6 @@ Inherited Association	none
 
 Referenced from	Identification_Area	
 """ 	 	 
-@python_2_unicode_compatible
-class Citation_Information(models.Model):
-
     bundle = models.ForeignKey(Bundle, on_delete=models.CASCADE)
     author_list = models.CharField(max_length=MAX_CHAR_FIELD)
     description = models.CharField(max_length=MAX_CHAR_FIELD)
@@ -3117,12 +3149,12 @@ class Citation_Information(models.Model):
 
 
 
+
+@python_2_unicode_compatible
+class Table(models.Model):
 """
     The Table model object can be one of the four accepted table types given in PDS4.
 """
-@python_2_unicode_compatible
-class Table(models.Model):
-
     OBSERVATIONAL_TYPES = [
         ('Table Base', 'Table Base'),
         ('Table Binary','Table Binary'),
@@ -3146,12 +3178,12 @@ class Table(models.Model):
         return 'Table Binary: {}'.format(self.name)
 
 
+
+@python_2_unicode_compatible
+class Array(models.Model):
 """
     The Array model object defines a homogeneous N-dimensional array of scalars. The Array class is the parent class for all n-dimensional arrays of scalars.
 """
-@python_2_unicode_compatible
-class Array(models.Model):
-
     ARRAY_DIMENSIONS = [
         ('Array_2D','Array 2D'),
         ('Array_3D', 'Array 3D'),
