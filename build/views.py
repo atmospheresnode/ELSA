@@ -1056,7 +1056,7 @@ def context_search_telescope(request, pk_bundle):
 
 
 @login_required
-def data(request, pk_bundle):
+def data_initial(request, pk_bundle): # To Be Removed
     print '\n\n'
     print '-------------------------------------------------------------------------'
     print '\n\n---------------------- Add Data with ELSA ---------------------------'
@@ -1106,7 +1106,7 @@ def data_raw(request, pk_bundle):
         return redirect('main:restricted_access')
 
 @login_required
-def data_depricated(request, pk_bundle): 
+def data(request, pk_bundle): 
     print '\n\n'
     print '-------------------------------------------------------------------------'
     print '\n\n---------------------- Add Data with ELSA ---------------------------'

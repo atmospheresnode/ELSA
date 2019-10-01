@@ -93,9 +93,25 @@ The data collection consists of the following subcollections: calibrated data, d
     
 </div>
 <!--/.Row-->
-<!--Divider-->
-<hr/>
-<!--/.Divider-->
+<hr/><!--Divider-->
+<!--Row-->
+<div class="row pt-2">
+
+    <!--Column-->
+    <div class="col-md-6">
+        <form id="form_product_document" method="post" action="">
+            {% csrf_token %}
+            <div id="form_product_document">
+
+                {{ form_product_observational.as_p }}
+            </div>
+            <input class="btn btn-default" type="submit" value="Add"/>
+        </form>
+    </div>
+    <!--/.Column-->
+</div>
+<!--/.Second row-->
+<hr/><!--/.Divider-->
 <!--Row-->
 <div class="row pt-2">
     <!--Column-->
