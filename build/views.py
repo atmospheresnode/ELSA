@@ -1081,6 +1081,31 @@ def data(request, pk_bundle):
         return redirect('main:restricted_access')
 
 @login_required
+def data_raw(request, pk_bundle):
+    print '\n\n'
+    print '-------------------------------------------------------------------------'
+    print '\n\n---------------------- Add Data Raw with ELSA ---------------------------'
+    print '------------------------------ DEBUGGER ---------------------------------'
+    # Get bundle
+    bundle = Bundle.objects.get(pk=pk_bundle)
+
+    # Secure ELSA by seeing if the user logged in is the same user associated with the Bundle
+    if request.user == bundle.user:
+        print 'authorized user: {}'.format(request.user)
+
+        # Context Dictionary
+        context_dict = {
+            'bundle':bundle,
+        }
+      
+        return render(request, 'build/data/data_raw.html', context_dict)
+
+    # Secure: Current user is not the user associated with the bundle, so...
+    else:
+        print 'unauthorized user attempting to access a restricted area.'
+        return redirect('main:restricted_access')
+
+@login_required
 def data_depricated(request, pk_bundle): 
     print '\n\n'
     print '-------------------------------------------------------------------------'
