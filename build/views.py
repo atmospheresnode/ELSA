@@ -1133,6 +1133,8 @@ def data(request, pk_bundle):
         # this conditional.
         print '\n\n------------------------ DATA INFO ----------------------------------'
         if form_data.is_valid() and form_product_observational.is_valid():
+            data_selected = request.POST.getlist("data_select", None)
+            print 'DATA SELECTED **** {}'.format(data_selected)
 
             # Create Data model object
             data = form_data.save(commit=False)

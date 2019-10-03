@@ -399,6 +399,12 @@ class ProductObservationalForm(forms.ModelForm):
         ('Table Character','Table Character'),
         ('Table Delimited','Table Delimited'),
     ]
+    OBSERVATIONAL_TYPES_OPTION_2 = [
+
+        ('Table','Table'),
+        ('Array','Array'),
+        ('Fits','Fits'),
+    ]
     PURPOSE_TYPES = [
         ('Calibration','Calibration'),
         ('Checkout','Checkout'),
@@ -409,7 +415,7 @@ class ProductObservationalForm(forms.ModelForm):
     ]
     purpose = forms.ChoiceField(required=True, choices=PURPOSE_TYPES)
     title = forms.CharField(required=True)
-    type_of = forms.ChoiceField(required=True, choices=OBSERVATIONAL_TYPES)
+    type_of = forms.ChoiceField(required=True, choices=OBSERVATIONAL_TYPES_OPTION_2)
 
     class Meta:
         model = Product_Observational

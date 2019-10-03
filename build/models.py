@@ -2517,6 +2517,11 @@ class Product_Observational(models.Model):
         ('Table Character','Table Character'),
         ('Table Delimited','Table Delimited'),
     ]
+    OBSERVATIONAL_TYPE_GENUS = [
+        ('Table', 'Table'),
+        ('Array', 'Array'),
+        ('Fits', 'Fits'),
+    ]
     PROCESSING_LEVEL_TYPES = [
         ('Calibrated','Calibrated'),
         ('Derived','Derived'),
@@ -2540,7 +2545,7 @@ class Product_Observational(models.Model):
     processing_level = models.CharField(max_length=MAX_CHAR_FIELD, choices=PROCESSING_LEVEL_TYPES)
     purpose = models.CharField(max_length=MAX_TEXT_FIELD, choices=PURPOSE_TYPES)
     title = models.CharField(max_length=MAX_CHAR_FIELD)
-    type_of = models.CharField(max_length=MAX_CHAR_FIELD, choices=OBSERVATIONAL_TYPES, default='Not_Set')
+    type_of = models.CharField(max_length=MAX_CHAR_FIELD, choices=OBSERVATIONAL_TYPE_GENUS,  default='Not_Set') #NEEDS WORK to add the 'species' after further bundle creation on user end
 
 
 
