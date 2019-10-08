@@ -19,8 +19,14 @@
     <!-- Your custom styles (optional) -->
     <link href="{% static 'css/style.css' %}" rel="stylesheet">
     <link href="{% static 'css/elsa-help.css' %}" rel="stylesheet">
-    <link href="{% static 'css/elsa-tutorial.css' %}" rel="stylesheet">
-    <link href="{% static 'css/elsa-new.css' %}" rel="stylesheet">
+
+<link rel="stylesheet" type="text/css" href="{% static 'css/elsa-toggle-select.css' %}" />
+    <!--CSS Style block-->
+    {% block css_style_block %}
+    {% endblock %}
+    <!--/.Body block-->
+    
+    <!-- Should only be on tutorial pages<link href="{% static 'css/elsa-tutorial.css' %}" rel="stylesheet">-->
     <!--<link href="{% static 'css/elsa-todo.css' %}" rel="stylesheet">-->
 </head>
 

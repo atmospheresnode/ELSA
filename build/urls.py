@@ -56,6 +56,9 @@ urlpatterns = [
     url(r'^(?P<pk_bundle>\d+)/table_creation/$', views.Table_Creation, name='table_creation'),
     url(r'^(?P<pk_bundle>\d+)/(?P<table>[-/w]+)/field_creation/$', views.Field_Creation, name='field_creation'),
 
+    # Dictionary
+    url(r'^(?P<pk_bundle>\d+)/data/array/display_dictionary/$', views.display_dictionary, name='display_dictionary'),
+
     # Document
     url(r'^(?P<pk_bundle>\d+)/document/$', views.document, name='document'),
     url(r'^(?P<pk_bundle>\d+)/document/product_document/(?P<pk_product_document>\d+)/$', views.product_document, name='product_document'),

@@ -6,7 +6,7 @@ from .models import *
 #from context.models import *
 from django.contrib.auth.decorators import login_required
 from django.db.models import Q
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpRequest
 from django.shortcuts import render, redirect
 from django.template import RequestContext
 from django import forms
@@ -1024,6 +1024,11 @@ def data_depricated(request, pk_bundle):
     if request.user == bundle.user:
         print 'authorized user: {}'.format(request.user)
 
+        if request.method == "POST":
+            data_selected = HttpRequest.POST()
+            data_selected = data_selected.getlist("data_select", None)
+            print 'DATA SELECTED **** {}'.format(data_selected)
+
         # Get forms
         form_data = DataForm(request.POST or None)
         form_product_observational = ProductObservationalForm(request.POST or None)
@@ -1098,6 +1103,100 @@ def data_depricated(request, pk_bundle):
     else:
         print 'unauthorized user attempting to access a restricted area.'
         return redirect('main:restricted_access')
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+@login_required
+def display_dictionary(request, pk_bundle):
+    print ' \n\n \n\n-------------------------------------------------------------------------'
+    print '\n\n------------------- Add Display Dictionary with ELSA --------------------------'
+    print '------------------------------ DEBUGGER ---------------------------------'
+
+    # Get Bundle
+    bundle = Bundle.objects.get(pk=pk_bundle)
+#    collections = Collections.objects.get(bundle=bundle)
+
+    # Secure ELSA by seeing if the user logged in is the same user associated with the Bundle
+    if request.user == bundle.user:
+        print 'authorized user: {}'.format(request.user)
+
+        # ELSA's current user is the bundle user so begin view logic
+        # Get forms
+        form_color_display_settings = ColorDisplaySettingsForm(request.POST or None)
+        form_display_direction = DisplayDirectionForm(request.POST or None)
+        form_display_settings = DisplaySettingsForm(request.POST or None)
+        form_movie_display_settings = MovieDisplaySettingsForm(request.POST or None)
+
+        # Declare context_dict for templating language used in ELSAs templates
+        context_dict = {
+            'bundle':bundle,
+            'form_color_display_settings':form_color_display_settings,
+            'form_display_direction':form_display_direction,
+            'form_display_settings':form_display_settings,
+            'form_movie_display_settings':form_movie_display_settings,
+
+        }
+
+        # After ELSAs friend hits submit, if the forms are completed correctly, we should enter
+        # this conditional.
+        print '\n\n------------------------ DISPLAY DICTIONARY INFO ----------------------------'
+        print '\nCurrently awaiting user input...\n\n'
+        if form_color_display_settings.is_valid() and form_display_direction.is_valid() and form_display_settings.is_valid() and form_movie_display_settings.is_valid():
+
+            print 'All Display Dictionary forms valid for {}.'.format(bundle.user)
+            # Create DisplayDictionary model object
+            display_dictionary = form_display_dictionary.save(commit=False)
+            display_dictionary.bundle = bundle
+            display_dictionary.save()
+            print 'Display Dictionary model object: {}'.format(display_dictionary)
+
+            # Create Color_Display_Settings model object
+            color_display_settings = form_color_display_settings.save(commit=False)
+            # Add association
+            color_display_settings.save()
+
+            # Create Display_Direction model object
+            display_direction = form_display_direction.save(commit=False)
+            # Add association
+            display_direction.save()
+
+            # Create Display_Settings model object
+            display_settings = form_display_settings.save(commit=False)
+            # Add association
+            display_settings.save()
+
+            # Create Movie_Display_Direction model object
+            movie_display_settings = form_movie_display_settings.save(commit=False)
+            # Add association
+            movie_display_settings.save()
+
+
+
+
+
+            # Find appropriate label(s).
+            print '---------------- End Build Display Dictionary ------------------------------'  
+	
+
+        # Get current Display Dictionary object associated with the user's Bundle
+        #alias_list = Alias.objects.filter(bundle=bundle)
+        #context_dict['alias_list'] = alias_list
+        return render(request, 'build/dictionary/display.html',context_dict)
+    else:
+        print 'unauthorized user attempting to access a restricted area.'
+        return redirect('main:restricted_access')
+
 
 
 
