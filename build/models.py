@@ -3155,236 +3155,29 @@ class Table(models.Model):
     def __str__(self):
         return 'Table Binary: {}'.format(self.name)
 
+
+
 """
-    The Array model object needs more work.
 """
 @python_2_unicode_compatible
-class Array(models.Model):
-
-    OBSERVATIONAL_TYPES = [
-        ('Table Base', 'Table Base'),
-        ('Table Binary','Table Binary'),
-        ('Table Character','Table Character'),
-        ('Table Delimited','Table Delimited'),
-    ]
-    product_observational = models.ForeignKey(Product_Observational, on_delete=models.CASCADE)
-    name = models.CharField(max_length=MAX_CHAR_FIELD)
-
-    # meta
+class Dictionary(models.Model):
     def __str__(self):
-        return 'Array: {}'.format(self.name)
-
-
-
-
-
-
-
-@python_2_unicode_compatible
-class Color_Display_Settings(models.Model):
-    """
-The blue_channel_band attribute identifies the
-        number of the band, along the band axis, that should be loaded,
-        by default, into the blue channel of a display device. The first
-        band along the band axis has band number 1.
-The color_display_axis attribute identifies, by
-        name, the axis of an Array (or Array subclass) that is intended
-        to be displayed in the color dimension of a display device.
-        I.e., bands from this dimension will be loaded into the red,
-        green, and blue bands of the display device. The value of this
-        attribute must match the value of one, and only one, axis_name
-        attribute in an Axis_Array class of the associated
-        Array.
-The green_channel_band attribute identifies the
-        number of the band, along the band axis, that should be loaded,
-        by default, into the green channel of a display device. The
-        first band along the band axis has band number
-        1.
-The red_channel_band attribute identifies the
-        number of the band, along the band axis, that should be loaded,
-        by default, into the red channel of a display device. The first
-        band along the band axis has band number 1.
-    """
-    color_display_axis = models.PositiveIntegerField() # max value 255
-    comment_color_display = models.CharField(max_length=MAX_CHAR_FIELD)
-    red_channel_band = models.PositiveIntegerField() # Big integer is better for
-    green_channel_band = models.PositiveIntegerField() # pds4 specs for these
-    blue_channel_band = models.PositiveIntegerField() # bands
-
-    #Color_Display_Settings
-    def __str__(self):
-        return "How you actually make a dictionary >.<"
-
-
-
-@python_2_unicode_compatible
-class Display_Direction(models.Model):
-    """
-The horizontal_display_axis attribute
-        identifies, by name, the axis of an Array (or Array subclass)
-        that is intended to be displayed in the horizontal or "sample"
-        dimension on a display device. The value of this attribute must
-        match the value of one, and only one, axis_name attribute in an
-        Axis_Array class of the associated Array.
-The horizontal_display_direction attribute
-        specifies the direction across the screen of a display device
-        that data along the horizontal axis of an Array is supposed to
-        be displayed.
-The vertical_display_axis attribute identifies,
-        by name, the axis of an Array (or Array subclass) that is
-        intended to be displayed in the vertical or "line" dimension on
-        a display device. The value of this attribute must match the
-        value of one, and only one, axis_name attribute in an Axis_Array
-        class of the associated Array.
-The vertical_display_direction attribute
-        specifies the direction along the screen of a display device
-        that data along the vertical axis of an Array is supposed to be
-        displayed.
-    """
-    comment_display_direction = models.CharField(max_length=MAX_CHAR_FIELD)
-    horizontal_display_axis = models.PositiveIntegerField() # max value 255
-    horizontal_display_direction = models.PositiveIntegerField() # max value 255
-    vertical_display_axis = models.PositiveIntegerField() # max value 255
-    vertical_display_direction = models.PositiveIntegerField() # max value 255
-
-    #Color_Display_Settings
-    def __str__(self):
-        return "How you actually make a dictionary >.<"
-
-
-
-@python_2_unicode_compatible
-class Display_Settings(models.Model):
+	return 'Incomplete'
     pass
-    #Local_Internal_Reference = models.CharField(max_length=MAX_CHAR_FIELD)
-    #Display_Direction = models.CharField(max_length=MAX_CHAR_FIELD)
-    #Color_Display_Settings = models.CharField(max_length=MAX_CHAR_FIELD)
-    #Movie_Display_Settings = models.CharField(max_length=MAX_CHAR_FIELD)
-
-    #Color_Display_Settings
-    def __str__(self):
-        return "How you actually make a dictionary >.<" 
+    
 
 
 
 
-    """
-The frame_rate attribute indicates the number of
-        still pictures (or frames) that should be displayed per unit of
-        time in a video. Note this is NOT necessarily the same as the
-        rate at which the images were acquired.
-
-The loop_back_and_forth_flag attribute specifies
-        whether or not a movie should only be "looped" or played
-        repeatedly in the forward direction, or whether it should be
-        played forward followed by played in reverse,
-        iteratively.
-The loop_count attribute specifies the number of
-        times a movie should be "looped" or replayed before
-        stopping.
-The loop_delay attribute specifies the amount of
-        time to pause between "loops" or repeated playbacks of a
-        movie.
-The loop_flag attribute specifies whether or not
-        a movie object should be played repeatedly without prompting
-        from the user.
-
-The time_display_axis attribute identifies, by
-        name, the axis of an Array (or Array subclass), the bands of
-        which are intended to be displayed sequentially in time on a
-        display device. The frame_rate attribute, if present, provides
-        the rate at which these bands are to be
-        displayed.
-    """
-    time_display_axis = models.PositiveIntegerField() # max 255
-    comment = models.CharField(max_length=MAX_CHAR_FIELD)
-    frame_rate = models.FloatField() # min_value=1.0
-    loop_flag = models.BooleanField()
-    loop_count = models.PositiveIntegerField()
-    loop_delay = models.FloatField() # min_length=0.0
-    loop_back_and_forth_flag = models.BooleanField()
-
-    #Color_Display_Settings
-    def __str__(self):
-        return "How you actually make a dictionary >.<"
-
-@python_2_unicode_compatible
-class Movie_Display_Settings(models.Model):
-    """
-The Movie_Display_Settings class provides
-        default values for the display of a multi-banded Array using a
-        software application capable of displaying video
-        content.
-The frame_rate attribute indicates the number of
-        still pictures (or frames) that should be displayed per unit of
-        time in a video. Note this is NOT necessarily the same as the
-        rate at which the images were acquired.
-
-The loop_back_and_forth_flag attribute specifies
-        whether or not a movie should only be "looped" or played
-        repeatedly in the forward direction, or whether it should be
-        played forward followed by played in reverse,
-        iteratively.
-The loop_count attribute specifies the number of
-        times a movie should be "looped" or replayed before
-        stopping.
-The loop_delay attribute specifies the amount of
-        time to pause between "loops" or repeated playbacks of a
-        movie.
-The loop_flag attribute specifies whether or not
-        a movie object should be played repeatedly without prompting
-        from the user.
-
-The time_display_axis attribute identifies, by
-        name, the axis of an Array (or Array subclass), the bands of
-        which are intended to be displayed sequentially in time on a
-        display device. The frame_rate attribute, if present, provides
-        the rate at which these bands are to be
-        displayed.
-    """
-    time_display_axis = models.PositiveIntegerField() # max 255
-    comment = models.CharField(max_length=MAX_CHAR_FIELD)
-    frame_rate = models.FloatField() # min_value=1.0
-    loop_flag = models.BooleanField()
-    loop_count = models.PositiveIntegerField()
-    loop_delay = models.FloatField() # min_length=0.0
-    loop_back_and_forth_flag = models.BooleanField()
-
-    #Color_Display_Settings
-    def __str__(self):
-        return "How you actually make a dictionary >.<"
-
-@python_2_unicode_compatible
-class DisplayDictionary(models.Model):
-    """
-    This dictionary describes how to display Array data on a display device
-
-The Color_Display_Settings class provides
-        guidance to data users on how to display a multi-banded Array
-        object on a color-capable display device.
-The Display_Direction class specifies how two of
-        the dimensions of an Array object should be displayed in the
-        vertical (line) and horizontal (sample) dimensions of a display
-        device.
-The Display_Settings class contains one or more
-        classes describing how data should be displayed on a display
-        device.
-The Movie_Display_Settings class provides
-        default values for the display of a multi-banded Array using a
-        software application capable of displaying video
-        content.
 
 
-    """
-    Color_Display_Settings = models.ForeignKey(Color_Display_Settings, on_delete=models.CASCADE)
-    Display_Direction = models.ForeignKey(Display_Direction, on_delete=models.CASCADE)
-    Display_Settings = models.ForeignKey(Display_Settings, on_delete=models.CASCADE)
-    #Movie_Display_Settings = models.ForeignKey(Movie_Display_Settings, on_delete=models.CASCADE)
 
 
-    #Color_Display_Settings
-    def __str__(self):
-        return "How you actually make a dictionary >.<"
+
+
+
+
+#    To Be Garbage Here✲
 
 
 
