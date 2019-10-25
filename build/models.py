@@ -1667,10 +1667,14 @@ class Bundle(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     version = models.CharField(max_length=4, choices=VERSION_CHOICES,)
     #version = models.ForeignKey(Version, on_delete=models.CASCADE, default=get_most_current_version())
+<<<<<<< HEAD
+    # Context Attributes
+=======
     #raw_enum = models.PositiveIntegerField(null=True, default = 0)
     #calibrated_enum = models.PositiveIntegerField(null=True, default = 0)
     #derived_enum = models.PositiveIntegerField(null=True, default = 0)
    # Context Attributes
+>>>>>>> master
     investigations = models.ManyToManyField(Investigation)
     instrument_hosts = models.ManyToManyField(Instrument_Host)
     instruments = models.ManyToManyField(Instrument)
@@ -3176,6 +3180,42 @@ class Array(models.Model):
 
 
 
+
+
+
+"""
+    The Array model object defines a homogeneous N-dimensional array of scalars. The Array class is the parent class for all n-dimensional arrays of scalars.
+"""
+@python_2_unicode_compatible
+class Array(models.Model):
+
+    ARRAY_DIMENSIONS = [
+        ('Array_2D','Array 2D'),
+        ('Array_3D', 'Array 3D'),
+    ]
+    ARRAY_TYPES = [
+        ('Image', 'Image'),
+        ('Map', 'Map'),
+        ('Spectrum', 'Spectrum'),
+    ]
+    product_observational = models.ForeignKey(Product_Observational, on_delete=models.CASCADE)
+    name = models.CharField(max_length=MAX_CHAR_FIELD)
+    array_dimensions = models.CharField(max_length=MAX_CHAR_FIELD, choices=ARRAY_DIMENSIONS)
+    array_type = models.CharField(max_length=MAX_CHAR_FIELD, choices=ARRAY_TYPES)
+    local_identifier = models.CharField(max_length=MAX_CHAR_FIELD)
+    md5_checksum = models.CharField(max_length=MAX_CHAR_FIELD)
+    offset = models.CharField(max_length=MAX_CHAR_FIELD)
+    axes = models.CharField(max_length=MAX_CHAR_FIELD)
+    axis_index_order = models.CharField(max_length=MAX_CHAR_FIELD)
+    description = models.CharField(max_length=MAX_CHAR_FIELD)
+    # Has associations @ https://pds.nasa.gov/datastandards/documents/dd/v1/PDS4_PDS_DD_1A00.html#d5e3181
+
+
+    # meta
+    def __str__(self):
+        return 'Array: {}'.format(self.name)
+
+    # fillers
 
 
 
