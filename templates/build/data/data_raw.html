@@ -1,22 +1,17 @@
 {% extends 'base-k-se.html' %}
 {% load static %}
-<<<<<<< HEAD
-=======
-{% block css_style_block %}
-<link rel="stylesheet" type="text/css" href="{% static 'css/elsa-toggle-select.css' %}" />
-{% endblock %}
->>>>>>> master
 
 {% block title_block %}
-Data
+Data Raw
 {% endblock %}
 
 {% block main_header_block %}
-Data Collection
+Data Collection - Raw Data
 {% endblock %}
 
 {% block about_header_block %}
-The data collection consists of the following subcollections: calibrated data, derived data, raw data, and reduced data.  Your data will fall into at least one of these categories.  <br/><br/>An abbreviated or reduced-resolution version of the data should be located in the browse collection rather than in this collection, the data collection.  
+Raw data definition here
+Let's make bundles of raw data at a time. =]
 {% endblock %}
 
 
@@ -26,11 +21,7 @@ The data collection consists of the following subcollections: calibrated data, d
 <div class="row pt-2">
     <!--Column-->
     <div class="col-md-12">
-<<<<<<< HEAD
-        <h3 class="card-header elegant-color white-text text-center z-depth-2">Types of Data</h3>       
-=======
-        <h3 class="card-header elegant-color white-text text-center z-depth-2">Add Data by Processing Level</h3>       
->>>>>>> master
+        <h3 class="card-header elegant-color white-text text-center z-depth-2">Types of Raw Data</h3>       
     </div>
     <!--/.Column-->
 </div>
@@ -43,20 +34,11 @@ The data collection consists of the following subcollections: calibrated data, d
     <a href="#">
     <div class="card">
         <!--Card image-->
-        <img class="img-fluid" src="{% static 'images/raw.png' %}" alt="Data Image"/>
+        <img class="img-fluid" src="#" alt="Data Image"/>
         <!--Card content-->
         <div class="card-body">
-<<<<<<< HEAD
-=======
-        <center>
-             <!-- Rectangular switch -->
-             <label class="switch">
-              <input type="checkbox" name="data_select[]" value="raw">
-              <span class="slider"></span>
-            </label>
-            <p class="card-text">Add in {{ bundle }}.</p>
-        </center>
->>>>>>> master
+            <!--Title-->
+            <h4 class="card-title">Table</h4>
         </div>
     </div>
     </a>
@@ -70,20 +52,11 @@ The data collection consists of the following subcollections: calibrated data, d
     <a href="#">
     <div class="card">
         <!--Card image-->
-        <img class="img-fluid" src="{% static 'images/calibrated.png' %}" alt="Data Image"/>
+        <img class="img-fluid" src="#" alt="Data Image"/>
         <!--Card content-->
         <div class="card-body">
-<<<<<<< HEAD
-=======
-        <center>
-             <!-- Rectangular switch -->
-             <label class="switch">
-              <input type="checkbox" name="data_select[]" value="calibrated">
-              <span class="slider"></span>
-            </label>
-            <p class="card-text">Add in {{ bundle }}.</p>
-        </center>
->>>>>>> master
+            <!--Title-->
+            <h4 class="card-title">Array</h4>
         </div>
     </div>
     </a>
@@ -97,20 +70,11 @@ The data collection consists of the following subcollections: calibrated data, d
     <a href="#">
     <div class="card">
         <!--Card image-->
-        <img class="img-fluid" src="{% static 'images/reduced.png' %}" alt="Data Image"/>
+        <img class="img-fluid" src="#" alt="Data Image"/>
         <!--Card content-->
         <div class="card-body">
-<<<<<<< HEAD
-=======
-        <center>
-             <!-- Rectangular switch -->
-             <label class="switch">
-              <input type="checkbox" name="data_select[]"  value="reduced">
-              <span class="slider"></span>
-            </label>
-            <p class="card-text">Add in {{ bundle }}.</p>
-        </center>
->>>>>>> master
+            <!--Title-->
+            <h4 class="card-title">Fits</h4>
         </div>
     </div>
     </a>
@@ -118,60 +82,12 @@ The data collection consists of the following subcollections: calibrated data, d
     </div>
     <!--/.Column-->
 
-    <!--Column-->
-    <div class="col-sm-6 col-md-3">
-    <!--Card-->
-    <a href="#">
-    <div class="card">
-        <!--Card image-->
-        <img class="img-fluid" src="{% static 'images/derived.png' %}" alt="Data Image"/>
-        <!--Card content-->
-        <div class="card-body">
-<<<<<<< HEAD
-=======
-        <center>
-             <!-- Rectangular switch -->
-             <label class="switch">
-              <input type="checkbox" name="data_select[]" value="derived">
-              <span class="slider"></span>
-            </label>
-            <p class="card-text">Add in {{ bundle }}.</p>
-        </center>
->>>>>>> master
-        </div>
-    </div>
-    </a>
-    <!--/.Card-->
-    </div>
-    <!--/.Column-->
     
 </div>
 <!--/.Row-->
-<<<<<<< HEAD
 <!--Divider-->
 <hr/>
 <!--/.Divider-->
-=======
-<hr/><!--Divider-->
-<!--Row-->
-<div class="row pt-2">
-
-    <!--Column-->
-    <div class="col-md-6">
-        <form id="form_product_document" method="post" action="">
-            {% csrf_token %}
-            <div id="form_product_document">
-
-                {{ form_product_observational.as_p }}
-            </div>
-            <input class="btn btn-default" type="submit" value="Add"/>
-        </form>
-    </div>
-    <!--/.Column-->
-</div>
-<!--/.Second row-->
-<hr/><!--/.Divider-->
->>>>>>> master
 <!--Row-->
 <div class="row pt-2">
     <!--Column-->
@@ -201,11 +117,7 @@ The data collection consists of the following subcollections: calibrated data, d
             {% elif product_observational.processing_level == 'Reduced' %}
             <img class="img-fluid" src="{% static 'images/reduced.png' %}" alt="Data Image">
             {% endif %}
-<<<<<<< HEAD
             
-=======
-
->>>>>>> master
             <!--Card content-->
             <div class="card-body">
                 <!--Title-->

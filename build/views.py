@@ -6,7 +6,7 @@ from .models import *
 #from context.models import *
 from django.contrib.auth.decorators import login_required
 from django.db.models import Q
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpRequest
 from django.shortcuts import render, redirect
 from django.template import RequestContext
 from django import forms
@@ -300,8 +300,13 @@ def build(request):
             collections.save()
             print '\nCollections model object:    {}'.format(collections)
 
-	    #Tell the bundle how much data we have, from the collection form
-	    bundle.data_enum = collections.data_enum
+	    #Tell the bundle what data we have, from the collection form
+	    '''if collections.has_raw_data is True:
+		collections.build_data_directories('data_raw')
+	    if collections.has_calibrated_data is True:
+		collections.build_data_directories('data_calibrated')
+	    if collections.has_derived_data is True:
+		collections.build_data_directories('data_derived')'''
 	    bundle.save()
             
             # Create PDS4 compliant directories for each collection within the bundle.            
@@ -336,7 +341,7 @@ def build(request):
 
                 # Build Product_Collection label for all labels other than those found in the data collection.
                 print '-------------Start Build Product_Collection Base Case-----------------'
-                if collection != 'data':
+                if collection != 'data_raw' and collection != 'data_calibrated' and collection != 'data_derived':
                     product_collection.build_base_case()
 
                     # Open Product_Collection label
@@ -359,7 +364,9 @@ def build(request):
             context_dict['Product_Bundle'] = Product_Bundle.objects.get(bundle=bundle)
             context_dict['Product_Collection_Set'] = Product_Collection.objects.filter(bundle=bundle)
 
-	    url = str(bundle.id) +'/data_prep/'
+	    #url = str(bundle.id) +'/data_prep/'
+	    url = str(bundle.id) +'/'
+	    #url = 'two/'
 
             return redirect(url, request, context_dict)
             #return render(request, 'build/two.html', context_dict)
@@ -1119,6 +1126,11 @@ def data_depricated(request, pk_bundle):
     if request.user == bundle.user:
         print 'authorized user: {}'.format(request.user)
 
+        if request.method == "POST":
+            data_selected = HttpRequest.POST()
+            data_selected = data_selected.getlist("data_select", None)
+            print 'DATA SELECTED **** {}'.format(data_selected)
+
         # Get forms
         form_data = DataForm(request.POST or None)
         form_product_observational = ProductObservationalForm(request.POST or None)
@@ -1223,12 +1235,18 @@ def display_dictionary(request, pk_bundle):
 
         # ELSA's current user is the bundle user so begin view logic
         # Get forms
-        form_display_dictionary = DisplayDictionaryForm(request.POST or None)
+        form_color_display_settings = ColorDisplaySettingsForm(request.POST or None)
+        form_display_direction = DisplayDirectionForm(request.POST or None)
+        form_display_settings = DisplaySettingsForm(request.POST or None)
+        form_movie_display_settings = MovieDisplaySettingsForm(request.POST or None)
 
         # Declare context_dict for templating language used in ELSAs templates
         context_dict = {
-            'form_display_dictionary':form_display_dictionary,
             'bundle':bundle,
+            'form_color_display_settings':form_color_display_settings,
+            'form_display_direction':form_display_direction,
+            'form_display_settings':form_display_settings,
+            'form_movie_display_settings':form_movie_display_settings,
 
         }
 
@@ -1236,13 +1254,38 @@ def display_dictionary(request, pk_bundle):
         # this conditional.
         print '\n\n------------------------ DISPLAY DICTIONARY INFO ----------------------------'
         print '\nCurrently awaiting user input...\n\n'
-        if form_display_dictionary.is_valid():
-            print 'form_display_dictionary is valid for {}.'.format(bundle.user)
+        if form_color_display_settings.is_valid() and form_display_direction.is_valid() and form_display_settings.is_valid() and form_movie_display_settings.is_valid():
+
+            print 'All Display Dictionary forms valid for {}.'.format(bundle.user)
             # Create DisplayDictionary model object
             display_dictionary = form_display_dictionary.save(commit=False)
             display_dictionary.bundle = bundle
             display_dictionary.save()
             print 'Display Dictionary model object: {}'.format(display_dictionary)
+
+            # Create Color_Display_Settings model object
+            color_display_settings = form_color_display_settings.save(commit=False)
+            # Add association
+            color_display_settings.save()
+
+            # Create Display_Direction model object
+            display_direction = form_display_direction.save(commit=False)
+            # Add association
+            display_direction.save()
+
+            # Create Display_Settings model object
+            display_settings = form_display_settings.save(commit=False)
+            # Add association
+            display_settings.save()
+
+            # Create Movie_Display_Direction model object
+            movie_display_settings = form_movie_display_settings.save(commit=False)
+            # Add association
+            movie_display_settings.save()
+
+
+
+
 
             # Find appropriate label(s).
             print '---------------- End Build Display Dictionary ------------------------------'  
@@ -1467,6 +1510,9 @@ def Table_Creation(request, pk_bundle):
     if request.user == bundle.user:
 
 
+	#Count the number of tables of each type the bundle has. 
+	#There's almost certainly a better way to do this, but this was faster and more reliable
+	#than dreging the django API.
 	TD_iterator = 0
 	TB_iterator = 0
 	TFW_iterator = 0
@@ -1481,40 +1527,93 @@ def Table_Creation(request, pk_bundle):
 	    if table.data_type == "Table Fixed-Width":
 		TFW_iterator = TFW_iterator + 1
 
+	#Create the formsets for each table.
+        TableDelimitedFormSet = modelformset_factory(Table_Delimited, exclude=('bundle',) , extra=TD_iterator, max_num=TD_iterator)
 
-        TableDelimitedFormSet = modelformset_factory(Table_Delimited, exclude=('bundle','name',) , extra=TD_iterator)
-        TD_formset = TableDelimitedFormSet(request.POST or None, queryset=Table_Delimited.objects.filter(bundle=bundle))
 
-	TableBinaryFormSet = modelformset_factory(Table_Binary, exclude=('bundle','name',) , extra=TB_iterator)
-        TB_formset = TableBinaryFormSet(request.POST or None, queryset=Table_Delimited.objects.filter(bundle=bundle))
+	TableBinaryFormSet = modelformset_factory(Table_Binary, exclude=('bundle',) , extra=TB_iterator, max_num=TB_iterator)
 
-	TableFixedWidthFormSet = modelformset_factory(Table_Fixed_Width, exclude=('bundle','name',) , extra=TFW_iterator)
-        TFW_formset = TableFixedWidthFormSet(request.POST or None, queryset=Table_Delimited.objects.filter(bundle=bundle))
+
+	TableFixedWidthFormSet = modelformset_factory(Table_Fixed_Width, exclude=('bundle',) , extra=TFW_iterator, max_num=TFW_iterator)
+
+
+	if request.method == 'POST':
+            TD_formset = TableDelimitedFormSet(request.POST, queryset=Table_Delimited.objects.filter(bundle=bundle), prefix='delimited')
+            TB_formset = TableBinaryFormSet(request.POST, queryset=Table_Binary.objects.filter(bundle=bundle), prefix='binary')
+            TFW_formset = TableFixedWidthFormSet(request.POST, queryset=Table_Fixed_Width.objects.filter(bundle=bundle), prefix='character')
+	else:
+            TD_formset = TableDelimitedFormSet(queryset=Table_Delimited.objects.filter(bundle=bundle),prefix='delimited')
+            TB_formset = TableBinaryFormSet(queryset=Table_Binary.objects.filter(bundle=bundle),prefix='binary')
+            TFW_formset = TableFixedWidthFormSet(queryset=Table_Fixed_Width.objects.filter(bundle=bundle),prefix='character')
 
 
 	context_dict = {
 	    'bundle':bundle,
 	    'TableDelimitedFormSet':TableDelimitedFormSet,
 	    'TD_formset':TD_formset,
+	    'TD_iterator':TD_iterator,
 	    'TableBinaryFormSet':TableBinaryFormSet,
 	    'TB_formset':TB_formset,
+	    'TB_iterator':TB_iterator,
 	    'TableFixedWidthFormSet':TableFixedWidthFormSet,
 	    'TFW_formset':TFW_formset,
+	    'TFW_iterator':TFW_iterator,
 	}
 
+
+
+	#id_iterator = 0
 	if request.method == 'POST':
+	    #Create and fill the database fields as well as (eventually) filling the data files
+	    #print str(TD_iterator) + " " + str(TD_formset.errors)
+	    if TD_formset.is_valid() and request.method == 'POST':
+	        id_iterator = 0
+	    	for TD_form in TD_formset:
+		    if TD_form.is_valid():
+			print TD_form.data
+  		    	table_id = TD_form.data['delimited-'+str(id_iterator)+'-id'] #Get Table object id
+		    	print table_id
+			print TD_form.data
+		     	table = Table_Delimited.objects.get(id=table_id) #Get the actual Table object using the id from the previous step
+		    	name = table.name #Get the Tables name (set in data_prep) using the object from the previous step
+		    	table_form = TD_form.save()
+		   	table_form.name = name #Manually fill the form name
+		    	table_form.save()
+		    	id_iterator = id_iterator+1
 
-	    if TD_iterator is 0 and TD_formset.is_valid():
-		for form in TD_formset:
-		    table_form = form.save()
 
-	    if TB_iterator is 0 and TB_formset.is_valid():
-		for form in TB_formset:
-		    table_form = form.save()
+	    #print str(TB_iterator) + " " + str(TB_formset.errors)
+	    if TB_formset.is_valid() and request.method == 'POST':
+	     	id_iterator = 0
+	    	for TB_form in TB_formset:
+		    if TB_form.is_valid():
+			print TB_form.data
+		    	table_id = TB_form.data['binary-'+str(id_iterator)+'-id']
+		    	print table_id
 
-	    if TFW_iterator is 0 and TFW_formset.is_valid():
-		for form in TFW_formset:
-		    table_form = form.save()
+		    	table = Table_Binary.objects.get(id=table_id)
+		    	name = table.name
+		    	table_form = TB_form.save(commit=False)
+		    	table_form.name = name
+		    	table_form.save()
+		    	id_iterator = id_iterator+1
+
+
+	    #print str(TFW_iterator) + " " + str(TFW_formset.errors)
+	    if TFW_formset.is_valid() and request.method == 'POST':
+	    	id_iterator = 0
+	    	for TFW_form in TFW_formset:
+		    if TFW_form.is_valid():
+		     	table_id = TFW_form.data['character-'+str(id_iterator)+'-id']
+		    	print table_id
+			print TFW_form.data
+		    	table = Table_Fixed_Width.objects.get(id=table_id)
+		    	name = table.name
+		    	table_form = TFW_form.save(commit=False)
+		    	table_form.name = name
+		    	table_form.save()
+		    	id_iterator = id_iterator+1
+
 
 	
 

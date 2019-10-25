@@ -149,9 +149,11 @@ class CitationInformationForm(forms.ModelForm):
 class CollectionsForm(forms.ModelForm):
     has_document = forms.BooleanField(required=True, initial=True)
     has_context = forms.BooleanField(required=True, initial=True)
-    has_xml_schema = forms.BooleanField(required=True, initial=True)
-    has_data = forms.BooleanField(required=False, initial=False)
-    data_enum = forms.IntegerField(required=False, min_value = 0, max_value=25)
+    #has_xml_schema = forms.BooleanField(required=True, initial=True)
+    has_raw_data = forms.BooleanField(required=False, initial=False)
+    has_calibrated_data = forms.BooleanField(required=False, initial=False)
+    has_derived_data = forms.BooleanField(required=False, initial=False)
+    #data_enum = forms.IntegerField(required=False, min_value = 0, max_value=25)
 
     class Meta:
         model = Collections
@@ -184,12 +186,6 @@ class DataForm(forms.ModelForm):
         exclude = ('bundle',)
 
 
-
-
-class DisplayDictionaryForm(forms.ModelForm):
-    class Meta:
-        model = DisplayDictionary
-        exclude = ('bundle',)
 
 
 
@@ -416,6 +412,49 @@ class ProductObservationalForm(forms.ModelForm):
         exclude = ('bundle', 'data', 'processing_level')
 
 
+
+
+
+
+class Table_Delimited_Form(forms.ModelForm):
+    class Meta:
+	model = Table_Delimited
+	exclude = ('bundle',)
+
+
+
+class Table_Binary_Form(forms.ModelForm):
+    class Meta:
+	model = Table_Binary
+	exclude = ('bundle',)	
+
+
+
+class Table_Fixed_Width_Form(forms.ModelForm):
+    class Meta:
+	model = Table_Fixed_Width
+	exclude = ('bundle',)
+
+
+
+class Field_Delimited_Form(forms.ModelForm):
+    class Meta:
+	model = Field_Delimited
+	exclude = ('table',)
+
+
+
+class Field_Binary_Form(forms.ModelForm):
+    class Meta:
+	model = Field_Binary
+	exclude = ('table',)
+
+
+
+class Field_Character_Form(forms.ModelForm):
+    class Meta:
+	model = Field_Character
+	exclude = ('table',)
 
 
 
