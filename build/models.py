@@ -1667,10 +1667,10 @@ class Bundle(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     version = models.CharField(max_length=4, choices=VERSION_CHOICES,)
     #version = models.ForeignKey(Version, on_delete=models.CASCADE, default=get_most_current_version())
-    raw_enum = models.PositiveIntegerField(null=True, default = 0)
-    calibrated_enum = models.PositiveIntegerField(null=True, default = 0)
-    derived_enum = models.PositiveIntegerField(null=True, default = 0)
-   # Context Attributes
+    #raw_enum = models.PositiveIntegerField(null=True, default = 0)
+    #calibrated_enum = models.PositiveIntegerField(null=True, default = 0)
+    #derived_enum = models.PositiveIntegerField(null=True, default = 0)
+    # Context Attributes
     investigations = models.ManyToManyField(Investigation)
     instrument_hosts = models.ManyToManyField(Instrument_Host)
     instruments = models.ManyToManyField(Instrument)
@@ -3205,6 +3205,7 @@ The red_channel_band attribute identifies the
         by default, into the red channel of a display device. The first
         band along the band axis has band number 1.
     """
+    array = models.ForeignKey(Array, on_delete=models.CASCADE)
     color_display_axis = models.PositiveIntegerField() # max value 255
     comment_color_display = models.CharField(max_length=MAX_CHAR_FIELD)
     red_channel_band = models.PositiveIntegerField() # Big integer is better for
@@ -3241,6 +3242,7 @@ The vertical_display_direction attribute
         that data along the vertical axis of an Array is supposed to be
         displayed.
     """
+    array = models.ForeignKey(Array, on_delete=models.CASCADE)
     comment_display_direction = models.CharField(max_length=MAX_CHAR_FIELD)
     horizontal_display_axis = models.PositiveIntegerField() # max value 255
     horizontal_display_direction = models.PositiveIntegerField() # max value 255
@@ -3296,6 +3298,7 @@ The time_display_axis attribute identifies, by
         the rate at which these bands are to be
         displayed.
     """
+    array = models.ForeignKey(Array, on_delete=models.CASCADE)
     time_display_axis = models.PositiveIntegerField() # max 255
     comment = models.CharField(max_length=MAX_CHAR_FIELD)
     frame_rate = models.FloatField() # min_value=1.0
@@ -3342,6 +3345,7 @@ The time_display_axis attribute identifies, by
         the rate at which these bands are to be
         displayed.
     """
+    array = models.ForeignKey(Array, on_delete=models.CASCADE)
     time_display_axis = models.PositiveIntegerField() # max 255
     comment = models.CharField(max_length=MAX_CHAR_FIELD)
     frame_rate = models.FloatField() # min_value=1.0
@@ -3376,6 +3380,7 @@ The Movie_Display_Settings class provides
 
 
     """
+    array = models.ForeignKey(Array, on_delete=models.CASCADE)
     Color_Display_Settings = models.ForeignKey(Color_Display_Settings, on_delete=models.CASCADE)
     Display_Direction = models.ForeignKey(Display_Direction, on_delete=models.CASCADE)
     Display_Settings = models.ForeignKey(Display_Settings, on_delete=models.CASCADE)
