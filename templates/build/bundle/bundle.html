@@ -268,7 +268,290 @@ r as UTF
             </div>
             <!--/.Card-->
         </div>
+    </div>
         <!--/.Column-->
+	<br>
+
+        {% if bundle.collections.has_raw_data %}
+	<br>
+	<div class="row pt-6">
+	    <div class="col-10">
+	    	<h4 class="card-header elegant-color white-text text-center z-depth-2">Raw Data</h4>
+	    </div>
+	</div>
+	<br>
+	<div class="row pt-6">
+	    <div class="col-3">
+		<h3>Edit Label</h3>
+	    </div>
+            <div class="button col-3">
+	    <a href="{% url 'main:construction' %}">
+                <!--Card content-->
+                <div class="card-body col-6">
+                    <!--Title-->
+                    <h4 class="card-title">Alias</h4>
+                    <!--/.Title-->
+                </div>
+                <!--/.Card content-->
+                <!--Image-->
+                <img style="width:100px;height:100px;" src="{% static 'images/add.png' %}" alt="An image representing addition."/>
+                <!--/.Image-->
+            </a>
+	    </div>
+            <div class="button col-0">
+	    <a href="{% url 'main:construction' %}">
+                <!--Card content-->
+                <div class="card-body col-6">
+                    <!--Title-->
+                    <h4 class="card-title">Modification History</h4>
+                    <!--/.Title-->
+                </div>
+                <!--/.Card content-->
+                <!--Image-->
+                <img style="width:100px;height:100px;" src="{% static 'images/add.png' %}" alt="An image representing addition."/>
+                <!--/.Image-->
+            </a>
+	    </div>
+	</div>
+	<div class="row pt-2">
+	    <div class="col-3">
+		<h3>Add Data</h3>
+	    </div>
+	{% if raw_data_objects %}
+            {% for data in raw_data_objects %}
+            <!--Column-->
+            <div class="col-3">
+                <!--Card -->
+                <a href="{% url 'build:table_creation' bundle.pk data.id %}">
+                <div class="card">
+                   <!--Card image-->
+                    <img class="img-fluid"  src="{% static 'images/bundle.jpg' %}" alt="Bundle Image">
+                    <!--Card content-->
+                    <div class="card-body">
+                        <!--Title-->
+                        <h4 class="card-title">{{ data.name }}</h4>
+			<h5> {{ data.data_type }} </h5>
+                    </div>
+                </div>
+                </a>
+                <!--/.Card-->
+            </div>
+            <!--/.Column-->
+
+            {% endfor %} 
+	{% endif %}
+	<!--Column-->
+        <div class="col-3">
+            <!--Card-->
+            <form method="post" action="{% url 'build:bundle' bundle.pk %}">
+            {% csrf_token %}
+            <div class="card">
+                <!--Card image-->
+                <img class="img-fluid" src="{% static 'images/add.png' %}" alt="An image representing building a plus.">
+                <!--Card content-->
+                <div class="card-body">
+                    <!--Title-->
+                    <div id="form_data">
+			{{ form_raw_data.as_p }}
+		    </div>
+	            <input type="submit" name="add_raw" value="Add Data" />
+                    <!--Text-->
+                    <p class="card-text"></p>
+                </div>
+            </div>
+            </form>
+            <!--/.Card-->
+        </div>
+        <!--/.Column-->
+	</div>
+        {% endif %}
+
+
+        {% if bundle.collections.has_calibrated_data %}
+	<br>
+	<div class="row pt-6">
+	    <div class="col-10">
+	    	<h4 class="card-header elegant-color white-text text-center z-depth-2">Calibrated Data</h4>
+	    </div>
+	</div>
+	<br>
+	<div class="row pt-6">
+	    <div class="col-3">
+		<h3>Edit Label</h3>
+	    </div>
+            <div class="button col-3">
+	    <a href="{% url 'main:construction' %}">
+                <!--Card content-->
+                <div class="card-body col-6">
+                    <!--Title-->
+                    <h4 class="card-title">Alias</h4>
+                    <!--/.Title-->
+                </div>
+                <!--/.Card content-->
+                <!--Image-->
+                <img style="width:100px;height:100px;" src="{% static 'images/add.png' %}" alt="An image representing addition."/>
+                <!--/.Image-->
+            </a>
+	    </div>
+            <div class="button col-0">
+	    <a href="{% url 'main:construction' %}">
+                <!--Card content-->
+                <div class="card-body col-6">
+                    <!--Title-->
+                    <h4 class="card-title">Modification History</h4>
+                    <!--/.Title-->
+                </div>
+                <!--/.Card content-->
+                <!--Image-->
+                <img style="width:100px;height:100px;" src="{% static 'images/add.png' %}" alt="An image representing addition."/>
+                <!--/.Image-->
+            </a>
+	    </div>
+	</div>
+	<div class="row pt-2">
+	    <div class="col-3">
+		<h3>Add Data</h3>
+	    </div>
+	{% if bundle_data %}
+            {% for data in calibrated_data_objects %}
+            <!--Column-->
+            <div class="col-3">
+                <!--Card -->
+                <a href="{% url 'main:construction' %}">
+                <div class="card">
+                   <!--Card image-->
+                    <img class="img-fluid"  src="{% static 'images/bundle.jpg' %}" alt="Bundle Image">
+                    <!--Card content-->
+                    <div class="card-body">
+                        <!--Title-->
+                        <h4 class="card-title">{{ data.name }}</h4>                     
+                    </div>
+                </div>
+                </a>
+                <!--/.Card-->
+            </div>
+            <!--/.Column-->
+
+            {% endfor %} 
+	{% endif %}
+	<!--Column-->
+        <div class="col-3">
+            <!--Card-->
+            <form method="post" action="{% url 'build:bundle' bundle.pk %}">
+            {% csrf_token %}
+            <div class="card">
+                <!--Card image-->
+                <img class="img-fluid" src="{% static 'images/add.png' %}" alt="An image representing building a plus.">
+                <!--Card content-->
+                <div class="card-body">
+                    <!--Title-->
+                    <div id="form_data">
+			{{ form_calibrated_data.as_p }}
+		    </div>
+	            <input type="submit" name="add_calibrated" value="Add Data" />
+                    <!--Text-->
+                    <p class="card-text"></p>
+                </div>
+            </div>
+            </form>
+            <!--/.Card-->
+        </div>
+        <!--/.Column-->
+	</div>
+        {% endif %}
+
+        {% if bundle.collections.has_derived_data %}
+	<br>
+	<div class="row pt-6">
+	    <div class="col-10">
+	    	<h4 class="card-header elegant-color white-text text-center z-depth-2">Derived Data</h4>
+	    </div>
+	</div>
+	<br>
+	<div class="row pt-6">
+	    <div class="col-3">
+		<h3>Edit Label</h3>
+	    </div>
+            <div class="button col-3">
+	    <a href="{% url 'main:construction' %}">
+                <!--Card content-->
+                <div class="card-body col-6">
+                    <!--Title-->
+                    <h4 class="card-title">Alias</h4>
+                    <!--/.Title-->
+                </div>
+                <!--/.Card content-->
+                <!--Image-->
+                <img style="width:100px;height:100px;" src="{% static 'images/add.png' %}" alt="An image representing addition."/>
+                <!--/.Image-->
+            </a>
+	    </div>
+            <div class="button col-0">
+	    <a href="{% url 'main:construction' %}">
+                <!--Card content-->
+                <div class="card-body col-6">
+                    <!--Title-->
+                    <h4 class="card-title">Modification History</h4>
+                    <!--/.Title-->
+                </div>
+                <!--/.Card content-->
+                <!--Image-->
+                <img style="width:100px;height:100px;" src="{% static 'images/add.png' %}" alt="An image representing addition."/>
+                <!--/.Image-->
+            </a>
+	    </div>
+	</div>
+	<div class="row pt-2">
+	    <div class="col-3">
+		<h3>Add Data</h3>
+	    </div>
+	{% if bundle_data %}
+            {% for data in derived_data_objects %}
+            <!--Column-->
+            <div class="col-3">
+                <!--Card -->
+                <a href="{% url 'main:construction' %}">
+                <div class="card">
+                   <!--Card image-->
+                    <img class="img-fluid"  src="{% static 'images/bundle.jpg' %}" alt="Bundle Image">
+                    <!--Card content-->
+                    <div class="card-body">
+                        <!--Title-->
+                        <h4 class="card-title">{{ data.name }}</h4>                     
+                    </div>
+                </div>
+                </a>
+                <!--/.Card-->
+            </div>
+            <!--/.Column-->
+
+            {% endfor %} 
+	{% endif %}
+	<!--Column-->
+        <div class="col-3">
+            <!--Card-->
+            <form method="post" action="{% url 'build:bundle' bundle.pk %}">
+            {% csrf_token %}
+            <div class="card">
+                <!--Card image-->
+                <img class="img-fluid" src="{% static 'images/add.png' %}" alt="An image representing building a plus.">
+                <!--Card content-->
+                <div class="card-body">
+                    <!--Title-->
+                    <div id="form_data">
+			{{ form_derived_data.as_p }}
+		    </div>
+	            <input type="submit" name="add_derived" value="Add Data" />
+                    <!--Text-->
+                    <p class="card-text"></p>
+                </div>
+            </div>
+            </form>
+            <!--/.Card-->
+        </div>
+        <!--/.Column-->
+	</div>
+        {% endif %}
 
         {% if bundle.collections.has_data %}
         <!--Column-->
@@ -277,7 +560,7 @@ r as UTF
             <div class="button">
 
             <!--Link-->
-            <a href="{% url 'build:data' bundle.pk %}">
+            <a href="{% url 'main:construction' %}">
                 <!--Card content-->
                 <div class="card-body">
                     <!--Title-->
@@ -304,7 +587,7 @@ r as UTF
             <!--Card-->
             <div class="button">
             <!--Link-->
-            <a href="{% url 'main:construction' bundle.pk %}">  <!--PLEASE FIX THIS LINK-->
+            <a href="{% url 'main:construction' %}">  <!--PLEASE FIX THIS LINK-->
                 <!--Card content-->
                 <div class="card-body">
                     <!--Title-->
