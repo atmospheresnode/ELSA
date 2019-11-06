@@ -51,8 +51,13 @@ class AliasDelete(forms.ModelForm):
 	exclude = ('bundle',)
 
 
-
-
+"""
+    Array
+"""
+class ArrayForm(forms.ModelForm):
+    class Meta:
+        model = Array
+        exclude = ('name', 'local_identifier')
 
 
 

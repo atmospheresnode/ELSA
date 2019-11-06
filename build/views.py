@@ -6,7 +6,7 @@ from .models import *
 #from context.models import *
 from django.contrib.auth.decorators import login_required
 from django.db.models import Q
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpRequest
 from django.shortcuts import render, redirect
 from django.template import RequestContext
 from django import forms
@@ -151,6 +151,64 @@ def alias_delete(request, pk_bundle, alias):
 
 
 
+
+
+@login_required
+def array(request, pk_bundle):
+    print ' \n\n \n\n-------------------------------------------------------------------------'
+    print '\n\n---------------- Welcome to Build A Bundle with ELSA --------------------'
+    print '------------------------------ DEBUGGER ---------------------------------'
+
+    bundle = Bundle.objects.get(pk=pk_bundle)
+
+    if request.user == bundle.user:
+        # Get forms
+        form_array = ArrayForm(request.POST or None)
+
+        # Declare context_dict for template
+        context_dict = {
+	    'bundle':bundle,
+            'form_array':form_array,
+        }
+
+        # After ELSAs friend hits submit, if the forms are completed correctly, we should enter
+        # this conditional.
+        print '\n\n------------------------------- ARRAY INFO --------------------------------'
+        print '\nCurrently awaiting user input...\n\n'
+        if form_array.is_valid():
+            print 'form_array is valid for {}.'.format(bundle.user)
+            # Create Array model object
+            array = form_array.save(commit=False)
+            array.bundle = bundle
+            array.save()
+            print 'Array model object: {}'.format(array)
+
+            # Find appropriate label(s).
+            # Array gets added to... some... Product_Observational labels.
+            # We first get all labels of these given types.
+            all_labels = []
+
+            for label in all_labels:
+                # Open appropriate label(s).  
+                print '- Label: {}'.format(label)
+                print ' ... Opening Label ... '
+                label_list = open_label(label.label())
+                label_root = label_list
+                # Build Array
+                print ' ... Building Label ... '
+                #label_root = array.build_array(label_root)
+		#array.array_list.append(label_root) <~-- just stole this from alias ?? idk what does
+
+
+                # Close appropriate label(s)
+                print ' ... Closing Label ... '
+                close_label(label.label(), label_root)
+
+        return render(request, 'build/data/array.html', context_dict)
+
+    else:
+        print 'unauthorized user attempting to access a restricted area.'
+        return redirect('main:restricted_access')
 
 
 
@@ -432,8 +490,8 @@ def bundle(request, pk_bundle):
 	# Each data type gets its own section (as stated above). This is done because there's no (simple)
 	# way to get the data with the proper processing level to one dynamic form. It is possible that
 	# there is a simple way around this that I overlooked. Until then try to keep the code compact.
-	# Also for reference request.POST.get() gets the form based on the name provided in the submit tag.
-	# -J
+	# Also for reference request.POST.get() gets the form based on the name provided in the submit
+	# tag. -J
 	if request.method == 'POST': 
 	    if request.POST.get("add_raw") and form_raw_data.is_valid():
 	    	data = form_raw_data.save(commit = False)
@@ -1062,6 +1120,55 @@ def context_search_telescope(request, pk_bundle):
 
 
 
+@login_required
+def data(request, pk_bundle):
+    print '\n\n'
+    print '-------------------------------------------------------------------------'
+    print '\n\n---------------------- Add Data with ELSA ---------------------------'
+    print '------------------------------ DEBUGGER ---------------------------------'
+    # Get bundle
+    bundle = Bundle.objects.get(pk=pk_bundle)
+
+    # Secure ELSA by seeing if the user logged in is the same user associated with the Bundle
+    if request.user == bundle.user:
+        print 'authorized user: {}'.format(request.user)
+
+        # Context Dictionary
+        context_dict = {
+            'bundle':bundle,
+        }
+      
+        return render(request, 'build/data/data.html', context_dict)
+
+    # Secure: Current user is not the user associated with the bundle, so...
+    else:
+        print 'unauthorized user attempting to access a restricted area.'
+        return redirect('main:restricted_access')
+
+@login_required
+def data_raw(request, pk_bundle):
+    print '\n\n'
+    print '-------------------------------------------------------------------------'
+    print '\n\n---------------------- Add Data Raw with ELSA ---------------------------'
+    print '------------------------------ DEBUGGER ---------------------------------'
+    # Get bundle
+    bundle = Bundle.objects.get(pk=pk_bundle)
+
+    # Secure ELSA by seeing if the user logged in is the same user associated with the Bundle
+    if request.user == bundle.user:
+        print 'authorized user: {}'.format(request.user)
+
+        # Context Dictionary
+        context_dict = {
+            'bundle':bundle,
+        }
+      
+        return render(request, 'build/data/data_raw.html', context_dict)
+
+    # Secure: Current user is not the user associated with the bundle, so...
+    else:
+        print 'unauthorized user attempting to access a restricted area.'
+        return redirect('main:restricted_access')
 
 
 
@@ -1156,6 +1263,88 @@ def data_depricated(request, pk_bundle):
         print 'unauthorized user attempting to access a restricted area.'
         return redirect('main:restricted_access')
 
+
+
+
+@login_required
+def display_dictionary(request, pk_bundle):
+    print ' \n\n \n\n-------------------------------------------------------------------------'
+    print '\n\n------------------- Add Display Dictionary with ELSA --------------------------'
+    print '------------------------------ DEBUGGER ---------------------------------'
+
+    # Get Bundle
+    bundle = Bundle.objects.get(pk=pk_bundle)
+#    collections = Collections.objects.get(bundle=bundle)
+
+    # Secure ELSA by seeing if the user logged in is the same user associated with the Bundle
+    if request.user == bundle.user:
+        print 'authorized user: {}'.format(request.user)
+
+        # ELSA's current user is the bundle user so begin view logic
+        # Get forms
+        form_color_display_settings = ColorDisplaySettingsForm(request.POST or None)
+        form_display_direction = DisplayDirectionForm(request.POST or None)
+        form_display_settings = DisplaySettingsForm(request.POST or None)
+        form_movie_display_settings = MovieDisplaySettingsForm(request.POST or None)
+
+        # Declare context_dict for templating language used in ELSAs templates
+        context_dict = {
+            'bundle':bundle,
+            'form_color_display_settings':form_color_display_settings,
+            'form_display_direction':form_display_direction,
+            'form_display_settings':form_display_settings,
+            'form_movie_display_settings':form_movie_display_settings,
+
+        }
+
+        # After ELSAs friend hits submit, if the forms are completed correctly, we should enter
+        # this conditional.
+        print '\n\n------------------------ DISPLAY DICTIONARY INFO ----------------------------'
+        print '\nCurrently awaiting user input...\n\n'
+        if form_color_display_settings.is_valid() and form_display_direction.is_valid() and form_display_settings.is_valid() and form_movie_display_settings.is_valid():
+
+            print 'All Display Dictionary forms valid for {}.'.format(bundle.user)
+            # Create DisplayDictionary model object
+            display_dictionary = form_display_dictionary.save(commit=False)
+            display_dictionary.bundle = bundle
+            display_dictionary.save()
+            print 'Display Dictionary model object: {}'.format(display_dictionary)
+
+            # Create Color_Display_Settings model object
+            color_display_settings = form_color_display_settings.save(commit=False)
+            # Add association
+            color_display_settings.save()
+
+            # Create Display_Direction model object
+            display_direction = form_display_direction.save(commit=False)
+            # Add association
+            display_direction.save()
+
+            # Create Display_Settings model object
+            display_settings = form_display_settings.save(commit=False)
+            # Add association
+            display_settings.save()
+
+            # Create Movie_Display_Direction model object
+            movie_display_settings = form_movie_display_settings.save(commit=False)
+            # Add association
+            movie_display_settings.save()
+
+
+
+
+
+            # Find appropriate label(s).
+            print '---------------- End Build Display Dictionary ------------------------------'  
+	
+
+        # Get current Display Dictionary object associated with the user's Bundle
+        #alias_list = Alias.objects.filter(bundle=bundle)
+        #context_dict['alias_list'] = alias_list
+        return render(request, 'build/dictionary/display.html',context_dict)
+    else:
+        print 'unauthorized user attempting to access a restricted area.'
+        return redirect('main:restricted_access')
 
 
 
@@ -1372,6 +1561,8 @@ def Table_Creation(request, data_object, pk_bundle):
 	    data_form = Table_Binary_Form(request.POST or None)
 	elif data_object.data_type == 'Table Fixed-Width':
 	    data_form = Table_Fixed_Width_Form(request.POST or None)
+	elif data_object.data_type == 'Array':
+	    data_form = ArrayForm(request.POST or None)
 
 	context_dict = {
 	    'bundle':bundle,
