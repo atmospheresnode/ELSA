@@ -1182,9 +1182,6 @@ def display_dictionary(request, pk_bundle):
             movie_display_settings.save()
 
 
-
-
-
             # Find appropriate label(s).
             print '---------------- End Build Display Dictionary ------------------------------'  
 	

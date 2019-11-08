@@ -594,7 +594,16 @@ The red_channel_band attribute identifies the
         model = Color_Display_Settings
         exclude = ('array',)
 
-    #def validate(self, blue_channel_band):
+    def validate_red_channel_band(self):
+        red_channel_band = self.cleaned_data.get("red_channel_band")
+        #green_channel_band = self.cleaned_data.get("green_channel_band")
+        #blue_channel_band = self.cleaned_data.get("blue_channel_band")
+        #color_display_axis = self.cleaned_data.get("color_display_axis")
+
+        if red_channel_band > 256:
+            raise forms.ValidationError("Red Channel band must be an integer in [0, 256].") 
+        else:
+            return red_channel_band
 
 
 
