@@ -154,6 +154,63 @@ def alias_delete(request, pk_bundle, alias):
 
 
 
+@login_required
+def array(request, pk_bundle):
+    print ' \n\n \n\n-------------------------------------------------------------------------'
+    print '\n\n---------------- Welcome to Build A Bundle with ELSA --------------------'
+    print '------------------------------ DEBUGGER ---------------------------------'
+
+    bundle = Bundle.objects.get(pk=pk_bundle)
+
+    if request.user == bundle.user:
+        # Get forms
+        form_array = ArrayForm(request.POST or None)
+
+        # Declare context_dict for template
+        context_dict = {
+	    'bundle':bundle,
+            'form_array':form_array,
+        }
+
+        # After ELSAs friend hits submit, if the forms are completed correctly, we should enter
+        # this conditional.
+        print '\n\n------------------------------- ARRAY INFO --------------------------------'
+        print '\nCurrently awaiting user input...\n\n'
+        if form_array.is_valid():
+            print 'form_array is valid for {}.'.format(bundle.user)
+            # Create Array model object
+            array = form_array.save(commit=False)
+            array.bundle = bundle
+            array.save()
+            print 'Array model object: {}'.format(array)
+
+            # Find appropriate label(s).
+            # Array gets added to... some... Product_Observational labels.
+            # We first get all labels of these given types.
+            all_labels = []
+
+            for label in all_labels:
+                # Open appropriate label(s).  
+                print '- Label: {}'.format(label)
+                print ' ... Opening Label ... '
+                label_list = open_label(label.label())
+                label_root = label_list
+                # Build Array
+                print ' ... Building Label ... '
+                #label_root = array.build_array(label_root)
+		#array.array_list.append(label_root) <~-- just stole this from alias ?? idk what does
+
+
+                # Close appropriate label(s)
+                print ' ... Closing Label ... '
+                close_label(label.label(), label_root)
+
+        return render(request, 'build/data/array.html', context_dict)
+
+    else:
+        print 'unauthorized user attempting to access a restricted area.'
+        return redirect('main:restricted_access')
+
 
 
 
@@ -1005,10 +1062,55 @@ def context_search_telescope(request, pk_bundle):
 
 
 
+@login_required
+def data(request, pk_bundle):
+    print '\n\n'
+    print '-------------------------------------------------------------------------'
+    print '\n\n---------------------- Add Data with ELSA ---------------------------'
+    print '------------------------------ DEBUGGER ---------------------------------'
+    # Get bundle
+    bundle = Bundle.objects.get(pk=pk_bundle)
 
+    # Secure ELSA by seeing if the user logged in is the same user associated with the Bundle
+    if request.user == bundle.user:
+        print 'authorized user: {}'.format(request.user)
 
+        # Context Dictionary
+        context_dict = {
+            'bundle':bundle,
+        }
+      
+        return render(request, 'build/data/data.html', context_dict)
 
+    # Secure: Current user is not the user associated with the bundle, so...
+    else:
+        print 'unauthorized user attempting to access a restricted area.'
+        return redirect('main:restricted_access')
 
+@login_required
+def data_raw(request, pk_bundle):
+    print '\n\n'
+    print '-------------------------------------------------------------------------'
+    print '\n\n---------------------- Add Data Raw with ELSA ---------------------------'
+    print '------------------------------ DEBUGGER ---------------------------------'
+    # Get bundle
+    bundle = Bundle.objects.get(pk=pk_bundle)
+
+    # Secure ELSA by seeing if the user logged in is the same user associated with the Bundle
+    if request.user == bundle.user:
+        print 'authorized user: {}'.format(request.user)
+
+        # Context Dictionary
+        context_dict = {
+            'bundle':bundle,
+        }
+      
+        return render(request, 'build/data/data_raw.html', context_dict)
+
+    # Secure: Current user is not the user associated with the bundle, so...
+    else:
+        print 'unauthorized user attempting to access a restricted area.'
+        return redirect('main:restricted_access')
 
 @login_required
 def data_depricated(request, pk_bundle): 
