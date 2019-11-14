@@ -1155,11 +1155,7 @@ def display_dictionary(request, pk_bundle):
         if form_color_display_settings.is_valid() and form_display_direction.is_valid() and form_display_settings.is_valid() and form_movie_display_settings.is_valid():
 
             print 'All Display Dictionary forms valid for {}.'.format(bundle.user)
-            # Create DisplayDictionary model object
-            display_dictionary = form_display_dictionary.save(commit=False)
-            display_dictionary.bundle = bundle
-            display_dictionary.save()
-            print 'Display Dictionary model object: {}'.format(display_dictionary)
+            # Link the following to the given Array model object
 
             # Create Color_Display_Settings model object
             color_display_settings = form_color_display_settings.save(commit=False)
