@@ -5,6 +5,7 @@ from __future__ import unicode_literals
 from django.db import models
 from django.conf import settings
 from django.contrib.auth.models import User
+from django.core.validators import MaxValueValidator, MinValueValidator
 from django.http import HttpResponseRedirect
 from django.shortcuts import render, redirect, render_to_response
 from django.urls import reverse
@@ -1667,14 +1668,12 @@ class Bundle(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     version = models.CharField(max_length=4, choices=VERSION_CHOICES,)
     #version = models.ForeignKey(Version, on_delete=models.CASCADE, default=get_most_current_version())
-<<<<<<< HEAD
+
     # Context Attributes
-=======
     #raw_enum = models.PositiveIntegerField(null=True, default = 0)
     #calibrated_enum = models.PositiveIntegerField(null=True, default = 0)
     #derived_enum = models.PositiveIntegerField(null=True, default = 0)
    # Context Attributes
->>>>>>> master
     investigations = models.ManyToManyField(Investigation)
     instrument_hosts = models.ManyToManyField(Instrument_Host)
     instruments = models.ManyToManyField(Instrument)
@@ -3245,7 +3244,12 @@ The red_channel_band attribute identifies the
         by default, into the red channel of a display device. The first
         band along the band axis has band number 1.
     """
-    color_display_axis = models.PositiveIntegerField() # max value 255
+    array = models.ForeignKey(Array, on_delete=models.CASCADE)
+    color_display_axis = models.PositiveIntegerField(
+        validators=[
+            MaxValueValidator(255)
+        ]
+    ) # max value 255
     comment_color_display = models.CharField(max_length=MAX_CHAR_FIELD)
     red_channel_band = models.PositiveIntegerField() # Big integer is better for
     green_channel_band = models.PositiveIntegerField() # pds4 specs for these
@@ -3281,11 +3285,28 @@ The vertical_display_direction attribute
         that data along the vertical axis of an Array is supposed to be
         displayed.
     """
+    array = models.ForeignKey(Array, on_delete=models.CASCADE)
     comment_display_direction = models.CharField(max_length=MAX_CHAR_FIELD)
-    horizontal_display_axis = models.PositiveIntegerField() # max value 255
-    horizontal_display_direction = models.PositiveIntegerField() # max value 255
-    vertical_display_axis = models.PositiveIntegerField() # max value 255
-    vertical_display_direction = models.PositiveIntegerField() # max value 255
+    horizontal_display_axis = models.PositiveIntegerField(
+        validators=[
+            MaxValueValidator(255)
+        ]
+    ) # max value 255
+    horizontal_display_direction = models.PositiveIntegerField(
+        validators=[
+            MaxValueValidator(255)
+        ]
+    ) # max value 255
+    vertical_display_axis = models.PositiveIntegerField(
+        validators=[
+            MaxValueValidator(255)
+        ]
+    ) # max value 255
+    vertical_display_direction = models.PositiveIntegerField(
+        validators=[
+            MaxValueValidator(255)
+        ]
+    ) # max value 255
 
     #Color_Display_Settings
     def __str__(self):
@@ -3336,12 +3357,25 @@ The time_display_axis attribute identifies, by
         the rate at which these bands are to be
         displayed.
     """
-    time_display_axis = models.PositiveIntegerField() # max 255
+    array = models.ForeignKey(Array, on_delete=models.CASCADE)
+    time_display_axis = models.PositiveIntegerField(
+        validators=[
+            MaxValueValidator(255)
+        ]
+    ) # max 255
     comment = models.CharField(max_length=MAX_CHAR_FIELD)
-    frame_rate = models.FloatField() # min_value=1.0
+    frame_rate = models.FloatField(
+        validators=[
+            MinValueValidator(1.0)
+        ]
+    ) # min_value=1.0
     loop_flag = models.BooleanField()
     loop_count = models.PositiveIntegerField()
-    loop_delay = models.FloatField() # min_length=0.0
+    loop_delay = models.FloatField(
+        validators=[
+            MinValueValidator(0.0)
+        ]
+    ) # min_length=0.0
     loop_back_and_forth_flag = models.BooleanField()
 
     #Color_Display_Settings
@@ -3382,12 +3416,25 @@ The time_display_axis attribute identifies, by
         the rate at which these bands are to be
         displayed.
     """
-    time_display_axis = models.PositiveIntegerField() # max 255
+    array = models.ForeignKey(Array, on_delete=models.CASCADE)
+    time_display_axis = models.PositiveIntegerField(
+        validators=[
+            MaxValueValidator(255)
+        ]
+    ) # max 255
     comment = models.CharField(max_length=MAX_CHAR_FIELD)
-    frame_rate = models.FloatField() # min_value=1.0
+    frame_rate = models.FloatField(
+        validators=[
+            MinValueValidator(1.0)
+        ]
+    ) # min_value=1.0
     loop_flag = models.BooleanField()
     loop_count = models.PositiveIntegerField()
-    loop_delay = models.FloatField() # min_length=0.0
+    loop_delay = models.FloatField(
+        validators=[
+            MinValueValidator(0.0)
+        ]
+    ) # min_length=0.0
     loop_back_and_forth_flag = models.BooleanField()
 
     #Color_Display_Settings
@@ -3416,6 +3463,7 @@ The Movie_Display_Settings class provides
 
 
     """
+    array = models.ForeignKey(Array, on_delete=models.CASCADE)
     Color_Display_Settings = models.ForeignKey(Color_Display_Settings, on_delete=models.CASCADE)
     Display_Direction = models.ForeignKey(Display_Direction, on_delete=models.CASCADE)
     Display_Settings = models.ForeignKey(Display_Settings, on_delete=models.CASCADE)
