@@ -53,6 +53,14 @@ class AliasDelete(forms.ModelForm):
 
 
 
+"""
+    Array
+"""
+class ArrayForm(forms.ModelForm):
+    class Meta:
+        model = Array
+        exclude = ('product_observational', 'local_identifier')
+
 
 
 
