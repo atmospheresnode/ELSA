@@ -53,10 +53,21 @@ class AliasDelete(forms.ModelForm):
 
 
 
-"""
-    Array
-"""
+
 class ArrayForm(forms.ModelForm):
+    """
+        Array
+    """
+    HORIZONTAL_DISPLAY_DIRECTION_CHOICES = [
+        ('left_to_right','Left to Right'),
+        ('right_to_left','Right to Left'),
+    ]
+    VERTICAL_DISPLAY_DIRECTION_CHOICES = [
+        ('bottom_to_top','Bottom to Top'),
+        ('top_to_bottom','Top to Bottom'),
+    ]
+    horizontal_display_direction = forms.RadioSelect(choices=HORIZONTAL_DISPLAY_DIRECTION_CHOICES)
+    vertical_display_direction = forms.RadioSelect(choices=VERTICAL_DISPLAY_DIRECTION_CHOICES)
     class Meta:
         model = Array
         exclude = ('product_observational', 'local_identifier')
@@ -709,8 +720,17 @@ The time_display_axis attribute identifies, by
         the rate at which these bands are to be
         displayed.
     """
-
-
+    LOOP_DELAY_UNIT_CHOICES = [
+        ('microseconds','microseconds'),
+        ('ms','milliseconds'),
+        ('s','seconds'),
+        ('min','minute'),
+        ('hr','hour'),
+        ('day','day'),
+        ('julian day','julian day'),
+        ('yr','year'),
+    ]
+    loop_delay_unit = forms.RadioSelect(choices=LOOP_DELAY_UNIT_CHOICES)
 
     class Meta:
         model = Movie_Display_Settings

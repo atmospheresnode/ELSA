@@ -22,14 +22,14 @@ $(document).ready(function(){
     $('#form_data').hover(
         function(){
             $('.help, .form_data').show();
-        }
+        },
         function(){
             $('.help, .form_data').hide();
         }
     );
 
 
-    $('#form_document').hover(
+    $('#form_product_document').hover(
         function(){
             $('.help, .form_document').show();
         },
@@ -57,6 +57,15 @@ $(document).ready(function(){
         }
     );
 
+    $('#form_color_display_settings').hover(
+        function(){
+            $('.help, .form_color_display_settings').show();
+        },
+        function(){
+            $('.help, .form_color_display_settings').hide();
+        }
+    );
+
 
     $('#form_data_template').hover(
         function(){
@@ -64,6 +73,24 @@ $(document).ready(function(){
         },
         function(){
             $('.help, .form_data_template').hide();
+        }
+    );
+
+    $('#form_display_direction').hover(
+        function(){
+            $('.help, .form_display_direction').show();
+        },
+        function(){
+            $('.help, .form_display_direction').hide();
+        }
+    );
+
+    $('#form_display_settings').hover(
+        function(){
+            $('.help, .form_display_settings').show();
+        },
+        function(){
+            $('.help, .form_display_settings').hide();
         }
     );
 
@@ -87,6 +114,14 @@ $(document).ready(function(){
         }
     );
 
+    $('#form_movie_display_settings').hover(
+        function(){
+            $('.help, .form_movie_display_settings').show();
+        },
+        function(){
+            $('.help, .form_movie_display_settings').hide();
+        }
+    );
 
     $('#preexisting_mission').hover(
         function(){

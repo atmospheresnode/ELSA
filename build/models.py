@@ -3251,9 +3251,21 @@ The red_channel_band attribute identifies the
         ]
     ) # max value 255
     comment_color_display = models.CharField(max_length=MAX_CHAR_FIELD)
-    red_channel_band = models.PositiveIntegerField() # Big integer is better for
-    green_channel_band = models.PositiveIntegerField() # pds4 specs for these
-    blue_channel_band = models.PositiveIntegerField() # bands
+    red_channel_band = models.PositiveIntegerField(
+        validators=[
+            MaxValueValidator(255)
+        ]
+    ) # Big integer is better for
+    green_channel_band = models.PositiveIntegerField(
+        validators=[
+            MaxValueValidator(255)
+        ]
+    ) # pds4 specs for these
+    blue_channel_band = models.PositiveIntegerField(
+        validators=[
+            MaxValueValidator(255)
+        ]
+    ) # bands
 
     #Color_Display_Settings
     def __str__(self):
@@ -3285,6 +3297,14 @@ The vertical_display_direction attribute
         that data along the vertical axis of an Array is supposed to be
         displayed.
     """
+    HORIZONTAL_DISPLAY_DIRECTION_CHOICES = [
+        ('left_to_right','Left to Right'),
+        ('right_to_left','Right to Left'),
+    ]
+    VERTICAL_DISPLAY_DIRECTION_CHOICES = [
+        ('bottom_to_top','Bottom to Top'),
+        ('top_to_bottom','Top to Bottom'),
+    ]
     array = models.ForeignKey(Array, on_delete=models.CASCADE)
     comment_display_direction = models.CharField(max_length=MAX_CHAR_FIELD)
     horizontal_display_axis = models.PositiveIntegerField(
@@ -3292,21 +3312,21 @@ The vertical_display_direction attribute
             MaxValueValidator(255)
         ]
     ) # max value 255
-    horizontal_display_direction = models.PositiveIntegerField(
-        validators=[
-            MaxValueValidator(255)
-        ]
-    ) # max value 255
+
+    horizontal_display_direction = models.CharField(
+        max_length=13,
+        choices=HORIZONTAL_DISPLAY_DIRECTION_CHOICES,
+    )
+
     vertical_display_axis = models.PositiveIntegerField(
         validators=[
             MaxValueValidator(255)
         ]
     ) # max value 255
-    vertical_display_direction = models.PositiveIntegerField(
-        validators=[
-            MaxValueValidator(255)
-        ]
-    ) # max value 255
+    vertical_display_direction = models.CharField(
+        max_length=13,
+        choices=HORIZONTAL_DISPLAY_DIRECTION_CHOICES,
+    )
 
     #Color_Display_Settings
     def __str__(self):
@@ -3326,61 +3346,6 @@ class Display_Settings(models.Model):
     def __str__(self):
         return "How you actually make a dictionary >.<" 
 
-
-
-
-    """
-The frame_rate attribute indicates the number of
-        still pictures (or frames) that should be displayed per unit of
-        time in a video. Note this is NOT necessarily the same as the
-        rate at which the images were acquired.
-
-The loop_back_and_forth_flag attribute specifies
-        whether or not a movie should only be "looped" or played
-        repeatedly in the forward direction, or whether it should be
-        played forward followed by played in reverse,
-        iteratively.
-The loop_count attribute specifies the number of
-        times a movie should be "looped" or replayed before
-        stopping.
-The loop_delay attribute specifies the amount of
-        time to pause between "loops" or repeated playbacks of a
-        movie.
-The loop_flag attribute specifies whether or not
-        a movie object should be played repeatedly without prompting
-        from the user.
-
-The time_display_axis attribute identifies, by
-        name, the axis of an Array (or Array subclass), the bands of
-        which are intended to be displayed sequentially in time on a
-        display device. The frame_rate attribute, if present, provides
-        the rate at which these bands are to be
-        displayed.
-    """
-    array = models.ForeignKey(Array, on_delete=models.CASCADE)
-    time_display_axis = models.PositiveIntegerField(
-        validators=[
-            MaxValueValidator(255)
-        ]
-    ) # max 255
-    comment = models.CharField(max_length=MAX_CHAR_FIELD)
-    frame_rate = models.FloatField(
-        validators=[
-            MinValueValidator(1.0)
-        ]
-    ) # min_value=1.0
-    loop_flag = models.BooleanField()
-    loop_count = models.PositiveIntegerField()
-    loop_delay = models.FloatField(
-        validators=[
-            MinValueValidator(0.0)
-        ]
-    ) # min_length=0.0
-    loop_back_and_forth_flag = models.BooleanField()
-
-    #Color_Display_Settings
-    def __str__(self):
-        return "How you actually make a dictionary >.<"
 
 @python_2_unicode_compatible
 class Movie_Display_Settings(models.Model):
@@ -3416,6 +3381,16 @@ The time_display_axis attribute identifies, by
         the rate at which these bands are to be
         displayed.
     """
+    LOOP_DELAY_UNIT_CHOICES = [
+        ('microseconds','microseconds'),
+        ('ms','milliseconds'),
+        ('s','seconds'),
+        ('min','minute'),
+        ('hr','hour'),
+        ('day','day'),
+        ('julian day','julian day'),
+        ('yr','year'),
+    ]
     array = models.ForeignKey(Array, on_delete=models.CASCADE)
     time_display_axis = models.PositiveIntegerField(
         validators=[
@@ -3435,6 +3410,10 @@ The time_display_axis attribute identifies, by
             MinValueValidator(0.0)
         ]
     ) # min_length=0.0
+    loop_delay_unit = models.CharField(
+        max_length = 20,
+        choices = LOOP_DELAY_UNIT_CHOICES,
+    )
     loop_back_and_forth_flag = models.BooleanField()
 
     #Color_Display_Settings
