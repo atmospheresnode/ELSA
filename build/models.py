@@ -1981,7 +1981,7 @@ class Data(models.Model):
         ('Reduced', 'Reduced'),
     )
     bundle = models.ForeignKey(Bundle, on_delete=models.CASCADE)
-    processing_level = models.CharField(max_length=30, choices=PROCESSING_LEVEL_CHOICES, default='Archive',)
+    processing_level = models.CharField(max_length=30, choices=PROCESSING_LEVEL_CHOICES, default='Calibrated',)
 
 
     class Meta:
@@ -2521,11 +2521,15 @@ class Product_Observational(models.Model):
         ('Small Bodies','Small Bodies'),
         ('Spectroscopy','Spectroscopy'),
     ]
-    OBSERVATIONAL_TYPES = [
+    OBSERVATIONAL_TYPES_OLD = [
 
         ('Table Binary','Table Binary'),
         ('Table Character','Table Character'),
         ('Table Delimited','Table Delimited'),
+    ]
+    OBSERVATIONAL_TYPES = [
+        ('Table','Table'),
+        ('Array','Array'),
     ]
     PROCESSING_LEVEL_TYPES = [
         ('Calibrated','Calibrated'),

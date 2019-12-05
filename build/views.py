@@ -1011,7 +1011,7 @@ def context_search_telescope(request, pk_bundle):
 
 
 @login_required
-def data_depricated(request, pk_bundle): 
+def data(request, pk_bundle): 
     print '\n\n'
     print '-------------------------------------------------------------------------'
     print '\n\n---------------------- Add Data with ELSA ---------------------------'
@@ -1024,10 +1024,10 @@ def data_depricated(request, pk_bundle):
     if request.user == bundle.user:
         print 'authorized user: {}'.format(request.user)
 
-        if request.method == "POST":
-            data_selected = HttpRequest.POST()
-            data_selected = data_selected.getlist("data_select", None)
-            print 'DATA SELECTED **** {}'.format(data_selected)
+        #if request.method == "POST":
+        #    data_selected = HttpRequest.POST()
+        #    data_selected = data_selected.getlist("data_select", None)
+        #    print 'DATA SELECTED **** {}'.format(data_selected)
 
         # Get forms
         form_data = DataForm(request.POST or None)
@@ -1089,13 +1089,42 @@ def data_depricated(request, pk_bundle):
             print '\n\n---------------------- UPDATING CONTEXT DICTIONARY --------------------------'
             context_dict['data'] = data
             context_dict['product_observational'] = product_observational  # Needs a fix
-        
+
+        # Get current data products for template        
         data_set = Data.objects.filter(bundle=bundle)
+        print '\n\nDATA DEBUG\n\n'
+        print 'Data set: '
+        print data_set
         context_dict['data_set'] = data_set
-        product_observational_set = []
+        product_observational_set_calibrated = []
+        product_observational_set_derived = []
+        product_observational_set_raw = []
+        product_observational_set_reduced = []
+
         for data in data_set:
-            product_observational_set.extend(Product_Observational.objects.filter(data=data))
-        context_dict['product_observational_set'] = product_observational_set
+            print data.processing_level
+            if data.processing_level == 'Calibrated':
+                product_observational_set_calibrated.extend(
+                    Product_Observational.objects.filter(data=data, processing_level='Calibrated')
+                )
+                print product_observational_set_calibrated
+            elif data.processing_level == 'Derived':
+                product_observational_set_derived.extend(
+                    Product_Observational.objects.filter(data=data, processing_level='Derived')
+                )
+            elif data.processing_level == 'Raw':
+                product_observational_set_raw.extend(
+                    Product_Observational.objects.filter(data=data, processing_level='Raw')
+                )
+            elif data.processing_level == 'Reduced':
+                product_observational_set_reduced.extend(
+                    Product_Observational.objects.filter(data=data, processing_level='Reduced')
+                )
+        context_dict['product_observational_set_calibrated'] = product_observational_set_calibrated
+        context_dict['product_observational_set_derived'] = product_observational_set_derived
+        context_dict['product_observational_set_raw'] = product_observational_set_raw
+        context_dict['product_observational_set_reduced'] = product_observational_set_reduced
+
       
         return render(request, 'build/data/data.html', context_dict)
 

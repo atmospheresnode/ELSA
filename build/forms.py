@@ -381,11 +381,15 @@ class ProductDocumentForm(forms.ModelForm):
     ProductObservational
 """
 class ProductObservationalForm(forms.ModelForm):
-    OBSERVATIONAL_TYPES = [
+    OBSERVATIONAL_TYPES_OLD = [
 
         ('Table Binary','Table Binary'),
         ('Table Character','Table Character'),
         ('Table Delimited','Table Delimited'),
+    ]
+    OBSERVATIONAL_TYPES = [
+        ('Table','Table'),
+        ('Array','Array'),
     ]
     PURPOSE_TYPES = [
         ('Calibration','Calibration'),
