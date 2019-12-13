@@ -52,8 +52,8 @@ urlpatterns = [
 
     # Data
     url(r'^(?P<pk_bundle>\d+)/data/$', views.data, name='data'),
-    #url(r'^(?P<pk_bundle>\d+)/data/(?P<pk_product_observational>\d+)/$', views.product_observational, name='product_observational'),
-    url(r'^(?P<pk_bundle>\d+)/table_creation/$', views.Table_Creation, name='table_creation'),
+    url(r'^(?P<pk_bundle>\d+)/data/(?P<pk_product_observational>\d+)/$', views.product_observational, name='product_observational'),
+    url(r'^(?P<pk_bundle>\d+)/(?P<data_object>\d+)/table_creation/$', views.Table_Creation, name='table_creation'),
     url(r'^(?P<pk_bundle>\d+)/(?P<table>[-/w]+)/field_creation/$', views.Field_Creation, name='field_creation'),
     url(r'^(?P<pk_bundle>\d+)/data/$', views.data, name='data'),
     url(r'^(?P<pk_bundle>\d+)/data/raw$', views.data_raw, name='data_raw'),

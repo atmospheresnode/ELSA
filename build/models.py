@@ -1667,6 +1667,7 @@ class Bundle(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     version = models.CharField(max_length=4, choices=VERSION_CHOICES,)
     #version = models.ForeignKey(Version, on_delete=models.CASCADE, default=get_most_current_version())
+
    # Context Attributes
     investigations = models.ManyToManyField(Investigation)
     instrument_hosts = models.ManyToManyField(Instrument_Host)
@@ -1852,9 +1853,11 @@ class Collections(models.Model):
     bundle = models.OneToOneField(Bundle, on_delete=models.CASCADE)
     has_document = models.BooleanField(default=True)
     has_context = models.BooleanField(default=True)
-    has_xml_schema = models.BooleanField(default=True)
-    has_data = models.BooleanField(default=False)
-    data_enum = models.PositiveIntegerField(default = 0)
+    #has_xml_schema = models.BooleanField(default=True)
+    has_raw_data = models.BooleanField(default=False)
+    has_calibrated_data = models.BooleanField(default=False)
+    has_derived_data = models.BooleanField(default=False)
+    #data_enum = models.PositiveIntegerField(default = 0)
 
 
     # Cleaners
@@ -1864,11 +1867,15 @@ class Collections(models.Model):
             collections_list.append("document")
         if self.has_context:
             collections_list.append("context")
-        if self.has_xml_schema:
-            collections_list.append("xml_schema")
-        if self.has_data:
-            collections_list.append("data")
-	    collections_list.append("data_enum")
+        #if self.has_xml_schema:
+            #collections_list.append("xml_schema")
+        if self.has_raw_data:
+            collections_list.append("data_raw")
+        if self.has_calibrated_data:
+            collections_list.append("data_calibrated")
+        if self.has_derived_data:
+            collections_list.append("data_derived")
+	    #collections_list.append("data_enum")
         return collections_list
 
 
@@ -1876,7 +1883,7 @@ class Collections(models.Model):
     #     Note: When we call on Collections, we want to be able to have a list of all collections 
     #           pertaining to a bundle.
     def __str__(self):
-        return '{0} Bundle has document={1}, context={2}, xml_schema={3}, data={4}, data_enum={5}'.format(self.bundle, self.has_document, self.has_context, self.has_xml_schema, self.has_data, self.data_enum)
+        return '{0} Bundle has document={1}, context={2}, raw={3}, calibrated={4}, derived={5}'.format(self.bundle, self.has_document, self.has_context, self.has_raw_data, self.has_calibrated_data, self.has_derived_data)
     class Meta:
         verbose_name_plural = 'Collections'        
 
@@ -1894,70 +1901,9 @@ class Collections(models.Model):
                 # exist. The model object that creates the data collection folders is the Data model 
                 # object.
 
-
-@python_2_unicode_compatible
-class Data_Prep(models.Model):
-    DATA_TYPES = (
-	('Table Delimited','Table Delimited'),
-	('Table Binary','Table Binary'),
-	('Table Fixed-Width','Table Fixed-Width'),
-    )
-    name=models.CharField(max_length=251)
-    data_type = models.CharField(max_length=256,choices=DATA_TYPES, default='Table Delimited',)
-    bundle = models.ForeignKey(Bundle, on_delete=models.CASCADE, null=True,)
-    
-
-    class Meta:
-        verbose_name_plural = 'Data Prep'
-
-    def build_data_directory(self):
-	data_directory = os.path.join(self.bundle.directory(), self.name)
-	make_directory(data_directory)
-
-    def label(self):
-        return os.path.join(self.bundle.directory(), self.name)
-
-    def build_base_case(self):
-
-        
-        # Locate base case Product_Bundle template found in templates/pds4_labels/base_case/product_bundle
-        source_file = os.path.join(settings.TEMPLATE_DIR, 'pds4_labels')
-        source_file = os.path.join(source_file, 'base_templates')
-	out_file = self.label()
-	
-	if self.data_type == 'Table Delimited':
-            source_file = os.path.join(source_file, 'data_table_delimited.xml')
-	    out_file = os.path.join(out_file, 'data_table_delimited.xml')
-
-	elif self.data_type == 'Table Binary':
-	    source_file = os.path.join(source_file, 'table_binary.xml')
-	    out_file = os.path.join(out_file, 'table_binary.xml')
-
-	elif self.data_type == 'Table Fixed-Width':
-            source_file = os.path.join(source_file, 'data_table_character.xml')
-	    out_file = os.path.join(out_file, 'data_table_character.xml')
-
-	else:
-	    pass
-
-	#set selected version
-	update = Version()
-	bundle = Bundle()
-	print source_file + "<<<<<<<<"
-	print self.data_type
-	update.version_update(self.bundle.version, source_file,out_file)
-
-        # Copy the base case template to the correct directory
-        copy(source_file, self.label())
-        
-        return
-
-    def __str__(self):
-	return 'Data Prep'
-    
-
-
-
+    def build_data_directories(self, data):
+	collection_directory = os.path.join(self.bundle.directory(), data)
+	make_directory(collection_directory)
 
 """
 """
@@ -1969,8 +1915,10 @@ class Data(models.Model):
         ('Raw', 'Raw'),
         ('Reduced', 'Reduced'),
     )
+    name = models.CharField(max_length=256, blank=True)
     bundle = models.ForeignKey(Bundle, on_delete=models.CASCADE)
-    processing_level = models.CharField(max_length=30, choices=PROCESSING_LEVEL_CHOICES, default='Archive',)
+    processing_level = models.CharField(max_length=30, choices=PROCESSING_LEVEL_CHOICES, default='Raw',)
+    data_enum = models.PositiveSmallIntegerField(default = 0,)
 
 
     class Meta:
@@ -1996,6 +1944,79 @@ class Data(models.Model):
         return data_directory  
 
 
+@python_2_unicode_compatible
+class Data_Object(models.Model):
+    DATA_TYPES = (
+	('Table Delimited','Table Delimited'),
+	('Table Binary','Table Binary'),
+	('Table Fixed-Width','Table Fixed-Width'),
+	('Array', 'Array'),
+    )
+    name=models.CharField(max_length=251)
+    data_type = models.CharField(max_length=256,choices=DATA_TYPES, default='Table Delimited',)
+    data = models.ForeignKey(Data, on_delete=models.CASCADE, null=True,)
+    
+
+    class Meta:
+        verbose_name_plural = 'Data Object'
+
+    def build_data_directory(self):
+	data_directory = os.path.join(self.bundle.directory(), self.name)
+	make_directory(data_directory)
+
+    def label(self):
+        return os.path.join(self.data.bundle.directory(), self.name)
+
+    def build_base_case(self):
+	pass
+
+    # directory returns the file path associated with the given model.
+    def directory(self):
+        data_collection_name = 'data_{}'.format(self.data.processing_level.lower())
+        data_directory = os.path.join(self.data.bundle.directory(), data_collection_name)
+        return data_directory  
+
+    def build_data_file(self):
+        # Locate base case Product_Bundle template found in templates/pds4_labels/base_case/product_bundle
+        source_file = os.path.join(settings.TEMPLATE_DIR, 'pds4_labels')
+        source_file = os.path.join(source_file, 'base_templates')
+	out_file = self.directory()
+	
+	if self.data_type == 'Table Delimited':
+            source_file = os.path.join(source_file, 'data_table_delimited.xml')
+	    out_file = os.path.join(out_file, self.name + '.xml')
+
+	elif self.data_type == 'Table Binary':
+	    source_file = os.path.join(source_file, 'table_binary.xml')
+	    out_file = os.path.join(out_file, self.name + '.xml')
+
+	elif self.data_type == 'Table Fixed-Width':
+            source_file = os.path.join(source_file, 'data_table_character.xml')
+	    out_file = os.path.join(out_file, self.name + '.xml')
+
+	else:
+	    pass
+
+	#set selected version
+	update = Version()
+	bundle = Bundle()
+	print source_file + "<<<<<<<<"
+	print self.data_type
+	update.version_update(self.data.bundle.version, source_file,out_file)
+
+        # Copy the base case template to the correct directory
+        copy(source_file, self.label())
+        
+        return
+
+    def __str__(self):
+	return 'Data Prep'
+    
+
+
+
+
+
 """
 Table and Field Objects
 
@@ -2015,47 +2036,52 @@ class Table_Delimited(models.Model):
 	('Vertical Bar','Vertical Bar'),
     )
 
-    name = models.CharField(max_length=256)
+    name = models.CharField(max_length=256, blank=True)
     offset = models.IntegerField(default=-1)
     object_length = models.IntegerField(default=-1)
     description = models.CharField(max_length=5000, default="unset")
     records = models.IntegerField(default=-1)
-    field_delimiter = models.CharField(max_length=256, choices=DELIMITER_CHOICES, default="Comma")
+    field_delimiter = models.CharField(max_length=256, choices=DELIMITER_CHOICES, default="Comma", blank=True)
     fields = models.IntegerField(default=-1)
+    data = models.ForeignKey(Data, on_delete=models.CASCADE, null=True,)
     bundle = models.ForeignKey(Bundle, on_delete=models.CASCADE,null=True)
 
     def __str__(self):
-        pass
+        return str(self.id)
+
 
 @python_2_unicode_compatible
 class Table_Binary(models.Model):
-    name = models.CharField(max_length=256)
+    name = models.CharField(max_length=256, blank=True)
     offset = models.IntegerField(default=-1)
     records = models.IntegerField(default=-1)
     fields = models.IntegerField(default=-1)
+    data = models.ForeignKey(Data, on_delete=models.CASCADE, null=True,)
     bundle = models.ForeignKey(Bundle, on_delete=models.CASCADE, null=True)
 
     def __str__(self):
-        pass
+        return str(self.id)
 
 @python_2_unicode_compatible
 class Table_Fixed_Width(models.Model):
 
     RECORD_CHOICES = (
-
+	('Sample Choice','Sample Choice'),
     )
 
-    name = models.CharField(max_length=256)
+    name = models.CharField(max_length=256, blank=True)
     offset = models.IntegerField(default=-1)
     object_length = models.IntegerField(default=-1)
     description = models.CharField(max_length=5000, default="unset")
     records = models.IntegerField(default=-1)
-    record_delimiter = models.CharField(max_length=256, choices=RECORD_CHOICES, default="Comma")
+    record_delimiter = models.CharField(max_length=256, choices=RECORD_CHOICES, default="Sample Choice", blank=True)
     fields = models.IntegerField(default=-1)
+    data = models.ForeignKey(Data, on_delete=models.CASCADE, null=True,)
     bundle = models.ForeignKey(Bundle, on_delete=models.CASCADE, null=True)
 
     def __str__(self):
-        pass
+        return str(self.id)
+
 
 @python_2_unicode_compatible
 class Field_Delimited(models.Model):
@@ -3182,6 +3208,241 @@ class Array(models.Model):
 
 
 
+"""
+    The Array model object needs more work.
+"""
+@python_2_unicode_compatible
+class Array(models.Model):
+
+    OBSERVATIONAL_TYPES = [
+        ('Table Base', 'Table Base'),
+        ('Table Binary','Table Binary'),
+        ('Table Character','Table Character'),
+        ('Table Delimited','Table Delimited'),
+    ]
+    product_observational = models.ForeignKey(Product_Observational, on_delete=models.CASCADE)
+    name = models.CharField(max_length=MAX_CHAR_FIELD)
+
+    # meta
+    def __str__(self):
+        return 'Array: {}'.format(self.name)
+
+
+
+
+
+
+"""
+    The Array model object defines a homogeneous N-dimensional array of scalars. The Array class is the parent class for all n-dimensional arrays of scalars.
+"""
+@python_2_unicode_compatible
+class Array(models.Model):
+
+    ARRAY_DIMENSIONS = [
+        ('Array_2D','Array 2D'),
+        ('Array_3D', 'Array 3D'),
+    ]
+    ARRAY_TYPES = [
+        ('Image', 'Image'),
+        ('Map', 'Map'),
+        ('Spectrum', 'Spectrum'),
+    ]
+    product_observational = models.ForeignKey(Product_Observational, on_delete=models.CASCADE)
+    name = models.CharField(max_length=MAX_CHAR_FIELD)
+    array_dimensions = models.CharField(max_length=MAX_CHAR_FIELD, choices=ARRAY_DIMENSIONS)
+    array_type = models.CharField(max_length=MAX_CHAR_FIELD, choices=ARRAY_TYPES)
+    local_identifier = models.CharField(max_length=MAX_CHAR_FIELD)
+    md5_checksum = models.CharField(max_length=MAX_CHAR_FIELD)
+    offset = models.CharField(max_length=MAX_CHAR_FIELD)
+    axes = models.CharField(max_length=MAX_CHAR_FIELD)
+    axis_index_order = models.CharField(max_length=MAX_CHAR_FIELD)
+    description = models.CharField(max_length=MAX_CHAR_FIELD)
+    # Has associations @ https://pds.nasa.gov/datastandards/documents/dd/v1/PDS4_PDS_DD_1A00.html#d5e3181
+
+
+    # meta
+    def __str__(self):
+        return 'Array: {}'.format(self.name)
+
+    # fillers
+
+
+
+
+@python_2_unicode_compatible
+class Color_Display_Settings(models.Model):
+    """
+The blue_channel_band attribute identifies the
+        number of the band, along the band axis, that should be loaded,
+        by default, into the blue channel of a display device. The first
+        band along the band axis has band number 1.
+The color_display_axis attribute identifies, by
+        name, the axis of an Array (or Array subclass) that is intended
+        to be displayed in the color dimension of a display device.
+        I.e., bands from this dimension will be loaded into the red,
+        green, and blue bands of the display device. The value of this
+        attribute must match the value of one, and only one, axis_name
+        attribute in an Axis_Array class of the associated
+        Array.
+The green_channel_band attribute identifies the
+        number of the band, along the band axis, that should be loaded,
+        by default, into the green channel of a display device. The
+        first band along the band axis has band number
+        1.
+The red_channel_band attribute identifies the
+        number of the band, along the band axis, that should be loaded,
+        by default, into the red channel of a display device. The first
+        band along the band axis has band number 1.
+    """
+    color_display_axis = models.PositiveIntegerField() # max value 255
+    comment_color_display = models.CharField(max_length=MAX_CHAR_FIELD)
+    red_channel_band = models.PositiveIntegerField() # Big integer is better for
+    green_channel_band = models.PositiveIntegerField() # pds4 specs for these
+    blue_channel_band = models.PositiveIntegerField() # bands
+
+    #Color_Display_Settings
+    def __str__(self):
+        return "How you actually make a dictionary >.<"
+
+
+
+@python_2_unicode_compatible
+class Display_Direction(models.Model):
+    """
+The horizontal_display_axis attribute
+        identifies, by name, the axis of an Array (or Array subclass)
+        that is intended to be displayed in the horizontal or "sample"
+        dimension on a display device. The value of this attribute must
+        match the value of one, and only one, axis_name attribute in an
+        Axis_Array class of the associated Array.
+The horizontal_display_direction attribute
+        specifies the direction across the screen of a display device
+        that data along the horizontal axis of an Array is supposed to
+        be displayed.
+The vertical_display_axis attribute identifies,
+        by name, the axis of an Array (or Array subclass) that is
+        intended to be displayed in the vertical or "line" dimension on
+        a display device. The value of this attribute must match the
+        value of one, and only one, axis_name attribute in an Axis_Array
+        class of the associated Array.
+The vertical_display_direction attribute
+        specifies the direction along the screen of a display device
+        that data along the vertical axis of an Array is supposed to be
+        displayed.
+    """
+    comment_display_direction = models.CharField(max_length=MAX_CHAR_FIELD)
+    horizontal_display_axis = models.PositiveIntegerField() # max value 255
+    horizontal_display_direction = models.PositiveIntegerField() # max value 255
+    vertical_display_axis = models.PositiveIntegerField() # max value 255
+    vertical_display_direction = models.PositiveIntegerField() # max value 255
+
+    #Color_Display_Settings
+    def __str__(self):
+        return "How you actually make a dictionary >.<"
+
+
+
+@python_2_unicode_compatible
+class Display_Settings(models.Model):
+    pass
+    #Local_Internal_Reference = models.CharField(max_length=MAX_CHAR_FIELD)
+    #Display_Direction = models.CharField(max_length=MAX_CHAR_FIELD)
+    #Color_Display_Settings = models.CharField(max_length=MAX_CHAR_FIELD)
+    #Movie_Display_Settings = models.CharField(max_length=MAX_CHAR_FIELD)
+
+    #Color_Display_Settings
+    def __str__(self):
+        return "How you actually make a dictionary >.<" 
+
+
+
+
+    """
+The frame_rate attribute indicates the number of
+        still pictures (or frames) that should be displayed per unit of
+        time in a video. Note this is NOT necessarily the same as the
+        rate at which the images were acquired.
+
+The loop_back_and_forth_flag attribute specifies
+        whether or not a movie should only be "looped" or played
+        repeatedly in the forward direction, or whether it should be
+        played forward followed by played in reverse,
+        iteratively.
+The loop_count attribute specifies the number of
+        times a movie should be "looped" or replayed before
+        stopping.
+The loop_delay attribute specifies the amount of
+        time to pause between "loops" or repeated playbacks of a
+        movie.
+The loop_flag attribute specifies whether or not
+        a movie object should be played repeatedly without prompting
+        from the user.
+
+The time_display_axis attribute identifies, by
+        name, the axis of an Array (or Array subclass), the bands of
+        which are intended to be displayed sequentially in time on a
+        display device. The frame_rate attribute, if present, provides
+        the rate at which these bands are to be
+        displayed.
+    """
+    time_display_axis = models.PositiveIntegerField() # max 255
+    comment = models.CharField(max_length=MAX_CHAR_FIELD)
+    frame_rate = models.FloatField() # min_value=1.0
+    loop_flag = models.BooleanField()
+    loop_count = models.PositiveIntegerField()
+    loop_delay = models.FloatField() # min_length=0.0
+    loop_back_and_forth_flag = models.BooleanField()
+
+    #Color_Display_Settings
+    def __str__(self):
+        return "How you actually make a dictionary >.<"
+
+@python_2_unicode_compatible
+class Movie_Display_Settings(models.Model):
+    """
+The Movie_Display_Settings class provides
+        default values for the display of a multi-banded Array using a
+        software application capable of displaying video
+        content.
+The frame_rate attribute indicates the number of
+        still pictures (or frames) that should be displayed per unit of
+        time in a video. Note this is NOT necessarily the same as the
+        rate at which the images were acquired.
+
+The loop_back_and_forth_flag attribute specifies
+        whether or not a movie should only be "looped" or played
+        repeatedly in the forward direction, or whether it should be
+        played forward followed by played in reverse,
+        iteratively.
+The loop_count attribute specifies the number of
+        times a movie should be "looped" or replayed before
+        stopping.
+The loop_delay attribute specifies the amount of
+        time to pause between "loops" or repeated playbacks of a
+        movie.
+The loop_flag attribute specifies whether or not
+        a movie object should be played repeatedly without prompting
+        from the user.
+
+The time_display_axis attribute identifies, by
+        name, the axis of an Array (or Array subclass), the bands of
+        which are intended to be displayed sequentially in time on a
+        display device. The frame_rate attribute, if present, provides
+        the rate at which these bands are to be
+        displayed.
+    """
+    time_display_axis = models.PositiveIntegerField() # max 255
+    comment = models.CharField(max_length=MAX_CHAR_FIELD)
+    frame_rate = models.FloatField() # min_value=1.0
+    loop_flag = models.BooleanField()
+    loop_count = models.PositiveIntegerField()
+    loop_delay = models.FloatField() # min_length=0.0
+    loop_back_and_forth_flag = models.BooleanField()
+
+    #Color_Display_Settings
+    def __str__(self):
+        return "How you actually make a dictionary >.<"
+
 @python_2_unicode_compatible
 class DisplayDictionary(models.Model):
     """
@@ -3201,104 +3462,32 @@ The Movie_Display_Settings class provides
         default values for the display of a multi-banded Array using a
         software application capable of displaying video
         content.
-The blue_channel_band attribute identifies the
-        number of the band, along the band axis, that should be loaded,
-        by default, into the blue channel of a display device. The first
-        band along the band axis has band number 1.
-The color_display_axis attribute identifies, by
-        name, the axis of an Array (or Array subclass) that is intended
-        to be displayed in the color dimension of a display device.
-        I.e., bands from this dimension will be loaded into the red,
-        green, and blue bands of the display device. The value of this
-        attribute must match the value of one, and only one, axis_name
-        attribute in an Axis_Array class of the associated
-        Array.
-The frame_rate attribute indicates the number of
-        still pictures (or frames) that should be displayed per unit of
-        time in a video. Note this is NOT necessarily the same as the
-        rate at which the images were acquired.
-The green_channel_band attribute identifies the
-        number of the band, along the band axis, that should be loaded,
-        by default, into the green channel of a display device. The
-        first band along the band axis has band number
-        1.
-The horizontal_display_axis attribute
-        identifies, by name, the axis of an Array (or Array subclass)
-        that is intended to be displayed in the horizontal or "sample"
-        dimension on a display device. The value of this attribute must
-        match the value of one, and only one, axis_name attribute in an
-        Axis_Array class of the associated Array.
-The horizontal_display_direction attribute
-        specifies the direction across the screen of a display device
-        that data along the horizontal axis of an Array is supposed to
-        be displayed.
-The loop_back_and_forth_flag attribute specifies
-        whether or not a movie should only be "looped" or played
-        repeatedly in the forward direction, or whether it should be
-        played forward followed by played in reverse,
-        iteratively.
-The loop_count attribute specifies the number of
-        times a movie should be "looped" or replayed before
-        stopping.
-The loop_delay attribute specifies the amount of
-        time to pause between "loops" or repeated playbacks of a
-        movie.
-The loop_flag attribute specifies whether or not
-        a movie object should be played repeatedly without prompting
-        from the user.
-The red_channel_band attribute identifies the
-        number of the band, along the band axis, that should be loaded,
-        by default, into the red channel of a display device. The first
-        band along the band axis has band number 1.
-The time_display_axis attribute identifies, by
-        name, the axis of an Array (or Array subclass), the bands of
-        which are intended to be displayed sequentially in time on a
-        display device. The frame_rate attribute, if present, provides
-        the rate at which these bands are to be
-        displayed.
-The vertical_display_axis attribute identifies,
-        by name, the axis of an Array (or Array subclass) that is
-        intended to be displayed in the vertical or "line" dimension on
-        a display device. The value of this attribute must match the
-        value of one, and only one, axis_name attribute in an Axis_Array
-        class of the associated Array.
-The vertical_display_direction attribute
-        specifies the direction along the screen of a display device
-        that data along the vertical axis of an Array is supposed to be
-        displayed.
+
+
     """
-    #Color_Display_Settings = models.CharField(max_length=MAX_CHAR_FIELD)
-    color_display_axis = models.PositiveIntegerField() # max value 255
-    comment_color_display = models.CharField(max_length=MAX_CHAR_FIELD)
-    red_channel_band = models.PositiveIntegerField() # Big integer is better for
-    green_channel_band = models.PositiveIntegerField() # pds4 specs for these
-    blue_channel_band = models.PositiveIntegerField() # bands
+    Color_Display_Settings = models.ForeignKey(Color_Display_Settings, on_delete=models.CASCADE)
+    Display_Direction = models.ForeignKey(Display_Direction, on_delete=models.CASCADE)
+    Display_Settings = models.ForeignKey(Display_Settings, on_delete=models.CASCADE)
+    #Movie_Display_Settings = models.ForeignKey(Movie_Display_Settings, on_delete=models.CASCADE)
 
-    #Display_Direction
-    comment_display_direction = models.CharField(max_length=MAX_CHAR_FIELD)
-    horizontal_display_axis = models.PositiveIntegerField() # max value 255
-    horizontal_display_direction = models.PositiveIntegerField() # max value 255
-    vertical_display_axis = models.PositiveIntegerField() # max value 255
-    vertical_display_direction = models.PositiveIntegerField() # max value 255
-
-    #Display_Settings
-    #Local_Internal_Reference = models.CharField(max_length=MAX_CHAR_FIELD)
-    #Display_Direction = models.CharField(max_length=MAX_CHAR_FIELD)
-    #Color_Display_Settings = models.CharField(max_length=MAX_CHAR_FIELD)
-    #Movie_Display_Settings = models.CharField(max_length=MAX_CHAR_FIELD)
-    
-    #Movie_Display_Settings
-    time_display_axis = models.PositiveIntegerField() # max 255
-    comment = models.CharField(max_length=MAX_CHAR_FIELD)
-    frame_rate = models.FloatField() # min_value=1.0
-    loop_flag = models.BooleanField()
-    loop_count = models.PositiveIntegerField()
-    loop_delay = models.FloatField() # min_length=0.0
-    loop_back_and_forth_flag = models.BooleanField()
 
     #Color_Display_Settings
     def __str__(self):
         return "How you actually make a dictionary >.<"
+
+
+
+
+
+
+
+
+
+
+
+
+
+#    To Be Garbage Here✲
 
 
 
