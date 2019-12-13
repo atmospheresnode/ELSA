@@ -51,8 +51,13 @@ class AliasDelete(forms.ModelForm):
 	exclude = ('bundle',)
 
 
-
-
+"""
+    Array
+"""
+class ArrayForm(forms.ModelForm):
+    class Meta:
+        model = Array
+        exclude = ('name', 'local_identifier')
 
 
 
@@ -155,11 +160,20 @@ class CollectionsForm(forms.ModelForm):
 """
     Data Prep
 """
-class DataPrepForm(forms.ModelForm):
+class DataObjectForm(forms.ModelForm):
     class Meta:
-	model = Data_Prep
+	model = Data_Object
 	fields = ('name', 'data_type')
 	exclude = ('bundle',)
+
+
+"""
+    Data Emun
+"""
+class DataEnum(forms.ModelForm):
+    class Meta:
+	model = Data
+	exclude = ('bundle','processing_level',)
 
 
 
@@ -175,7 +189,7 @@ class DataPrepForm(forms.ModelForm):
 class DataForm(forms.ModelForm):
     class Meta:
         model = Data
-        exclude = ('bundle',)
+        exclude = ('bundle','data_enum',)
 
 
 
@@ -381,15 +395,11 @@ class ProductDocumentForm(forms.ModelForm):
     ProductObservational
 """
 class ProductObservationalForm(forms.ModelForm):
-    OBSERVATIONAL_TYPES_OLD = [
+    OBSERVATIONAL_TYPES = [
 
         ('Table Binary','Table Binary'),
         ('Table Character','Table Character'),
         ('Table Delimited','Table Delimited'),
-    ]
-    OBSERVATIONAL_TYPES = [
-        ('Table','Table'),
-        ('Array','Array'),
     ]
     PURPOSE_TYPES = [
         ('Calibration','Calibration'),
@@ -408,28 +418,35 @@ class ProductObservationalForm(forms.ModelForm):
         exclude = ('bundle', 'data', 'processing_level')
 
 
+# An experimental attempt to get forms of existing objects to populate their data when we look at them. -J
+'''
+class Table_Delimited_Form(forms.Form):
+    table_delimited = forms.ModelChoiceField(queryset=Table_Delimited.objects.none())
 
-
+    def __init__(self, item_id):
+	super(Table_Delimited_Form, self).__init__()
+	self.fields['table_delimited'].queryset = Table_Delimited.objects.filter(id=item_id)
+'''
 
 
 class Table_Delimited_Form(forms.ModelForm):
     class Meta:
 	model = Table_Delimited
-	exclude = ('bundle',)
+	exclude = ('bundle','name',)
 
 
 
 class Table_Binary_Form(forms.ModelForm):
     class Meta:
 	model = Table_Binary
-	exclude = ('bundle',)	
+	exclude = ('bundle','name',)	
 
 
 
 class Table_Fixed_Width_Form(forms.ModelForm):
     class Meta:
 	model = Table_Fixed_Width
-	exclude = ('bundle',)
+	exclude = ('bundle','name',)
 
 
 

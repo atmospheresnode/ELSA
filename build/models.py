@@ -1907,69 +1907,6 @@ class Collections(models.Model):
 	collection_directory = os.path.join(self.bundle.directory(), data)
 	make_directory(collection_directory)
 
-
-@python_2_unicode_compatible
-class Data_Prep(models.Model):
-    DATA_TYPES = (
-	('Table Delimited','Table Delimited'),
-	('Table Binary','Table Binary'),
-	('Table Fixed-Width','Table Fixed-Width'),
-    )
-    name=models.CharField(max_length=251)
-    data_type = models.CharField(max_length=256,choices=DATA_TYPES, default='Table Delimited',)
-    bundle = models.ForeignKey(Bundle, on_delete=models.CASCADE, null=True,)
-    
-
-    class Meta:
-        verbose_name_plural = 'Data Prep'
-
-    def build_data_directory(self):
-	data_directory = os.path.join(self.bundle.directory(), self.name)
-	make_directory(data_directory)
-
-    def label(self):
-        return os.path.join(self.bundle.directory(), self.name)
-
-    def build_base_case(self):
-
-        
-        # Locate base case Product_Bundle template found in templates/pds4_labels/base_case/product_bundle
-        source_file = os.path.join(settings.TEMPLATE_DIR, 'pds4_labels')
-        source_file = os.path.join(source_file, 'base_templates')
-	out_file = self.label()
-	
-	if self.data_type == 'Table Delimited':
-            source_file = os.path.join(source_file, 'data_table_delimited.xml')
-	    out_file = os.path.join(out_file, 'data_table_delimited.xml')
-
-	elif self.data_type == 'Table Binary':
-	    source_file = os.path.join(source_file, 'table_binary.xml')
-	    out_file = os.path.join(out_file, 'table_binary.xml')
-
-	elif self.data_type == 'Table Fixed-Width':
-            source_file = os.path.join(source_file, 'data_table_character.xml')
-	    out_file = os.path.join(out_file, 'data_table_character.xml')
-
-	else:
-	    pass
-
-	#set selected version
-	update = Version()
-	bundle = Bundle()
-	print source_file + "<<<<<<<<"
-	print self.data_type
-	update.version_update(self.bundle.version, source_file,out_file)
-
-        # Copy the base case template to the correct directory
-        copy(source_file, self.label())
-        
-        return
-
-    def __str__(self):
-	return 'Data Prep'
-    
-
-
 """
 """
 @python_2_unicode_compatible
@@ -1980,8 +1917,10 @@ class Data(models.Model):
         ('Raw', 'Raw'),
         ('Reduced', 'Reduced'),
     )
+    name = models.CharField(max_length=256, blank=True)
     bundle = models.ForeignKey(Bundle, on_delete=models.CASCADE)
-    processing_level = models.CharField(max_length=30, choices=PROCESSING_LEVEL_CHOICES, default='Calibrated',)
+    processing_level = models.CharField(max_length=30, choices=PROCESSING_LEVEL_CHOICES, default='Raw',)
+    data_enum = models.PositiveSmallIntegerField(default = 0,)
 
 
     class Meta:
@@ -2005,6 +1944,79 @@ class Data(models.Model):
         data_collection_name = 'data_{}'.format(self.processing_level.lower())
         data_directory = os.path.join(self.bundle.directory(), data_collection_name)
         return data_directory  
+
+
+@python_2_unicode_compatible
+class Data_Object(models.Model):
+    DATA_TYPES = (
+	('Table Delimited','Table Delimited'),
+	('Table Binary','Table Binary'),
+	('Table Fixed-Width','Table Fixed-Width'),
+	('Array', 'Array'),
+    )
+    name=models.CharField(max_length=251)
+    data_type = models.CharField(max_length=256,choices=DATA_TYPES, default='Table Delimited',)
+    data = models.ForeignKey(Data, on_delete=models.CASCADE, null=True,)
+    
+
+    class Meta:
+        verbose_name_plural = 'Data Object'
+
+    def build_data_directory(self):
+	data_directory = os.path.join(self.bundle.directory(), self.name)
+	make_directory(data_directory)
+
+    def label(self):
+        return os.path.join(self.data.bundle.directory(), self.name)
+
+    def build_base_case(self):
+	pass
+
+    # directory returns the file path associated with the given model.
+    def directory(self):
+        data_collection_name = 'data_{}'.format(self.data.processing_level.lower())
+        data_directory = os.path.join(self.data.bundle.directory(), data_collection_name)
+        return data_directory  
+
+    def build_data_file(self):
+        # Locate base case Product_Bundle template found in templates/pds4_labels/base_case/product_bundle
+        source_file = os.path.join(settings.TEMPLATE_DIR, 'pds4_labels')
+        source_file = os.path.join(source_file, 'base_templates')
+	out_file = self.directory()
+	
+	if self.data_type == 'Table Delimited':
+            source_file = os.path.join(source_file, 'data_table_delimited.xml')
+	    out_file = os.path.join(out_file, self.name + '.xml')
+
+	elif self.data_type == 'Table Binary':
+	    source_file = os.path.join(source_file, 'table_binary.xml')
+	    out_file = os.path.join(out_file, self.name + '.xml')
+
+	elif self.data_type == 'Table Fixed-Width':
+            source_file = os.path.join(source_file, 'data_table_character.xml')
+	    out_file = os.path.join(out_file, self.name + '.xml')
+
+	else:
+	    pass
+
+	#set selected version
+	update = Version()
+	bundle = Bundle()
+	print source_file + "<<<<<<<<"
+	print self.data_type
+	update.version_update(self.data.bundle.version, source_file,out_file)
+
+        # Copy the base case template to the correct directory
+        copy(source_file, self.label())
+        
+        return
+
+    def __str__(self):
+	return 'Data Prep'
+    
+
+
+
 
 
 """
@@ -2033,10 +2045,12 @@ class Table_Delimited(models.Model):
     records = models.IntegerField(default=-1)
     field_delimiter = models.CharField(max_length=256, choices=DELIMITER_CHOICES, default="Comma", blank=True)
     fields = models.IntegerField(default=-1)
+    data = models.ForeignKey(Data, on_delete=models.CASCADE, null=True,)
     bundle = models.ForeignKey(Bundle, on_delete=models.CASCADE,null=True)
 
     def __str__(self):
         return str(self.id)
+
 
 @python_2_unicode_compatible
 class Table_Binary(models.Model):
@@ -2044,6 +2058,7 @@ class Table_Binary(models.Model):
     offset = models.IntegerField(default=-1)
     records = models.IntegerField(default=-1)
     fields = models.IntegerField(default=-1)
+    data = models.ForeignKey(Data, on_delete=models.CASCADE, null=True,)
     bundle = models.ForeignKey(Bundle, on_delete=models.CASCADE, null=True)
 
     def __str__(self):
@@ -2063,10 +2078,12 @@ class Table_Fixed_Width(models.Model):
     records = models.IntegerField(default=-1)
     record_delimiter = models.CharField(max_length=256, choices=RECORD_CHOICES, default="Sample Choice", blank=True)
     fields = models.IntegerField(default=-1)
+    data = models.ForeignKey(Data, on_delete=models.CASCADE, null=True,)
     bundle = models.ForeignKey(Bundle, on_delete=models.CASCADE, null=True)
 
     def __str__(self):
         return str(self.id)
+
 
 @python_2_unicode_compatible
 class Field_Delimited(models.Model):
@@ -2521,15 +2538,11 @@ class Product_Observational(models.Model):
         ('Small Bodies','Small Bodies'),
         ('Spectroscopy','Spectroscopy'),
     ]
-    OBSERVATIONAL_TYPES_OLD = [
+    OBSERVATIONAL_TYPES = [
 
         ('Table Binary','Table Binary'),
         ('Table Character','Table Character'),
         ('Table Delimited','Table Delimited'),
-    ]
-    OBSERVATIONAL_TYPES = [
-        ('Table','Table'),
-        ('Array','Array'),
     ]
     PROCESSING_LEVEL_TYPES = [
         ('Calibrated','Calibrated'),
@@ -3159,6 +3172,8 @@ class Table(models.Model):
     def __str__(self):
         return 'Table Binary: {}'.format(self.name)
 
+
+
 """
     The Array model object needs more work.
 """
@@ -3180,6 +3195,42 @@ class Array(models.Model):
 
 
 
+
+
+
+"""
+    The Array model object defines a homogeneous N-dimensional array of scalars. The Array class is the parent class for all n-dimensional arrays of scalars.
+"""
+@python_2_unicode_compatible
+class Array(models.Model):
+
+    ARRAY_DIMENSIONS = [
+        ('Array_2D','Array 2D'),
+        ('Array_3D', 'Array 3D'),
+    ]
+    ARRAY_TYPES = [
+        ('Image', 'Image'),
+        ('Map', 'Map'),
+        ('Spectrum', 'Spectrum'),
+    ]
+    product_observational = models.ForeignKey(Product_Observational, on_delete=models.CASCADE)
+    name = models.CharField(max_length=MAX_CHAR_FIELD)
+    array_dimensions = models.CharField(max_length=MAX_CHAR_FIELD, choices=ARRAY_DIMENSIONS)
+    array_type = models.CharField(max_length=MAX_CHAR_FIELD, choices=ARRAY_TYPES)
+    local_identifier = models.CharField(max_length=MAX_CHAR_FIELD)
+    md5_checksum = models.CharField(max_length=MAX_CHAR_FIELD)
+    offset = models.CharField(max_length=MAX_CHAR_FIELD)
+    axes = models.CharField(max_length=MAX_CHAR_FIELD)
+    axis_index_order = models.CharField(max_length=MAX_CHAR_FIELD)
+    description = models.CharField(max_length=MAX_CHAR_FIELD)
+    # Has associations @ https://pds.nasa.gov/datastandards/documents/dd/v1/PDS4_PDS_DD_1A00.html#d5e3181
+
+
+    # meta
+    def __str__(self):
+        return 'Array: {}'.format(self.name)
+
+    # fillers
 
 
 
@@ -3389,6 +3440,20 @@ The Movie_Display_Settings class provides
     #Color_Display_Settings
     def __str__(self):
         return "How you actually make a dictionary >.<"
+
+
+
+
+
+
+
+
+
+
+
+
+
+#    To Be Garbage Here✲
 
 
 
