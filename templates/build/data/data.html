@@ -1,8 +1,10 @@
 {% extends 'base-k-se.html' %}
 {% load static %}
+
 {% block css_style_block %}
 <link rel="stylesheet" type="text/css" href="{% static 'css/elsa-toggle-select.css' %}" />
 {% endblock %}
+
 
 {% block title_block %}
 Data
@@ -23,13 +25,16 @@ The data collection consists of the following subcollections: calibrated data, d
 <div class="row pt-2">
     <!--Column-->
     <div class="col-md-12">
+
         <h4 class="card-header elegant-color white-text text-center z-depth-2">Add Data by Processing Level</h4>       
+
     </div>
     <!--/.Column-->
 </div>
 <!--/.Row-->
 <!--Row-->
 <div class="row pt-2">
+
 
 </div>
 <!--/.Row-->
@@ -69,6 +74,7 @@ The data collection consists of the following subcollections: calibrated data, d
 </div>
 <!--/.Second row-->
 <hr/><!--/.Divider-->
+
 <!--Row-->
 <div class="row pt-2">
     <!--Column-->
@@ -80,6 +86,7 @@ The data collection consists of the following subcollections: calibrated data, d
 <!--/.Second row-->
 <!--Row-->
 <div class="row pt-2">
+
 {% if data_set %} 
     {% for data in data_set %}
         {% if data.processing_level == 'Calibrated' %}
@@ -214,7 +221,7 @@ The data collection consists of the following subcollections: calibrated data, d
 
 
 
-   
+
     {% for product_observational in product_observational_set %}
     <!--Column-->
     <div class="col-sm-6 col-md-3">
@@ -232,6 +239,7 @@ The data collection consists of the following subcollections: calibrated data, d
             {% elif product_observational.processing_level == 'Reduced' %}
             <img class="img-fluid" src="{% static 'images/reduced.png' %}" alt="Data Image">
             {% endif %}
+
 
             <!--Card content-->
             <div class="card-body">
