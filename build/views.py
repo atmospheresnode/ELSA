@@ -358,16 +358,7 @@ def build(request):
             collections.save()
             print '\nCollections model object:    {}'.format(collections)
 
-	    #Tell the bundle what data we have, from the collection form
-	    if collections.has_raw_data is True:
-		raw = Data(name = "data_raw", processing_level = "Raw", bundle = bundle)
-		raw.save()
-	    if collections.has_calibrated_data is True:
-		calibrated = Data(name = "data_calibrated", processing_level = "Calibrated", bundle = bundle)
-		calibrated.save()
-	    if collections.has_derived_data is True:
-		derived = Data(name = "data_derived", processing_level = "Derived", bundle = bundle)
-		derived.save()
+
 	    bundle.save()
             
             # Create PDS4 compliant directories for each collection within the bundle.            
@@ -402,7 +393,7 @@ def build(request):
 
                 # Build Product_Collection label for all labels other than those found in the data collection.
                 print '-------------Start Build Product_Collection Base Case-----------------'
-                if collection != 'data_raw' and collection != 'data_calibrated' and collection != 'data_derived':
+                if collection != 'data':
                     product_collection.build_base_case()
 
                     # Open Product_Collection label
@@ -504,22 +495,7 @@ with the bundle  -J
 def bundle(request, pk_bundle):
     # Get Bundle
     bundle = Bundle.objects.get(pk=pk_bundle)
-    bundle_data = Data.objects.filter(bundle=pk_bundle)
-
-    # Each data type get its own form as a way of hardcoding the data id for the data objects. It's 
-    # inelegant but it's the easiest way I can think to do it without rewriting all of the data code again. 
-    # This is explained in more detail when we use them. -J
-    form_raw_data = DataObjectForm(request.POST or None)
-    form_calibrated_data = DataObjectForm(request.POST or None)
-    form_derived_data = DataObjectForm(request.POST or None)
-    form_reduced_data = DataObjectForm(request.POST or None)
-
-    # Get the data objects assiciated with the individual bundle data. The data_object querry is passed a
-    # querry of the bundle_data for the associated processing level.
-    raw_data_objects = Data_Object.objects.filter(data=bundle_data.filter(processing_level = "Raw"))
-    calibrated_data_objects = Data_Object.objects.filter(data=bundle_data.filter(processing_level = "Calibrated"))
-    derived_data_objects = Data_Object.objects.filter(data=bundle_data.filter(processing_level = "Derived"))
-    reduced_data_objects = Data_Object.objects.filter(data=bundle_data.filter(processing_level = "Reduced"))
+    data = Data.objects.filter(bundle=pk_bundle)
     
 
     # Secure ELSA by seeing if the user logged in is the same user associated with the Bundle
@@ -532,47 +508,9 @@ def bundle(request, pk_bundle):
         print '--------------------------------------------------------------------------\n'
         context_dict = {
             'bundle':bundle,
-	    'bundle_data':bundle_data,
+	    'data':data,
             'collections': Collections.objects.get(bundle=bundle),
-	    'form_raw_data':form_raw_data,
-	    'form_calibrated_data':form_calibrated_data,
-	    'form_derived_data':form_derived_data,
-	    'form_reduced_data':form_reduced_data,
-	    'raw_data_objects':raw_data_objects,
-	    'calibrated_data_objects':calibrated_data_objects,
-	    'derived_data_objects':derived_data_objects,
-	    'reduced_data_objects':reduced_data_objects,
         }
-
-	# Each data type gets its own section (as stated above). This is done because there's no (simple)
-	# way to get the data with the proper processing level to one dynamic form. It is possible that
-	# there is a simple way around this that I overlooked. Until then try to keep the code compact.
-	# Also for reference request.POST.get() gets the form based on the name provided in the submit
-	# HTML tag. -J
-	if request.method == 'POST': 
-	    if request.POST.get("add_raw") and form_raw_data.is_valid():
-	    	data = form_raw_data.save(commit = False)
-	    	data.data = bundle_data.filter(processing_level = "Raw")[0]
-		data.build_data_file()
-	    	data.save()
-
-	    if request.POST.get("add_calibrated") and form_calibrated_data.is_valid():
-	   	data = form_calibrated_data.save(commit = False)
-	    	data.data = bundle_data.filter(processing_level = "Calibrated")[0]
-		data.build_data_file()
-	    	data.save()
-
-	    if request.POST.get("add_derived") and form_derived_data.is_valid():
-	    	data = form_derived_data.save(commit = False)
-	    	data.data = bundle_data.filter(processing_level = "Derived")[0]
-		data.build_data_file()
-	    	data.save()
-
-	    if request.POST.get("add_reduced") and form_reduced_data.is_valid():
-	    	data = form_reduced_data.save(commit = False)
-	    	data.data = bundle_data.filter(processing_level = "Reduced")[0]
-		data.build_data_file()
-	    	data.save()
 	   
 
 
@@ -1196,151 +1134,39 @@ def data(request, pk_bundle):
     if request.user == bundle.user:
         print 'authorized user: {}'.format(request.user)
 
-        # Context Dictionary
-        context_dict = {
-            'bundle':bundle,
-        }
-      
-        return render(request, 'build/data/data.html', context_dict)
-
-    # Secure: Current user is not the user associated with the bundle, so...
-    else:
-        print 'unauthorized user attempting to access a restricted area.'
-        return redirect('main:restricted_access')
-
-
-@login_required
-def data_raw(request, pk_bundle):
-    print '\n\n'
-    print '-------------------------------------------------------------------------'
-    print '\n\n---------------------- Add Data Raw with ELSA ---------------------------'
-    print '------------------------------ DEBUGGER ---------------------------------'
-    # Get bundle
-    bundle = Bundle.objects.get(pk=pk_bundle)
-
-    # Secure ELSA by seeing if the user logged in is the same user associated with the Bundle
-    if request.user == bundle.user:
-        print 'authorized user: {}'.format(request.user)
-
-        # Context Dictionary
-        context_dict = {
-            'bundle':bundle,
-        }
-      
-        return render(request, 'build/data/data_raw.html', context_dict)
-
-    # Secure: Current user is not the user associated with the bundle, so...
-    else:
-        print 'unauthorized user attempting to access a restricted area.'
-        return redirect('main:restricted_access')
-
-
-@login_required
-def data_raw(request, pk_bundle):
-    print '\n\n'
-    print '-------------------------------------------------------------------------'
-    print '\n\n---------------------- Add Data Raw with ELSA ---------------------------'
-    print '------------------------------ DEBUGGER ---------------------------------'
-    # Get bundle
-    bundle = Bundle.objects.get(pk=pk_bundle)
-
-    # Secure ELSA by seeing if the user logged in is the same user associated with the Bundle
-    if request.user == bundle.user:
-        print 'authorized user: {}'.format(request.user)
-
-        # Context Dictionary
-        context_dict = {
-            'bundle':bundle,
-        }
-      
-        return render(request, 'build/data/data_raw.html', context_dict)
-
-    # Secure: Current user is not the user associated with the bundle, so...
-    else:
-        print 'unauthorized user attempting to access a restricted area.'
-        return redirect('main:restricted_access')
-
-@login_required
-def data_depricated(request, pk_bundle): 
-    print '\n\n'
-    print '-------------------------------------------------------------------------'
-    print '\n\n---------------------- Add Data with ELSA ---------------------------'
-    print '------------------------------ DEBUGGER ---------------------------------'
-
-    # Get bundle
-    bundle = Bundle.objects.get(pk=pk_bundle)
-
-    # Secure ELSA by seeing if the user logged in is the same user associated with the Bundle
-    if request.user == bundle.user:
-        print 'authorized user: {}'.format(request.user)
-
         # Get forms
         form_data = DataForm(request.POST or None)
         form_product_observational = ProductObservationalForm(request.POST or None)
+
+        # After ELSA's friend hits submit, if the forms are completed correctly, we should
+        # satisfy this conditional
+        if form_data.is_valid() and form_product_observational.is_valid():
+
+            # Make Data object
+            data = form_data.save(commit=False)
+            data.bundle = bundle
+            data.save()
+            print 'Data object: {}'.format(data)
+
+            # Make Product Observational
+            product_observational = form_product_observational.save(commit=False)
+            product_observational.bundle = bundle
+            product_observational.data = data
+            product_observational.save()
+            print 'Product Observational object: {}'.format(product_observational)
+
+            # Make data directory
+            print 'Checking to see if data directory needs to be made'
+            data.build_directory()
+            
 
         # Context Dictionary
         context_dict = {
             'bundle':bundle,
             'form_data':form_data,
             'form_product_observational':form_product_observational,
+            'data_set': Data.objects.filter(bundle=bundle)
         }
-        # After ELSAs friend hits submit, if the forms are completed correctly, we should enter
-        # this conditional.
-        print '\n\n------------------------ DATA INFO ----------------------------------'
-        if form_data.is_valid() and form_product_observational.is_valid():
-
-            # Create Data model object
-            data = form_data.save(commit=False)
-            data.bundle = bundle
-            data.save()
-            print 'Data model object: {}'.format(data)
-
-            # Create Product_Observational model object
-            product_observational = form_product_observational.save(commit=False)
-            product_observational.bundle = bundle
-            product_observational.data = data
-            product_observational.processing_level = data.processing_level
-            product_observational.save()
-            print 'Product_Observational model object: {}'.format(product_observational)
-
-            # Create Data Folder corresponding to processing level
-            data.build_directory()
-
-            print '---------------- Start Build Product_Collection Base Case ------------------------'
-            product_collection = Product_Collection.objects.get(bundle=bundle, collection='Data')
-            product_collection.build_base_case_data(data)
-        
-            print '---------------- End Build Product_Collection Base Case -------------------------'
-                
-
-
-            print '---------------- Start Build Product_Observational Base Case ---------------------'
-            # Copy Product_Observational label
-            product_observational.build_base_case()
-
-            # Open label - returns a list of label information where list = [label_object, label_root]
-            print ' ... Opening Label ... '
-            label_list = open_label(product_observational.label())
-            label_root = label_list
-            # Fill label - fills 
-            print ' ... Filling Label ... '
-            label_root = product_observational.fill_base_case(label_root)
-            # Close label
-            print ' ... Closing Label ... '
-            close_label(product_observational.label(), label_root)           
-            print '---------------- End Build Product_Observational Base Case-----------------------'
-
-            # Update context_dict
-            print '\n\n---------------------- UPDATING CONTEXT DICTIONARY --------------------------'
-            context_dict['data'] = data
-            context_dict['product_observational'] = product_observational  # Needs a fix
-        
-        data_set = Data.objects.filter(bundle=bundle)
-        context_dict['data_set'] = data_set
-        product_observational_set = []
-        for data in data_set:
-            product_observational_set.extend(Product_Observational.objects.filter(data=data))
-        context_dict['product_observational_set'] = product_observational_set
       
         return render(request, 'build/data/data.html', context_dict)
 
@@ -1348,7 +1174,6 @@ def data_depricated(request, pk_bundle):
     else:
         print 'unauthorized user attempting to access a restricted area.'
         return redirect('main:restricted_access')
-
 
 
 

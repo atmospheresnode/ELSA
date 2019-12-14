@@ -1853,11 +1853,7 @@ class Collections(models.Model):
     bundle = models.OneToOneField(Bundle, on_delete=models.CASCADE)
     has_document = models.BooleanField(default=True)
     has_context = models.BooleanField(default=True)
-    #has_xml_schema = models.BooleanField(default=True)
-    has_raw_data = models.BooleanField(default=False)
-    has_calibrated_data = models.BooleanField(default=False)
-    has_derived_data = models.BooleanField(default=False)
-    #data_enum = models.PositiveIntegerField(default = 0)
+    has_data = models.BooleanField(default=False)
 
 
     # Cleaners
@@ -1869,13 +1865,8 @@ class Collections(models.Model):
             collections_list.append("context")
         #if self.has_xml_schema:
             #collections_list.append("xml_schema")
-        if self.has_raw_data:
-            collections_list.append("data_raw")
-        if self.has_calibrated_data:
-            collections_list.append("data_calibrated")
-        if self.has_derived_data:
-            collections_list.append("data_derived")
-	    #collections_list.append("data_enum")
+        if self.has_data:
+            collections_list.append("data")
         return collections_list
 
 
@@ -1883,7 +1874,7 @@ class Collections(models.Model):
     #     Note: When we call on Collections, we want to be able to have a list of all collections 
     #           pertaining to a bundle.
     def __str__(self):
-        return '{0} Bundle has document={1}, context={2}, raw={3}, calibrated={4}, derived={5}'.format(self.bundle, self.has_document, self.has_context, self.has_raw_data, self.has_calibrated_data, self.has_derived_data)
+        return '{0} Bundle has document={1}, context={2}, data={3}'.format(self.bundle, self.has_document, self.has_context, self.has_data)
     class Meta:
         verbose_name_plural = 'Collections'        
 
@@ -1915,10 +1906,8 @@ class Data(models.Model):
         ('Raw', 'Raw'),
         ('Reduced', 'Reduced'),
     )
-    name = models.CharField(max_length=256, blank=True)
     bundle = models.ForeignKey(Bundle, on_delete=models.CASCADE)
     processing_level = models.CharField(max_length=30, choices=PROCESSING_LEVEL_CHOICES, default='Raw',)
-    data_enum = models.PositiveSmallIntegerField(default = 0,)
 
 
     class Meta:
@@ -1933,8 +1922,15 @@ class Data(models.Model):
     # Function make_directory(path) can be found in chocolate.py.  It checks the existence
     # of a directory before creating the directory.
     def build_directory(self):
+
+        # Add check to see if data directory exists
         data_directory = os.path.join(self.bundle.directory(),'data_{}'.format(self.processing_level.lower()))
-        make_directory(data_directory)
+
+        if not os.path.exists(data_directory):
+            print 'Creating directory'
+            make_directory(data_directory)
+        else:
+            print 'Directory already created'
 
 
     # directory returns the file path associated with the given model.
@@ -1944,74 +1940,6 @@ class Data(models.Model):
         return data_directory  
 
 
-@python_2_unicode_compatible
-class Data_Object(models.Model):
-    DATA_TYPES = (
-	('Table Delimited','Table Delimited'),
-	('Table Binary','Table Binary'),
-	('Table Fixed-Width','Table Fixed-Width'),
-	('Array', 'Array'),
-    )
-    name=models.CharField(max_length=251)
-    data_type = models.CharField(max_length=256,choices=DATA_TYPES, default='Table Delimited',)
-    data = models.ForeignKey(Data, on_delete=models.CASCADE, null=True,)
-    
-
-    class Meta:
-        verbose_name_plural = 'Data Object'
-
-    def build_data_directory(self):
-	data_directory = os.path.join(self.bundle.directory(), self.name)
-	make_directory(data_directory)
-
-    def label(self):
-        return os.path.join(self.data.bundle.directory(), self.name)
-
-    def build_base_case(self):
-	pass
-
-    # directory returns the file path associated with the given model.
-    def directory(self):
-        data_collection_name = 'data_{}'.format(self.data.processing_level.lower())
-        data_directory = os.path.join(self.data.bundle.directory(), data_collection_name)
-        return data_directory  
-
-    def build_data_file(self):
-        # Locate base case Product_Bundle template found in templates/pds4_labels/base_case/product_bundle
-        source_file = os.path.join(settings.TEMPLATE_DIR, 'pds4_labels')
-        source_file = os.path.join(source_file, 'base_templates')
-	out_file = self.directory()
-	
-	if self.data_type == 'Table Delimited':
-            source_file = os.path.join(source_file, 'data_table_delimited.xml')
-	    out_file = os.path.join(out_file, self.name + '.xml')
-
-	elif self.data_type == 'Table Binary':
-	    source_file = os.path.join(source_file, 'table_binary.xml')
-	    out_file = os.path.join(out_file, self.name + '.xml')
-
-	elif self.data_type == 'Table Fixed-Width':
-            source_file = os.path.join(source_file, 'data_table_character.xml')
-	    out_file = os.path.join(out_file, self.name + '.xml')
-
-	else:
-	    pass
-
-	#set selected version
-	update = Version()
-	bundle = Bundle()
-	print source_file + "<<<<<<<<"
-	print self.data_type
-	update.version_update(self.data.bundle.version, source_file,out_file)
-
-        # Copy the base case template to the correct directory
-        copy(source_file, self.label())
-        
-        return
-
-    def __str__(self):
-	return 'Data Prep'
-    
 
 
 
@@ -2383,14 +2311,9 @@ class Product_Collection(models.Model):
         # Locate collection directory and create path for new label
         label_file = os.path.join(self.directory(), self.name_label_case())
 
-	#set selected version
-	update = Version()
-	bundle = Bundle()
-	update.version_update(self.bundle.version, source_file,label_file)
-
 
         # Copy the base case template to the correct directory
-        #copyfile(source_file, label_file)
+        copyfile(source_file, label_file)
             
         return
 
@@ -2538,9 +2461,8 @@ class Product_Observational(models.Model):
     ]
     OBSERVATIONAL_TYPES = [
 
-        ('Table Binary','Table Binary'),
-        ('Table Character','Table Character'),
-        ('Table Delimited','Table Delimited'),
+        ('Table','Table'),
+        ('Array','Array'),
     ]
     PROCESSING_LEVEL_TYPES = [
         ('Calibrated','Calibrated'),
@@ -2565,7 +2487,7 @@ class Product_Observational(models.Model):
     processing_level = models.CharField(max_length=MAX_CHAR_FIELD, choices=PROCESSING_LEVEL_TYPES)
     purpose = models.CharField(max_length=MAX_TEXT_FIELD, choices=PURPOSE_TYPES)
     title = models.CharField(max_length=MAX_CHAR_FIELD)
-    type_of = models.CharField(max_length=MAX_CHAR_FIELD, choices=OBSERVATIONAL_TYPES, default='Not_Set')
+    type_of = models.CharField(max_length=MAX_CHAR_FIELD, choices=OBSERVATIONAL_TYPES, default='Table')
 
 
 
@@ -3169,66 +3091,6 @@ class Table(models.Model):
     # meta
     def __str__(self):
         return 'Table Binary: {}'.format(self.name)
-
-
-"""
-    The Array model object defines a homogeneous N-dimensional array of scalars. The Array class is the parent class for all n-dimensional arrays of scalars.
-"""
-@python_2_unicode_compatible
-class Array(models.Model):
-
-    ARRAY_DIMENSIONS = [
-        ('Array_2D','Array 2D'),
-        ('Array_3D', 'Array 3D'),
-    ]
-    ARRAY_TYPES = [
-        ('Image', 'Image'),
-        ('Map', 'Map'),
-        ('Spectrum', 'Spectrum'),
-    ]
-    product_observational = models.ForeignKey(Product_Observational, on_delete=models.CASCADE)
-    name = models.CharField(max_length=MAX_CHAR_FIELD)
-    array_dimensions = models.CharField(max_length=MAX_CHAR_FIELD, choices=ARRAY_DIMENSIONS)
-    array_type = models.CharField(max_length=MAX_CHAR_FIELD, choices=ARRAY_TYPES)
-    local_identifier = models.CharField(max_length=MAX_CHAR_FIELD)
-    md5_checksum = models.CharField(max_length=MAX_CHAR_FIELD)
-    offset = models.CharField(max_length=MAX_CHAR_FIELD)
-    axes = models.CharField(max_length=MAX_CHAR_FIELD)
-    axis_index_order = models.CharField(max_length=MAX_CHAR_FIELD)
-    description = models.CharField(max_length=MAX_CHAR_FIELD)
-    # Has associations @ https://pds.nasa.gov/datastandards/documents/dd/v1/PDS4_PDS_DD_1A00.html#d5e3181
-
-
-    # meta
-    def __str__(self):
-        return 'Array: {}'.format(self.name)
-
-    # fillers
-
-
-
-
-"""
-    The Array model object needs more work.
-"""
-@python_2_unicode_compatible
-class Array(models.Model):
-
-    OBSERVATIONAL_TYPES = [
-        ('Table Base', 'Table Base'),
-        ('Table Binary','Table Binary'),
-        ('Table Character','Table Character'),
-        ('Table Delimited','Table Delimited'),
-    ]
-    product_observational = models.ForeignKey(Product_Observational, on_delete=models.CASCADE)
-    name = models.CharField(max_length=MAX_CHAR_FIELD)
-
-    # meta
-    def __str__(self):
-        return 'Array: {}'.format(self.name)
-
-
-
 
 
 

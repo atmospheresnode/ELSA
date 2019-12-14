@@ -150,33 +150,11 @@ class CollectionsForm(forms.ModelForm):
     has_document = forms.BooleanField(required=True, initial=True)
     has_context = forms.BooleanField(required=True, initial=True)
     #has_xml_schema = forms.BooleanField(required=True, initial=True)
-    has_raw_data = forms.BooleanField(required=False, initial=False)
-    has_calibrated_data = forms.BooleanField(required=False, initial=False)
-    has_derived_data = forms.BooleanField(required=False, initial=False)
-    #data_enum = forms.IntegerField(required=False, min_value = 0, max_value=25)
+    has_data = forms.BooleanField(required=False, initial=False)
 
     class Meta:
         model = Collections
         exclude = ('bundle',)
-
-
-"""
-    Data Prep
-"""
-class DataObjectForm(forms.ModelForm):
-    class Meta:
-	model = Data_Object
-	fields = ('name', 'data_type')
-	exclude = ('bundle',)
-
-
-"""
-    Data Emun
-"""
-class DataEnum(forms.ModelForm):
-    class Meta:
-	model = Data
-	exclude = ('bundle','processing_level',)
 
 
 
@@ -192,7 +170,7 @@ class DataEnum(forms.ModelForm):
 class DataForm(forms.ModelForm):
     class Meta:
         model = Data
-        exclude = ('bundle','data_enum',)
+        exclude = ('bundle',)
 
 
 
@@ -400,9 +378,8 @@ class ProductDocumentForm(forms.ModelForm):
 class ProductObservationalForm(forms.ModelForm):
     OBSERVATIONAL_TYPES = [
 
-        ('Table Binary','Table Binary'),
-        ('Table Character','Table Character'),
-        ('Table Delimited','Table Delimited'),
+        ('Table','Table'),
+        ('Array','Array'),
     ]
     PURPOSE_TYPES = [
         ('Calibration','Calibration'),
