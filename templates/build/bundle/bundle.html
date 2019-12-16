@@ -12,14 +12,14 @@ Bundle
 
 
 {% block main_header_block %}
-Bundle
+Bundle: {{ bundle.name }}
 {% endblock %}
 
 {% block about_header_block %}
 
 {% endblock %}
 
-{% block standards_reference_block %}
+{% block standards_reference_block %} <!-- Should make a question mark where people can expand to read this -- Look at base-k-se template for more details. Base-k-se is where the actual collapsing should happen, not in an individual template -->
 2A.1
  Bundles 
 A 
@@ -122,20 +122,15 @@ r as UTF
     <div class="row">
         <div class="col-md-12">
           <h3 class="card-header elegant-color white-text text-center z-depth-2">
-            <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#contextcollapse" aria-expanded="true" aria-controls="contextcollapse">
 	      Context
-            </button>
           </h3><br/>
         </div>
     </div>
     <!--/.Row-->
     <!--Row-->
-
     <div class="row">
-
         <!--/.Column-->
         <!--Column-->
-       <div id="contextcollapse" class="collapse in">
         <div class="col-sm-6 col-md-3">
             <!--Card-->
             <div class="button">
@@ -159,7 +154,7 @@ r as UTF
                 <!--/.Link-->
             </div>
             <!--/.Card-->
-        </div>
+
     </div>
         <!--/.Column-->
 
@@ -176,6 +171,16 @@ r as UTF
         </div>
     </div>
     <!--/.Row-->
+
+
+    <div id="product_bundle_detail">
+    <!--Row-->
+    <div class="row">
+        <div class="col-md-12">
+            <p class="card-header stylish-color white-text text-center z-depth-2">The Product_Bundle label describes your bundle as a product. Add aliases if your bundle has more than one name. Add citation information so others can cite your bundle.</h3><br/>
+        </div>
+    </div>
+    <!--/.Row-->
     <!--Row-->
     <div class="row">
         <!--Card-->
@@ -189,6 +194,13 @@ r as UTF
                     <h4 class="card-title">ALIAS</h4>
                     <!--/.Title-->
                     <!--Text-->
+                    {% if alias_set_count == 0 %}
+                        <p class="card-text">No Alias Information Saved</p>
+                    {% else %}
+                    <p class="card-text">
+                        {% for alias in alias_set %} {{alias}} {%endfor%}
+                    </p>
+                    {% endif %}
                     <p class="card-text">Add an alias if your data has multiple names.<br/><br/><br/></p>
                     <!--/.Text-->
                 </div>
@@ -200,6 +212,7 @@ r as UTF
             <!--/.Link-->
         </div>
         <!--/.Card-->
+
         </div>
         <!--/.Column-->
         <!--Column-->
@@ -227,11 +240,12 @@ r as UTF
             <!--/.Card-->
         </div>
         <!--/.Column-->
-
-
-
     </div>
     <!--/.Row-->
+    </div>
+    <!--/.Product Bundle Detail-->
+
+
     <!--Divider-->
     <hr class="mb-5">
     <!--/.Divider-->
@@ -239,6 +253,16 @@ r as UTF
     <div class="row pt-2">
         <div class="col-md-12">
             <h3 class="card-header elegant-color white-text text-center z-depth-2">Collections</h3><br/>
+        </div>
+    </div>
+    <!--/.Row-->
+
+
+    <div id="document_collection_detail">
+    <!--Row-->
+    <div class="row">
+        <div class="col-md-12">
+            <p class="card-header stylish-color white-text text-center z-depth-2">Document Collection</h3><br/>
         </div>
     </div>
     <!--/.Row-->
@@ -268,11 +292,26 @@ r as UTF
             </div>
             <!--/.Card-->
         </div>
-    </div>
         <!--/.Column-->
-	<br>
+    </div>
+    <!--/.Row-->
+    </div>
+    <!--/.Document Collection Detail-->
 
+
+    <div id="data_collection_detail">
+    <!--Row-->
+    <div class="row">
+        <div class="col-md-12">
+            <p class="card-header stylish-color white-text text-center z-depth-2">Data Collection</h3><br/>
+        </div>
+    </div>
+    <!--/.Row-->
+    <!--Row-->
+    <div class="row">
         {% if bundle.collections.has_data %}
+
+        {% for product in product_observational_set %}
         <!--Column-->
         <div class="col-sm-6 col-md-3">
             <!--Card-->
@@ -282,23 +321,70 @@ r as UTF
                 <!--Card content-->
                 <div class="card-body">
                     <!--Title-->
-                    <h4 class="card-title">DATA</h4>
+                    <h4 class="card-title">{{ product.title }}</h4>
                     <!--/.Title-->
                     <!--Text-->
-                    <p class="card-text">Undetermined - Under Construction</p>
+                    <p class="card-text">{{ product.data.processing_level }}</p>
+                    <p class="card-text">{{ product.type_of }}</p>
                     <!--/.Text-->
                 </div>
                 <!--/.Card content-->
                 <!--Image-->
                 <img class="img-fluid" src="{% static 'images/arrow.png' %}" alt="An image representing an arrow."/>
                 <!--/.Image-->
-                </a>
+                <!--/a-->
             </a>
             <!--/.Link-->
+            </div>
+            <!--/.Card-->
         </div>
-        <!--/.Card-->
+        <!--/.Column-->
+        {% endfor %}
+
+        <!--Column-->
+        <div class="col-sm-6 col-md-3">
+            <!--Card-->
+            <div class="button">
+            <!--Link-->
+            <a href="{% url 'build:data' bundle.pk %}">
+                <!--Card content-->
+                <div class="card-body">
+                    <!--Title-->
+                    <h4 class="card-title">Add Data</h4>
+                    <!--/.Title-->
+                    <!--Text-->
+                    <p class="card-text">Each data collection can be thought of as a little bundle.</p>
+                    <!--/.Text-->
+                </div>
+                <!--/.Card content-->
+                <!--Image-->
+                <img class="img-fluid" src="{% static 'images/add.png' %}" alt="An image representing an add."/>
+                <!--/.Image-->
+                <!--/a-->
+            </a>
+            <!--/.Link-->
+            </div>
+            <!--/.Card-->
+        </div>
+        <!--/.Column-->
         {% endif %}
 
+
+    <!--/.Row-->
+    </div>
+    <!--/.Data Collection Detail-->
+
+
+    <div id="geometry_collection_detail">
+    <!--Row-->
+    <div class="row">
+        <div class="col-md-12">
+            <p class="card-header stylish-color white-text text-center z-depth-2">Geometry Collection</h3><br/>
+        </div>
+    </div>
+    <!--/.Row-->
+    <!--Row-->
+    <div class="row">
         {% if bundle.collections.has_geometry %}
         <!--Column-->
         <div class="col-sm-6 col-md-3">
@@ -325,6 +411,11 @@ r as UTF
         </div>
         <!--/.Card-->
         {% endif %}
+
+    </div>
+    <!--/.Row-->
+    </div>
+    <!--/.Geometry Collection Detail-->
 
 
 

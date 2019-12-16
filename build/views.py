@@ -495,7 +495,6 @@ with the bundle  -J
 def bundle(request, pk_bundle):
     # Get Bundle
     bundle = Bundle.objects.get(pk=pk_bundle)
-    data = Data.objects.filter(bundle=pk_bundle)
     
 
     # Secure ELSA by seeing if the user logged in is the same user associated with the Bundle
@@ -506,10 +505,25 @@ def bundle(request, pk_bundle):
         print ' \n\n \n\n----------------------------------------------------------------------\n'
         print '-----------------------BEGIN Bundle Detail VIEW--------------------------.\n'
         print '--------------------------------------------------------------------------\n'
+
+        # get information in regards to current bundle for detailed display
+        alias_set = Alias.objects.filter(bundle=bundle)
+        alias_set_count = len(alias_set)
+
+        data_set = Data.objects.filter(bundle=pk_bundle)
+        product_observational_set = []    
+        if len(data_set) > 0:
+            for data in data_set:
+                product_observational_set.extend(Product_Observational.objects.filter(data=data))
+            
+
         context_dict = {
             'bundle':bundle,
-	    'data':data,
+            'alias_set':alias_set,
+            'alias_set_count':alias_set_count,            
+	    'data_set':data_set,
             'collections': Collections.objects.get(bundle=bundle),
+            'product_observational_set':product_observational_set,
         }
 	   
 
