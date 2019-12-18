@@ -33,15 +33,17 @@ Display Dictionary
             <div id="form_product_document">
                 <h3>Color Display Settings</h3>
                 {{ form_color_display_settings }}
+                <hr/>
 
                 <h3>Display Direction</h3>
                 {{ form_display_direction }}
+                <hr/>
 
-
+<!--
                 <h3>Display Settings</h3>
                 {{ form_display_settings }}
-
-
+                <hr/>
+-->
                 <h3>Movie Display Settings</h3>
                 {{ form_movie_display_settings }}
             </div>
@@ -51,10 +53,94 @@ Display Dictionary
     <!--/.Column-->
     <!--Column-->
     <div class="col-md-4 help">
-        <div class="document">			<!-- FIX -->
-            <p>The name of your document is the unique name to be associated with your lid</p>
-            <p>The title of your document can be the same as the name given; however, does not necessarily have to be.</p>
+        <div class="form_color_display_settings">
+            <p>The blue_channel_band, red_channel_band, green_channel_band attributes identify the
+        number of the band, along the band axis, that should be loaded,
+        by default, into the blue channel of a display device. The first
+        band along the band axis has band number 1.</p>
+            <p>The color_display_axis attribute identifies, by
+        name, the axis of an Array (or Array subclass) that is intended
+        to be displayed in the color dimension of a display device.
+        I.e., bands from this dimension will be loaded into the red,
+        green, and blue bands of the display device. The value of this
+        attribute must match the value of one, and only one, axis_name
+        attribute in an Axis_Array class of the associated
+        Array.</p>
         </div>
+
+
+        <div class="form_display_direction">
+<p>
+The horizontal_display_axis attribute
+        identifies, by name, the axis of an Array (or Array subclass)
+        that is intended to be displayed in the horizontal or "sample"
+        dimension on a display device. The value of this attribute must
+        match the value of one, and only one, axis_name attribute in an
+        Axis_Array class of the associated Array.
+</p><p>
+The horizontal_display_direction attribute
+        specifies the direction across the screen of a display device
+        that data along the horizontal axis of an Array is supposed to
+        be displayed.
+</p><p>
+The vertical_display_axis attribute identifies,
+        by name, the axis of an Array (or Array subclass) that is
+        intended to be displayed in the vertical or "line" dimension on
+        a display device. The value of this attribute must match the
+        value of one, and only one, axis_name attribute in an Axis_Array
+        class of the associated Array.
+</p><p>
+The vertical_display_direction attribute
+        specifies the direction along the screen of a display device
+        that data along the vertical axis of an Array is supposed to be
+        displayed.
+</p>
+        </div>
+
+
+        <div class="form_movie_display_settings">
+<p>
+The Movie_Display_Settings class provides
+        default values for the display of a multi-banded Array using a
+        software application capable of displaying video
+        content.
+</p><p>
+The frame_rate attribute indicates the number of
+        still pictures (or frames) that should be displayed per unit of
+        time in a video. Note this is NOT necessarily the same as the
+        rate at which the images were acquired.
+
+</p><p>
+The loop_back_and_forth_flag attribute specifies
+        whether or not a movie should only be "looped" or played
+        repeatedly in the forward direction, or whether it should be
+        played forward followed by played in reverse,
+        iteratively.
+</p><p>
+The loop_count attribute specifies the number of
+        times a movie should be "looped" or replayed before
+        stopping.
+</p>
+</p><p>
+The loop_delay attribute specifies the amount of
+        time to pause between "loops" or repeated playbacks of a
+        movie.
+</p>
+</p><p>
+The loop_flag attribute specifies whether or not
+        a movie object should be played repeatedly without prompting
+        from the user.
+</p>
+</p><p>
+The time_display_axis attribute identifies, by
+        name, the axis of an Array (or Array subclass), the bands of
+        which are intended to be displayed sequentially in time on a
+        display device. The frame_rate attribute, if present, provides
+        the rate at which these bands are to be
+        displayed.
+</p>
+        </div>
+
     </div>
     <!--/.Column-->
 </div>

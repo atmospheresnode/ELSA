@@ -1220,6 +1220,7 @@ def data(request, pk_bundle):
 
 
 
+
 @login_required
 def display_dictionary(request, pk_bundle, pk_product_observational, pk_array):
     print ' \n\n \n\n-------------------------------------------------------------------------'
@@ -1255,14 +1256,10 @@ def display_dictionary(request, pk_bundle, pk_product_observational, pk_array):
         # this conditional.
         print '\n\n------------------------ DISPLAY DICTIONARY INFO ----------------------------'
         print '\nCurrently awaiting user input...\n\n'
-        if form_color_display_settings.is_valid() and form_display_direction.is_valid() and form_display_settings.is_valid() and form_movie_display_settings.is_valid():
+        if form_color_display_settings.is_valid() and form_display_direction.is_valid() and form_movie_display_settings.is_valid():
 
             print 'All Display Dictionary forms valid for {}.'.format(bundle.user)
-            # Create DisplayDictionary model object
-            display_dictionary = form_display_dictionary.save(commit=False)
-            display_dictionary.bundle = bundle
-            display_dictionary.save()
-            print 'Display Dictionary model object: {}'.format(display_dictionary)
+            # Link the following to the given Array model object
 
             # Create Color_Display_Settings model object
             color_display_settings = form_color_display_settings.save(commit=False)
@@ -1275,18 +1272,22 @@ def display_dictionary(request, pk_bundle, pk_product_observational, pk_array):
             display_direction.save()
 
             # Create Display_Settings model object
-            display_settings = form_display_settings.save(commit=False)
+            #display_settings = form_display_settings.save(commit=False)
             # Add association
-            display_settings.save()
+            #display_settings.save()
 
             # Create Movie_Display_Direction model object
             movie_display_settings = form_movie_display_settings.save(commit=False)
             # Add association
             movie_display_settings.save()
 
-
-
-
+            # Create Display Dictionary parent object for the above objects
+            display_dictionary = DisplayDictionary.objects.create(
+                array = Array.objects.get(pk=pk_array),
+                color_display_settings=color_display_settings,
+                display_direction=display_direction,
+                movie_display_settings=movie_display_settings
+            )
 
             # Find appropriate label(s).
             print '---------------- End Build Display Dictionary ------------------------------'  
@@ -1299,7 +1300,6 @@ def display_dictionary(request, pk_bundle, pk_product_observational, pk_array):
     else:
         print 'unauthorized user attempting to access a restricted area.'
         return redirect('main:restricted_access')
-
 
 
 
