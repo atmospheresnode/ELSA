@@ -3338,6 +3338,7 @@ The Movie_Display_Settings class provides
 
 
     """
+    array = models.ForeignKey(Array, on_delete=models.CASCADE)
     Color_Display_Settings = models.ForeignKey(Color_Display_Settings, on_delete=models.CASCADE)
     Display_Direction = models.ForeignKey(Display_Direction, on_delete=models.CASCADE)
     Display_Settings = models.ForeignKey(Display_Settings, on_delete=models.CASCADE)

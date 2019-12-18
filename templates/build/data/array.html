@@ -73,8 +73,50 @@ Array Data
 <!--/.Row-->
 <!--Row-->
 <div class="row pt-2">
-    {% for array in arrays %}
-        {{ array.name }}
+    {% for array, dictionary in arrays %}
+    <!--Column-->
+    <div class="col-md-4">
+            <!--Card-->
+            <div class="card">
+               <!--Card content-->
+                <div class="card-body">
+                    <!--Title-->
+                    <h4 class="card-title">Name: {{ array.name }}</h4>
+                    <!--/.Title-->
+                    <!--Text-->
+                    <p class="card-text">
+                      <ul>
+                        <li>Dimensions: {{ array.array_dimensions }}</li>
+                        <li>Type: {{ array.array_type }}</li>
+                        <li>LID: {{ array.local_identifier }}</li>
+                        <li>MD5 Checksum: {{ array.md5_checksum }}</li>
+                        <li>Offset: {{ array.offset }}</li>
+                        <li>Axes: {{ array.axes }}</li>
+                        <li>Axis Index Order: {{ array.axis_index_order }}</li>
+                        <li>Description: {{ array.description }}</li>
+                      </ul>
+                    </p>
+                    <!--/.Text-->
+                    {% if dictionary is None %}
+                        <a href="{% url 'build:display_dictionary' bundle.pk product_observational.pk array.pk%}">
+                            <button type="button" class="btn btn-default">
+                                <i class="fa fa-plus"></i>
+                                Add Display Dictionary
+                            </button>
+                        </a>
+                    {% else %}
+                    <!--Title-->
+                    <h5 class="card-title">Display Dictionary: {{ dictionary }}</h5>
+                    <!--/.Title-->
+                    {% endif %}
+                    
+                </div>
+                <!--/.Card content-->
+
+            </div>
+            <!--/.Card-->
+    </div>
+    <!--/.Column-->
     {% endfor %}
 </div>
 <!--/.Row-->

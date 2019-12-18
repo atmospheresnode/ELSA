@@ -166,12 +166,22 @@ def array(request, pk_bundle, pk_product_observational):
         # Get forms
         form_array = ArrayForm(request.POST or None)
 
+        # Get (array, dictionary) tuple sets
+        arrays = []
+        array_only = Array.objects.filter(product_observational=product_observational)
+        for array in array_only:
+            try:
+                disp_dict = DisplayDictionary.objects.get(array=array) # Should be only one
+            except DisplayDictionary.DoesNotExist:
+                disp_dict = None
+            arrays.append( (array, disp_dict) )
+
         # Declare context_dict for template
         context_dict = {
 	    'bundle':bundle,
             'form_array':form_array,
             'product_observational':product_observational,
-            'arrays':Array.objects.filter(product_observational=product_observational),
+            'arrays':arrays,
         }
 
         # After ELSAs friend hits submit, if the forms are completed correctly, we should enter
@@ -1211,7 +1221,7 @@ def data(request, pk_bundle):
 
 
 @login_required
-def display_dictionary(request, pk_bundle):
+def display_dictionary(request, pk_bundle, pk_product_observational, pk_array):
     print ' \n\n \n\n-------------------------------------------------------------------------'
     print '\n\n------------------- Add Display Dictionary with ELSA --------------------------'
     print '------------------------------ DEBUGGER ---------------------------------'
