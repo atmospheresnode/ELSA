@@ -90,13 +90,19 @@ The data collection consists of the following subcollections: calibrated data, d
 {% if data_set %} 
     {% for data in data_set %}
         {% if data.processing_level == 'Calibrated' %}
-            Calibrated</hr>
-            {% for product_observational in product_observational_set_calibrated %}
+            </hr>
+            {% for product_observational in calibrated_set %}
 
             <!--Column-->
             <div class="col-sm-6 col-md-3">
                 <!--Card-->
-                <a href="{% url 'build:product_observational' bundle.pk product_observational.pk %}">
+                {% if product_observational.type_of == 'Table' %}
+                <a href="{% url 'build:table_detail' bundle.pk product_observational.pk %}">
+                {% elif product_observational.type_of == 'Array' %}
+                <a href="{% url 'build:array_detail' bundle.pk product_observational.pk %}">
+                {% else %}
+                <a href="{% url 'main:construction' %}">
+                {% endif %}
                 <div class="card">
                     <!--Card image-->
                     <img class="img-fluid" src="{% static 'images/calibrated.png' %}" alt="Data Image">
@@ -107,7 +113,7 @@ The data collection consists of the following subcollections: calibrated data, d
                         <h4 class="card-title">{{ product_observational.title }}</h4>
                         <!--Text-->
                         <p class="card-text">{{ product_observational.domain }}</p>
-                        <p class="card-text">Processing Level: {{ product_observational.processing_level }}</p>
+                        <p class="card-text">Processing Level: {{ product_observational.data.processing_level }}</p>
                         <p class="card-text">Structure: {{ product_observational.type_of }}</p>
                         <!--Buttons-->
                         <a href="{% url 'main:construction' %}">
@@ -121,8 +127,8 @@ The data collection consists of the following subcollections: calibrated data, d
             <!--/.Column-->
             {% endfor %}    
         {% elif data.processing_level == 'Derived' %}
-            Derived</hr>
-            {% for product_observational in product_observational_set_derived %}
+            </hr>
+            {% for product_observational in derived_set %}
             <!--Column-->
             <div class="col-sm-6 col-md-3">
                 <!--Card-->
@@ -137,7 +143,7 @@ The data collection consists of the following subcollections: calibrated data, d
                         <h4 class="card-title">{{ product_observational.title }}</h4>
                         <!--Text-->
                         <p class="card-text">{{ product_observational.domain }}</p>
-                        <p class="card-text">Processing Level: {{ product_observational.processing_level }}</p>
+                        <p class="card-text">Processing Level: {{ product_observational.data.processing_level }}</p>
                         <p class="card-text">Structure: {{ product_observational.type_of }}</p>
                         <!--Buttons-->
                         <a href="{% url 'main:construction' %}">
@@ -151,12 +157,18 @@ The data collection consists of the following subcollections: calibrated data, d
             <!--/.Column-->
             {% endfor %} 
         {% elif data.processing_level == 'Raw' %}
-            Raw</hr>
-            {% for product_observational in product_observational_set_raw %}
+            </hr>
+            {% for product_observational in raw_set %}
             <!--Column-->
             <div class="col-sm-6 col-md-3">
                 <!--Card-->
-                <a href="{% url 'build:product_observational' bundle.pk product_observational.pk %}">
+                {% if product_observational.type_of == 'Table' %}
+                <a href="{% url 'build:table_detail' bundle.pk product_observational.pk %}">
+                {% elif product_observational.type_of == 'Array' %}
+                <a href="{% url 'build:array' bundle.pk product_observational.pk %}">
+                {% else %}
+                <a href="{% url 'main:construction' %}">
+                {% endif %}
                 <div class="card">
                     <!--Card image-->
                     <img class="img-fluid" src="{% static 'images/raw.png' %}" alt="Data Image">
@@ -167,7 +179,7 @@ The data collection consists of the following subcollections: calibrated data, d
                         <h4 class="card-title">{{ product_observational.title }}</h4>
                         <!--Text-->
                         <p class="card-text">{{ product_observational.domain }}</p>
-                        <p class="card-text">Processing Level: {{ product_observational.processing_level }}</p>
+                        <p class="card-text">Processing Level: {{ product_observational.data.processing_level }}</p>
                         <p class="card-text">Structure: {{ product_observational.type_of }}</p>
                         <!--Buttons-->
                         <a href="{% url 'main:construction' %}">
@@ -181,12 +193,18 @@ The data collection consists of the following subcollections: calibrated data, d
             <!--/.Column-->
             {% endfor %} 
         {% elif data.processing_level == 'Reduced' %}
-            Reduced</hr>
-            {% for product_observational in product_observational_set_reduced %}
+            </hr>
+            {% for product_observational in reduced_set %}
             <!--Column-->
             <div class="col-sm-6 col-md-3">
                 <!--Card-->
-                <a href="{% url 'build:product_observational' bundle.pk product_observational.pk %}">
+                {% if product_observational.type_of == 'Table' %}
+                <a href="{% url 'build:table_detail' bundle.pk product_observational.pk %}">
+                {% elif product_observational.type_of == 'Array' %}
+                <a href="{% url 'build:array_detail' bundle.pk product_observational.pk %}">
+                {% else %}
+                <a href="{% url 'main:construction' %}">
+                {% endif %}
                 <div class="card">
                     <!--Card image-->
                     <img class="img-fluid" src="{% static 'images/reduced.png' %}" alt="Data Image">
@@ -197,7 +215,7 @@ The data collection consists of the following subcollections: calibrated data, d
                         <h4 class="card-title">{{ product_observational.title }}</h4>
                         <!--Text-->
                         <p class="card-text">{{ product_observational.domain }}</p>
-                        <p class="card-text">Processing Level: {{ product_observational.processing_level }}</p>
+                        <p class="card-text">Processing Level: {{ product_observational.data.processing_level }}</p>
                         <p class="card-text">Structure: {{ product_observational.type_of }}</p>
                         <!--Buttons-->
                         <a href="{% url 'main:construction' %}">
@@ -214,52 +232,6 @@ The data collection consists of the following subcollections: calibrated data, d
     {% endfor %}
 
 
-
-
-
-
-
-
-
-
-    {% for product_observational in product_observational_set %}
-    <!--Column-->
-    <div class="col-sm-6 col-md-3">
-        <!--Card-->
-        <a href="{% url 'build:product_observational' bundle.pk product_observational.pk %}">
-        <div class="card">
-            <!--Card image-->
-            <!-----------------------ADD IFS FOR IMAGES--------------------->
-            {% if product_observational.processing_level == 'Calibrated' %}
-            <img class="img-fluid" src="{% static 'images/calibrated.png' %}" alt="Data Image">
-            {% elif product_observational.processing_level == 'Derived' %}
-            <img class="img-fluid" src="{% static 'images/derived.png' %}" alt="Data Image">
-            {% elif product_observational.processing_level == 'Raw' %}
-            <img class="img-fluid" src="{% static 'images/raw.png' %}" alt="Data Image">
-            {% elif product_observational.processing_level == 'Reduced' %}
-            <img class="img-fluid" src="{% static 'images/reduced.png' %}" alt="Data Image">
-            {% endif %}
-
-
-            <!--Card content-->
-            <div class="card-body">
-                <!--Title-->
-                <h4 class="card-title">{{ product_observational.title }}</h4>
-                <!--Text-->
-                <p class="card-text">{{ product_observational.domain }}</p>
-                <p class="card-text">Processing Level: {{ product_observational.processing_level }}</p>
-                <p class="card-text">Structure: {{ product_observational.type_of }}</p>
-                <!--Buttons-->
-                <a href="{% url 'main:construction' %}">
-                    <button type="button" class="btn btn-danger">Remove</button> 
-                </a>
-            </div>
-        </div>
-        </a>
-        <!--/.Card-->
-    </div>
-    <!--/.Column-->
-    {% endfor %}
 {% else %}
     <!--Column-->
     <div class="col-sm-6 col-md-3">

@@ -52,13 +52,13 @@ urlpatterns = [
 
     # Data
     url(r'^(?P<pk_bundle>\d+)/data/$', views.data, name='data'),
+    url(r'^(?P<pk_bundle>\d+)/data/table/(?P<pk_product_observational>\d+)/$', views.table_detail, name='table_detail'),
+    url(r'^(?P<pk_bundle>\d+)/data/(?P<pk_product_observational>\d+)/array/$', views.array, name='array'),
+    url(r'^(?P<pk_bundle>\d+)/data/array/$', views.array, name='array'),
     url(r'^(?P<pk_bundle>\d+)/data/(?P<pk_product_observational>\d+)/$', views.product_observational, name='product_observational'),
     url(r'^(?P<pk_bundle>\d+)/(?P<data_object>\d+)/table_creation/$', views.Table_Creation, name='table_creation'),
     url(r'^(?P<pk_bundle>\d+)/(?P<table>[-/w]+)/field_creation/$', views.Field_Creation, name='field_creation'),
-    url(r'^(?P<pk_bundle>\d+)/data/$', views.data, name='data'),
-    url(r'^(?P<pk_bundle>\d+)/data/array/$', views.array, name='array'),
 
-    url(r'^(?P<pk_bundle>\d+)/data/array/$', views.array, name='array'),
 
     # Dictionary
     url(r'^(?P<pk_bundle>\d+)/data/array/display_dictionary/$', views.display_dictionary, name='display_dictionary'),

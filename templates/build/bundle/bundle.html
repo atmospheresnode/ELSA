@@ -127,6 +127,14 @@ r as UTF
         </div>
     </div>
     <!--/.Row-->
+    <div id="context_detail">
+    <!--Row-->
+    <div class="row">
+        <div class="col-md-12">
+            <p class="card-header stylish-color white-text text-center z-depth-2">Adding context products entails associating your bundle with the missions, facilities, telescopes, instruments, the hosts of those instruments, targets, and the like that relate to the data within your bundle.</h3><br/>
+        </div>
+    </div>
+    <!--/.Row-->
     <!--Row-->
     <div class="row">
         <!--/.Column-->
@@ -262,7 +270,7 @@ r as UTF
     <!--Row-->
     <div class="row">
         <div class="col-md-12">
-            <p class="card-header stylish-color white-text text-center z-depth-2">Document Collection</h3><br/>
+            <p class="card-header stylish-color white-text text-center z-depth-2">Document Collection</p><br/>
         </div>
     </div>
     <!--/.Row-->
@@ -303,7 +311,7 @@ r as UTF
     <!--Row-->
     <div class="row">
         <div class="col-md-12">
-            <p class="card-header stylish-color white-text text-center z-depth-2">Data Collection</h3><br/>
+            <p class="card-header stylish-color white-text text-center z-depth-2">Data Collection</p><br/>
         </div>
     </div>
     <!--/.Row-->
@@ -317,7 +325,14 @@ r as UTF
             <!--Card-->
             <div class="button">
             <!--Link-->
-            <a href="{% url 'build:data' bundle.pk %}">
+            {% if product.type_of == 'Table' %}
+                <a href="{% url 'build:table_detail' bundle.pk product.pk %}">
+            {% elif product.type_of == 'Array' %}
+                <a href="{% url 'build:array' bundle.pk product.pk %}">
+            {% else %}
+                <a href="{% url 'main:construction' %}">
+            {% endif %}
+
                 <!--Card content-->
                 <div class="card-body">
                     <!--Title-->

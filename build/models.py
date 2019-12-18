@@ -1896,162 +1896,6 @@ class Collections(models.Model):
 	collection_directory = os.path.join(self.bundle.directory(), data)
 	make_directory(collection_directory)
 
-"""
-"""
-@python_2_unicode_compatible
-class Data(models.Model):
-    PROCESSING_LEVEL_CHOICES = (            
-        ('Calibrated', 'Calibrated'),
-        ('Derived', 'Derived'),
-        ('Raw', 'Raw'),
-        ('Reduced', 'Reduced'),
-    )
-    bundle = models.ForeignKey(Bundle, on_delete=models.CASCADE)
-    processing_level = models.CharField(max_length=30, choices=PROCESSING_LEVEL_CHOICES, default='Raw',)
-
-
-    class Meta:
-        verbose_name_plural = 'Data'    
-
-
-    def __str__(self):
-        return 'Data associated'  # Better this once we work on data more
-
-
-    # build_directory builds a directory of the form data_<processing_level>.  
-    # Function make_directory(path) can be found in chocolate.py.  It checks the existence
-    # of a directory before creating the directory.
-    def build_directory(self):
-
-        # Add check to see if data directory exists
-        data_directory = os.path.join(self.bundle.directory(),'data_{}'.format(self.processing_level.lower()))
-
-        if not os.path.exists(data_directory):
-            print 'Creating directory'
-            make_directory(data_directory)
-        else:
-            print 'Directory already created'
-
-
-    # directory returns the file path associated with the given model.
-    def directory(self):
-        data_collection_name = 'data_{}'.format(self.processing_level.lower())
-        data_directory = os.path.join(self.bundle.directory(), data_collection_name)
-        return data_directory  
-
-
-
-
-
-
-
-"""
-Table and Field Objects
-
-    -Table Objects belong to bundle objects. How many tables of what type is determined by the data prep
-	object. The name atribute is also determined by data prep.
-
-    -Field Objects belong to Table objects. Their quantity is deterined by the fields atribute of their 
-	parent Table object.
-"""
-@python_2_unicode_compatible
-class Table_Delimited(models.Model):
-    
-    DELIMITER_CHOICES = (
-	('Comma','Comma'),
-	('Horizontal Tab','Horizontal Tab'),
-	('Semicolon','Semicolon'),
-	('Vertical Bar','Vertical Bar'),
-    )
-
-    name = models.CharField(max_length=256, blank=True)
-    offset = models.IntegerField(default=-1)
-    object_length = models.IntegerField(default=-1)
-    description = models.CharField(max_length=5000, default="unset")
-    records = models.IntegerField(default=-1)
-    field_delimiter = models.CharField(max_length=256, choices=DELIMITER_CHOICES, default="Comma", blank=True)
-    fields = models.IntegerField(default=-1)
-    data = models.ForeignKey(Data, on_delete=models.CASCADE, null=True,)
-    bundle = models.ForeignKey(Bundle, on_delete=models.CASCADE,null=True)
-
-    def __str__(self):
-        return str(self.id)
-
-
-@python_2_unicode_compatible
-class Table_Binary(models.Model):
-    name = models.CharField(max_length=256, blank=True)
-    offset = models.IntegerField(default=-1)
-    records = models.IntegerField(default=-1)
-    fields = models.IntegerField(default=-1)
-    data = models.ForeignKey(Data, on_delete=models.CASCADE, null=True,)
-    bundle = models.ForeignKey(Bundle, on_delete=models.CASCADE, null=True)
-
-    def __str__(self):
-        return str(self.id)
-
-@python_2_unicode_compatible
-class Table_Fixed_Width(models.Model):
-
-    RECORD_CHOICES = (
-	('Sample Choice','Sample Choice'),
-    )
-
-    name = models.CharField(max_length=256, blank=True)
-    offset = models.IntegerField(default=-1)
-    object_length = models.IntegerField(default=-1)
-    description = models.CharField(max_length=5000, default="unset")
-    records = models.IntegerField(default=-1)
-    record_delimiter = models.CharField(max_length=256, choices=RECORD_CHOICES, default="Sample Choice", blank=True)
-    fields = models.IntegerField(default=-1)
-    data = models.ForeignKey(Data, on_delete=models.CASCADE, null=True,)
-    bundle = models.ForeignKey(Bundle, on_delete=models.CASCADE, null=True)
-
-    def __str__(self):
-        return str(self.id)
-
-
-@python_2_unicode_compatible
-class Field_Delimited(models.Model):
-    name = models.CharField(max_length=256)
-    field_number = models.IntegerField()
-    data_type = models.CharField(max_length=256)
-    unit = models.CharField(max_length=256, null=True,)
-    description = models.CharField(max_length=5000)
-    table = models.ForeignKey(Table_Delimited, on_delete=models.CASCADE, null=True,)
-
-    def __str__(self):
-        pass
-
-@python_2_unicode_compatible
-class Field_Binary(models.Model):
-    name = models.CharField(max_length=256)
-    field_number = models.IntegerField()
-    field_location = models.CharField(max_length=256)
-    data_type = models.CharField(max_length=256)
-    field_length = models.IntegerField()
-    unit = models.CharField(max_length=256, null=True,)
-    scaling_factor = models.IntegerField()
-    value_offset = models.IntegerField()
-    description = models.CharField(max_length=5000)
-    table = models.ForeignKey(Table_Binary, on_delete=models.CASCADE, null=True,)
-
-    def __str__(self):
-        pass
-    
-
-@python_2_unicode_compatible
-class Field_Character(models.Model):
-    name = models.CharField(max_length=256)
-    field_number = models.IntegerField()
-    data_type = models.CharField(max_length=256)
-    field_length = models.IntegerField()
-    field_location = models.CharField(max_length=256)
-    description = models.CharField(max_length=5000)
-    table = models.ForeignKey(Table_Fixed_Width, on_delete=models.CASCADE, null=True,)
-
-    def __str__(self):
-        pass
 
 
 
@@ -2406,6 +2250,174 @@ class Product_Collection(models.Model):
 
 
 
+
+
+"""
+"""
+@python_2_unicode_compatible
+class Data(models.Model):
+    PROCESSING_LEVEL_CHOICES = (            
+        ('Calibrated', 'Calibrated'),
+        ('Derived', 'Derived'),
+        ('Raw', 'Raw'),
+        ('Reduced', 'Reduced'),
+    )
+    bundle = models.ForeignKey(Bundle, on_delete=models.CASCADE)
+    processing_level = models.CharField(max_length=30, choices=PROCESSING_LEVEL_CHOICES, default='Raw',)
+
+
+    class Meta:
+        verbose_name_plural = 'Data'    
+
+
+    def __str__(self):
+        return 'Data associated'  # Better this once we work on data more
+
+
+    # build_directory builds a directory of the form data_<processing_level>.  
+    # Function make_directory(path) can be found in chocolate.py.  It checks the existence
+    # of a directory before creating the directory.
+    def build_directory(self):
+
+        # Add check to see if data directory exists
+        data_directory = os.path.join(self.bundle.directory(),'data_{}'.format(self.processing_level.lower()))
+
+        if not os.path.exists(data_directory):
+            print 'Creating directory'
+            make_directory(data_directory)
+            return True
+        else:
+            print 'Directory already created'
+            return False
+
+    def build_product_collection(self):
+        print "Building product collection label - base case"
+        p = Product_Collection.objects.get(bundle=self.bundle, collection='Data')
+        p.build_base_case_data(self)
+        
+
+
+    # directory returns the file path associated with the given model.
+    def directory(self):
+        data_collection_name = 'data_{}'.format(self.processing_level.lower())
+        data_directory = os.path.join(self.bundle.directory(), data_collection_name)
+        return data_directory  
+
+
+
+
+
+
+
+"""
+Table and Field Objects
+
+    -Table Objects belong to bundle objects. How many tables of what type is determined by the data prep
+	object. The name atribute is also determined by data prep.
+
+    -Field Objects belong to Table objects. Their quantity is deterined by the fields atribute of their 
+	parent Table object.
+"""
+@python_2_unicode_compatible
+class Table_Delimited(models.Model):
+    
+    DELIMITER_CHOICES = (
+	('Comma','Comma'),
+	('Horizontal Tab','Horizontal Tab'),
+	('Semicolon','Semicolon'),
+	('Vertical Bar','Vertical Bar'),
+    )
+
+    name = models.CharField(max_length=256, blank=True)
+    offset = models.IntegerField(default=-1)
+    object_length = models.IntegerField(default=-1)
+    description = models.CharField(max_length=5000, default="unset")
+    records = models.IntegerField(default=-1)
+    field_delimiter = models.CharField(max_length=256, choices=DELIMITER_CHOICES, default="Comma", blank=True)
+    fields = models.IntegerField(default=-1)
+    data = models.ForeignKey(Data, on_delete=models.CASCADE, null=True,)
+    bundle = models.ForeignKey(Bundle, on_delete=models.CASCADE,null=True)
+
+    def __str__(self):
+        return str(self.id)
+
+
+@python_2_unicode_compatible
+class Table_Binary(models.Model):
+    name = models.CharField(max_length=256, blank=True)
+    offset = models.IntegerField(default=-1)
+    records = models.IntegerField(default=-1)
+    fields = models.IntegerField(default=-1)
+    data = models.ForeignKey(Data, on_delete=models.CASCADE, null=True,)
+    bundle = models.ForeignKey(Bundle, on_delete=models.CASCADE, null=True)
+
+    def __str__(self):
+        return str(self.id)
+
+@python_2_unicode_compatible
+class Table_Fixed_Width(models.Model):
+
+    RECORD_CHOICES = (
+	('Sample Choice','Sample Choice'),
+    )
+
+    name = models.CharField(max_length=256, blank=True)
+    offset = models.IntegerField(default=-1)
+    object_length = models.IntegerField(default=-1)
+    description = models.CharField(max_length=5000, default="unset")
+    records = models.IntegerField(default=-1)
+    record_delimiter = models.CharField(max_length=256, choices=RECORD_CHOICES, default="Sample Choice", blank=True)
+    fields = models.IntegerField(default=-1)
+    data = models.ForeignKey(Data, on_delete=models.CASCADE, null=True,)
+    bundle = models.ForeignKey(Bundle, on_delete=models.CASCADE, null=True)
+
+    def __str__(self):
+        return str(self.id)
+
+
+@python_2_unicode_compatible
+class Field_Delimited(models.Model):
+    name = models.CharField(max_length=256)
+    field_number = models.IntegerField()
+    data_type = models.CharField(max_length=256)
+    unit = models.CharField(max_length=256, null=True,)
+    description = models.CharField(max_length=5000)
+    table = models.ForeignKey(Table_Delimited, on_delete=models.CASCADE, null=True,)
+
+    def __str__(self):
+        pass
+
+@python_2_unicode_compatible
+class Field_Binary(models.Model):
+    name = models.CharField(max_length=256)
+    field_number = models.IntegerField()
+    field_location = models.CharField(max_length=256)
+    data_type = models.CharField(max_length=256)
+    field_length = models.IntegerField()
+    unit = models.CharField(max_length=256, null=True,)
+    scaling_factor = models.IntegerField()
+    value_offset = models.IntegerField()
+    description = models.CharField(max_length=5000)
+    table = models.ForeignKey(Table_Binary, on_delete=models.CASCADE, null=True,)
+
+    def __str__(self):
+        pass
+    
+
+@python_2_unicode_compatible
+class Field_Character(models.Model):
+    name = models.CharField(max_length=256)
+    field_number = models.IntegerField()
+    data_type = models.CharField(max_length=256)
+    field_length = models.IntegerField()
+    field_location = models.CharField(max_length=256)
+    description = models.CharField(max_length=5000)
+    table = models.ForeignKey(Table_Fixed_Width, on_delete=models.CASCADE, null=True,)
+
+    def __str__(self):
+        pass
+
+
 """
 8.3  Product_Observational
 
@@ -2645,7 +2657,6 @@ class Product_Observational(models.Model):
     def __str__(self):
         
         return "Product_Observational at: {}".format(self.title)
-
 
 
 

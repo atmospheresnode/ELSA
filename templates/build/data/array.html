@@ -14,7 +14,70 @@ Array Data
 {% endblock %}
 
 {% block body_block %}
+<!--Row-->
+<div class="row pt-2">
+    <!--Column-->
+    <div class="col-md-12">
 
+        <h3 class="card-header elegant-color white-text text-center z-depth-2">Product Observational</h3><br/>
+
+    </div>
+    <!--/.Column-->
+</div>
+<!--/.Row-->
+<!--Row-->
+<div class="row pt-2">
+        <div class="col-md-12">
+            <p class="card-header stylish-color white-text text-center z-depth-2">Below you will find the current details of your observational product's label.</p><br/>
+        </div>
+</div>
+<!--/.Row-->
+<!--Row-->
+<div class="row pt-2">
+    <!--Column-->
+    <div class="col-md-12">
+            <!--Card-->
+            <div class="button">
+               <!--Card content-->
+                <div class="card-body">
+                    <!--Title-->
+                    <h4 class="card-title">Title: {{ product_observational.title }}</h4>
+                    <!--/.Title-->
+                    <!--Text-->
+                    <p class="card-text">
+                      <ul>
+                        <li>Bundle: {{ product_observational.bundle }}</li>
+                        <li>Processing Level: {{ product_observational.data.processing_level }}</li>
+                        <li>Domain: {{ product_observational.domain }}</li>
+                        <li>Discipline: {{ product_observational.discipline }}</li>
+                        <li>Purpose: {{ product_observational.purpose }}</li>
+                        <li>Structure: {{ product_observational.type_of }}</li>
+                      </ul>
+                    </p>
+                    <!--/.Text-->
+                </div>
+                <!--/.Card content-->
+
+            </div>
+            <!--/.Card-->
+    </div>
+    <!--/.Column-->
+</div>
+<!--/.Row-->
+<!--Row-->
+<div class="row pt-2">
+        <div class="col-md-12">
+            <p class="card-header stylish-color white-text text-center z-depth-2">Below you will find the array's currently associated with this observational product.</p><br/>
+        </div>
+</div>
+<!--/.Row-->
+<!--Row-->
+<div class="row pt-2">
+    {% for array in arrays %}
+        {{ array.name }}
+    {% endfor %}
+</div>
+<!--/.Row-->
 <!--Row-->
 <div class="row pt-2">
     <!--Column-->
@@ -50,27 +113,7 @@ Array Data
     <!--/.Column-->
 </div>
 <!--/.Row-->
-<hr/>
-<!--Row-->
-<div class="row pt-2">
-    <!--Column-->
-    <div class="col-md-12">
 
-        <h3 class="card-header elegant-color white-text text-center z-depth-2">Current Array Data</h3><br/>
-
-    </div>
-    <!--/.Column-->
-</div>
-<!--/.Row-->
-<!--Row-->
-<div class="row pt-2">
-
-
-
-
-
-</div>
-<!--/.Row-->
 <hr/>
 <!--Row-->
 <div class="row pt-2">

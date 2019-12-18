@@ -154,12 +154,13 @@ def alias_delete(request, pk_bundle, alias):
 
 
 @login_required
-def array(request, pk_bundle):
+def array(request, pk_bundle, pk_product_observational):
     print ' \n\n \n\n-------------------------------------------------------------------------'
     print '\n\n---------------- Welcome to Build A Bundle with ELSA --------------------'
     print '------------------------------ DEBUGGER ---------------------------------'
 
     bundle = Bundle.objects.get(pk=pk_bundle)
+    product_observational = Product_Observational.objects.get(pk=pk_product_observational)
 
     if request.user == bundle.user:
         # Get forms
@@ -169,6 +170,8 @@ def array(request, pk_bundle):
         context_dict = {
 	    'bundle':bundle,
             'form_array':form_array,
+            'product_observational':product_observational,
+            'arrays':Array.objects.filter(product_observational=product_observational),
         }
 
         # After ELSAs friend hits submit, if the forms are completed correctly, we should enter
@@ -179,7 +182,7 @@ def array(request, pk_bundle):
             print 'form_array is valid for {}.'.format(bundle.user)
             # Create Array model object
             array = form_array.save(commit=False)
-            array.bundle = bundle
+            array.product_observational = product_observational
             array.save()
             print 'Array model object: {}'.format(array)
 
@@ -213,7 +216,7 @@ def array(request, pk_bundle):
 
 
 @login_required
-def array(request, pk_bundle):
+def array_detail(request, pk_bundle, pk_product_observational):
     print ' \n\n \n\n-------------------------------------------------------------------------'
     print '\n\n---------------- Welcome to Build A Bundle with ELSA --------------------'
     print '------------------------------ DEBUGGER ---------------------------------'
@@ -221,49 +224,15 @@ def array(request, pk_bundle):
     bundle = Bundle.objects.get(pk=pk_bundle)
 
     if request.user == bundle.user:
-        # Get forms
-        form_array = ArrayForm(request.POST or None)
-
+        
         # Declare context_dict for template
         context_dict = {
 	    'bundle':bundle,
-            'form_array':form_array,
         }
 
-        # After ELSAs friend hits submit, if the forms are completed correctly, we should enter
-        # this conditional.
-        print '\n\n------------------------------- ARRAY INFO --------------------------------'
-        print '\nCurrently awaiting user input...\n\n'
-        if form_array.is_valid():
-            print 'form_array is valid for {}.'.format(bundle.user)
-            # Create Array model object
-            array = form_array.save(commit=False)
-            array.bundle = bundle
-            array.save()
-            print 'Array model object: {}'.format(array)
+        
 
-            # Find appropriate label(s).
-            # Array gets added to... some... Product_Observational labels.
-            # We first get all labels of these given types.
-            all_labels = []
-
-            for label in all_labels:
-                # Open appropriate label(s).  
-                print '- Label: {}'.format(label)
-                print ' ... Opening Label ... '
-                label_list = open_label(label.label())
-                label_root = label_list
-                # Build Array
-                print ' ... Building Label ... '
-                #label_root = array.build_array(label_root)
-		#array.array_list.append(label_root) <~-- just stole this from alias ?? idk what does
-
-
-                # Close appropriate label(s)
-                print ' ... Closing Label ... '
-                close_label(label.label(), label_root)
-
-        return render(request, 'build/data/array.html', context_dict)
+        return render(request, 'build/data/array_detail.html', context_dict)
 
     else:
         print 'unauthorized user attempting to access a restricted area.'
@@ -272,6 +241,30 @@ def array(request, pk_bundle):
 
 
 
+
+
+@login_required
+def table_detail(request, pk_bundle, pk_product_observational):
+    print ' \n\n \n\n-------------------------------------------------------------------------'
+    print '\n\n---------------- Welcome to Build A Bundle with ELSA --------------------'
+    print '------------------------------ DEBUGGER ---------------------------------'
+
+    bundle = Bundle.objects.get(pk=pk_bundle)
+
+    if request.user == bundle.user:
+        
+        # Declare context_dict for template
+        context_dict = {
+	    'bundle':bundle,
+        }
+
+        
+
+        return render(request, 'build/data/table_detail.html', context_dict)
+
+    else:
+        print 'unauthorized user attempting to access a restricted area.'
+        return redirect('main:restricted_access')
 
 
 
@@ -1171,15 +1164,41 @@ def data(request, pk_bundle):
 
             # Make data directory
             print 'Checking to see if data directory needs to be made'
-            data.build_directory()
+            new_directory = data.build_directory()
+
+            # If it's a new directory, we need a product_collection to describe the
+            # collection. *** Currently: Just does base case. Fix in data model.
+            if new_directory:
+                data.build_product_collection()
             
+        # Get sets for context dictionary
+        data_set = Data.objects.filter(bundle=bundle)
+        calibrated_set = []
+        derived_set = []
+        raw_set = []
+        reduced_set = []
+        for data in data_set:
+            if data.processing_level == 'Calibrated':
+                calibrated_set.extend(Product_Observational.objects.filter(bundle=bundle, data=data))
+            elif data.processing_level == 'Derived':
+                derived_set.extend(Product_Observational.objects.filter(bundle=bundle, data=data))
+            elif data.processing_level == 'Raw':
+                raw_set.extend(Product_Observational.objects.filter(bundle=bundle, data=data))
+            elif data.processing_level == 'Reduced':
+                reduced_set.extend(Product_Observational.objects.filter(bundle=bundle, data=data))
+
+        print "Raw: {},\tCalibrated: {},\tDerived: {},\tReduced:{}".format(raw_set, calibrated_set, derived_set, reduced_set)
 
         # Context Dictionary
         context_dict = {
             'bundle':bundle,
             'form_data':form_data,
             'form_product_observational':form_product_observational,
-            'data_set': Data.objects.filter(bundle=bundle)
+            'data_set': data_set,
+            'calibrated_set': calibrated_set,
+            'derived_set':derived_set,
+            'raw_set':raw_set,
+            'reduced_set':reduced_set,
         }
       
         return render(request, 'build/data/data.html', context_dict)
