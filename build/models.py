@@ -2264,6 +2264,7 @@ class Data(models.Model):
         ('Reduced', 'Reduced'),
     )
     bundle = models.ForeignKey(Bundle, on_delete=models.CASCADE)
+    name = models.CharField(max_length=MAX_CHAR_FIELD)
     processing_level = models.CharField(max_length=30, choices=PROCESSING_LEVEL_CHOICES, default='Raw',)
 
 
@@ -2275,13 +2276,18 @@ class Data(models.Model):
         return 'Data associated'  # Better this once we work on data more
 
 
+    # get_directory_name returns the name of the directory for this data object.
+    def get_directory_name(self):
+        return 'data_{}_{}'.format(self.processing_level.lower(), self.name.lower())
+
+
     # build_directory builds a directory of the form data_<processing_level>.  
     # Function make_directory(path) can be found in chocolate.py.  It checks the existence
     # of a directory before creating the directory.
     def build_directory(self):
 
         # Add check to see if data directory exists
-        data_directory = os.path.join(self.bundle.directory(),'data_{}'.format(self.processing_level.lower()))
+        data_directory = os.path.join(self.bundle.directory(),self.get_directory_name())
 
         if not os.path.exists(data_directory):
             print 'Creating directory'
@@ -2300,8 +2306,7 @@ class Data(models.Model):
 
     # directory returns the file path associated with the given model.
     def directory(self):
-        data_collection_name = 'data_{}'.format(self.processing_level.lower())
-        data_directory = os.path.join(self.bundle.directory(), data_collection_name)
+        data_directory = os.path.join(self.bundle.directory(), self.get_directory_name())
         return data_directory  
 
 
@@ -3126,7 +3131,6 @@ class Array(models.Model):
     array_dimensions = models.CharField(max_length=MAX_CHAR_FIELD, choices=ARRAY_DIMENSIONS)
     array_type = models.CharField(max_length=MAX_CHAR_FIELD, choices=ARRAY_TYPES)
     local_identifier = models.CharField(max_length=MAX_CHAR_FIELD)
-    md5_checksum = models.CharField(max_length=MAX_CHAR_FIELD)
     offset = models.CharField(max_length=MAX_CHAR_FIELD)
     axes = models.CharField(max_length=MAX_CHAR_FIELD)
     axis_index_order = models.CharField(max_length=MAX_CHAR_FIELD)
