@@ -16,12 +16,13 @@ Bundle: {{ bundle.name }}
 {% endblock %}
 
 {% block about_header_block %}
-
 {% endblock %}
 
 {% block standards_reference_block %} <!-- Should make a question mark where people can expand to read this -- Look at base-k-se template for more details. Base-k-se is where the actual collapsing should happen, not in an individual template -->
-2A.1
- Bundles 
+Design labels for data products, documents, and any additional material from this bundle detail page.
+</br></br>
+<strong>2A.1 Bundles</strong>
+ </br>
 A 
 bundle
  is the default logical construct for archiving digital data in the PDS.
@@ -131,7 +132,7 @@ r as UTF
     <!--Row-->
     <div class="row">
         <div class="col-md-12">
-            <p class="card-header stylish-color white-text text-center z-depth-2">Adding context products entails associating your bundle with the missions, facilities, telescopes, instruments, the hosts of those instruments, targets, and the like that relate to the data within your bundle.</h3><br/>
+            <p class="card-header stylish-color white-text text-left z-depth-2">Adding context products entails associating your bundle with the missions, facilities, telescopes, instruments, the hosts of those instruments, targets, and the like that relate to the data within your bundle.</h3><br/>
         </div>
     </div>
     <!--/.Row-->
@@ -185,7 +186,7 @@ r as UTF
     <!--Row-->
     <div class="row">
         <div class="col-md-12">
-            <p class="card-header stylish-color white-text text-center z-depth-2">The Product_Bundle label describes your bundle as a product. Add aliases if your bundle has more than one name. Add citation information so others can cite your bundle.</h3><br/>
+            <p class="card-header stylish-color white-text text-left z-depth-2">The Product_Bundle label describes your bundle as a product. Add aliases if your bundle has more than one name. Add citation information so others can cite your bundle.</h3><br/>
         </div>
     </div>
     <!--/.Row-->
@@ -317,37 +318,50 @@ r as UTF
     <!--/.Row-->
     <!--Row-->
     <div class="row">
-        {% if bundle.collections.has_data %}
 
-        {% for product in product_observational_set %} <!-- WE WANT THIS TO BE DATA LEVEL -->
+        {% if bundle.collections.has_data %}
+        <!--Display Add Data Form-->
+
+        <!--Column-->
+        <div class="col-sm-6 col-md-3">
+
+            <h4>Add Data</h4>
+            <form id="form_data" method="post" action="{% url 'build:bundle' bundle.pk %}">
+                {% csrf_token %}
+
+                <div id="form_data">
+                    {{ form_data.as_p }}
+                </div>
+
+                <input class="btn btn-default" type="submit" value="Add"/>
+
+            </form>
+        </div>
+        <!--/.Column-->
+
+
+        {% for data in data_set %} <!-- WE WANT THIS TO BE DATA LEVEL -->
         <!--Column-->
         <div class="col-sm-6 col-md-3">
             <!--Card-->
             <div class="button">
             <!--Link-->
-            {% if product.type_of == 'Table' %}
-                <a href="{% url 'build:table_detail' bundle.pk product.pk %}">
-            {% elif product.type_of == 'Array' %}
-                <a href="{% url 'build:array' bundle.pk product.pk %}">
-            {% else %}
-                <a href="{% url 'main:construction' %}">
-            {% endif %}
-
+            <a href="{% url 'build:data' bundle.pk data.pk %}">
                 <!--Card content-->
                 <div class="card-body">
                     <!--Title-->
-                    <h4 class="card-title">{{ product.title }}</h4>
+                    <h4 class="card-title">{{ data.name }}</h4>
                     <!--/.Title-->
                     <!--Text-->
-                    <p class="card-text">{{ product.data.processing_level }}</p>
-                    <p class="card-text">{{ product.type_of }}</p>
+                    <!--<p class="card-text">{{ data.name }}</p>-->
+                    <!--<p class="card-text">{{ product.type_of }}</p>-->
                     <!--/.Text-->
                 </div>
                 <!--/.Card content-->
                 <!--Image-->
                 <img class="img-fluid" src="{% static 'images/arrow.png' %}" alt="An image representing an arrow."/>
                 <!--/.Image-->
-                <!--/a-->
+            
             </a>
             <!--/.Link-->
             </div>
@@ -356,32 +370,6 @@ r as UTF
         <!--/.Column-->
         {% endfor %}
 
-        <!--Column-->
-        <div class="col-sm-6 col-md-3">
-            <!--Card-->
-            <div class="button">
-            <!--Link-->
-            <a href="{% url 'build:data' bundle.pk %}">
-                <!--Card content-->
-                <div class="card-body">
-                    <!--Title-->
-                    <h4 class="card-title">Add Data</h4>
-                    <!--/.Title-->
-                    <!--Text-->
-                    <p class="card-text">Each data collection can be thought of as a little bundle.</p>
-                    <!--/.Text-->
-                </div>
-                <!--/.Card content-->
-                <!--Image-->
-                <img class="img-fluid" src="{% static 'images/add.png' %}" alt="An image representing an add."/>
-                <!--/.Image-->
-                <!--/a-->
-            </a>
-            <!--/.Link-->
-            </div>
-            <!--/.Card-->
-        </div>
-        <!--/.Column-->
         {% endif %}
 
 

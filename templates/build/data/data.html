@@ -11,58 +11,60 @@ Data
 {% endblock %}
 
 {% block main_header_block %}
-Data Collection
+{{ data.processing_level }} Data Collection: {{ data.title }}
 {% endblock %}
 
 {% block about_header_block %}
-The data collection consists of the following subcollections: calibrated data, derived data, raw data, and reduced data.  Your data will fall into at least one of these categories.  <br/><br/>An abbreviated or reduced-resolution version of the data should be located in the browse collection rather than in this collection, the data collection.  
+{% endblock %}
+
+{% block standards_reference_block %}
+ Each collection of data contains a Product_Observational label. The Product_Observational is broken into 5 pieces. The first 4 are required and the 5th one is optional:</br>
+            
+            </br>1. Identification Area: uniquely identifies this product from all other products
+            </br>2. Observation Area: describes the observation and subsequent processing at a high level
+            </br>3. Reference List: cross references internal products like documents or calibration observations
+            </br>4. File Area: identifies the data file(s) contained in the data collection as well as defines the data structures. Multiple file areas can be added to an observational product.
+            </br>5. Supplemental File Area: identifies data file(s) that are supplemental to the observational data, like reduced-precision browse images. This section is optional and also contains additional data structures.
+        
 {% endblock %}
 
 
 
 {% block body_block %}
-<!--Row-->
-<div class="row pt-2">
-    <!--Column-->
-    <div class="col-md-12">
-
-        <h4 class="card-header elegant-color white-text text-center z-depth-2">Add Data by Processing Level</h4>       
-
-    </div>
-    <!--/.Column-->
-</div>
-<!--/.Row-->
-<!--Row-->
-<div class="row pt-2">
-
-
-</div>
-<!--/.Row-->
-
 <hr/><!--Divider-->
 <!--Row-->
 <div class="row pt-2">
-
     <!--Column-->
-    <div class="col-md-6">
-        <form id="form_product_document" method="post" action="">  <!--Might change this name later-->
-            <!--Column-->
-                <div class="col-md-12">
-                    <h3>1. Select Processing Level</h3>       
-                </div>
-            <!--/.Column-->
-            {% csrf_token %}
-            <div id="form_data">
+    <div class="col-md-4">
+                <!--Card-->       
+                <div class="card">
+                    <!--Card image-->
+                    <!--img class="img-fluid" src="{% static 'images/calibrated.png' %}" alt="Data Image"-->
 
-                {{ form_data.as_p }}
-            </div>
-            <hr/><!--Divider-->
-            <hr/><!--Divider-->
-            <!--Column-->
-                <div class="col-md-12">
-                    <h3>2. Add Product Observational Information</h3>       
+                    <!--Card content-->
+                    <div class="card-body">
+                        <!--Title-->
+                        <h4 class="card-title">{{ data.name }}</h4>
+                        <!--Text-->
+                        <p class="card-text"><strong>Processing Level:</strong> {{ data.processing_level }}</p>
+                        <p class="card-text"><Strong>Dictionary:</strong>Show display dictionary or add display dictionary option</p>
+                        <p class="card-text">Below you will find the observational products listed within this collection.</p>
+                        <p class="card-text">To add more observational products, fill out the form to the right.</p>
+                        <!--Buttons-->
+                        <a href="{% url 'main:construction' %}">
+                            <button type="button" class="btn btn-danger">Delete</button> 
+                        </a>
+                    </div>
                 </div>
-            <!--/.Column-->
+                <!--/.Card-->
+    </div>
+    <!--/.Column-->
+    <!--Column-->
+    <div class="col-md-8">
+        <form id="form_product_document" method="post" action="">  <!--Might change this name later-->
+            {% csrf_token %}
+
+            <h3>Add Product Observational Information</h3>       
             <div id="form_product_document">
 
                 {{ form_product_observational.as_p }}
@@ -79,7 +81,7 @@ The data collection consists of the following subcollections: calibrated data, d
 <div class="row pt-2">
     <!--Column-->
     <div class="col-md-12">
-        <h3 class="card-header elegant-color white-text text-center z-depth-2">Current Data Products</h3>
+        <h3 class="card-header elegant-color white-text text-center z-depth-2">Current Observational Products</h3>
     </div>
     <!--/.Column-->
 </div>
@@ -87,19 +89,19 @@ The data collection consists of the following subcollections: calibrated data, d
 <!--Row-->
 <div class="row pt-2">
 
-{% if data_set %} 
-    {% for data in data_set %}
+{% if product_observational_set %} 
+    {% for product_observational in product_observational_set %}
         {% if data.processing_level == 'Calibrated' %}
             </hr>
-            {% for product_observational in calibrated_set %}
-
-            <!--Column-->
             <div class="col-sm-6 col-md-3">
                 <!--Card-->
                 {% if product_observational.type_of == 'Table' %}
                 <a href="{% url 'build:table_detail' bundle.pk product_observational.pk %}">
                 {% elif product_observational.type_of == 'Array' %}
-                <a href="{% url 'build:array_detail' bundle.pk product_observational.pk %}">
+                <!--
+                <a href="{% url 'build:array' bundle.pk data.pk product_observational.pk %}">
+                -->
+                <a href="{% url 'main:construction' %}
                 {% else %}
                 <a href="{% url 'main:construction' %}">
                 {% endif %}
@@ -125,10 +127,8 @@ The data collection consists of the following subcollections: calibrated data, d
                 <!--/.Card-->
             </div>
             <!--/.Column-->
-            {% endfor %}    
         {% elif data.processing_level == 'Derived' %}
             </hr>
-            {% for product_observational in derived_set %}
             <!--Column-->
             <div class="col-sm-6 col-md-3">
                 <!--Card-->
@@ -155,10 +155,8 @@ The data collection consists of the following subcollections: calibrated data, d
                 <!--/.Card-->
             </div>
             <!--/.Column-->
-            {% endfor %} 
         {% elif data.processing_level == 'Raw' %}
             </hr>
-            {% for product_observational in raw_set %}
             <!--Column-->
             <div class="col-sm-6 col-md-3">
                 <!--Card-->
@@ -191,17 +189,15 @@ The data collection consists of the following subcollections: calibrated data, d
                 <!--/.Card-->
             </div>
             <!--/.Column-->
-            {% endfor %} 
         {% elif data.processing_level == 'Reduced' %}
             </hr>
-            {% for product_observational in reduced_set %}
             <!--Column-->
             <div class="col-sm-6 col-md-3">
                 <!--Card-->
                 {% if product_observational.type_of == 'Table' %}
                 <a href="{% url 'build:table_detail' bundle.pk product_observational.pk %}">
                 {% elif product_observational.type_of == 'Array' %}
-                <a href="{% url 'build:array_detail' bundle.pk product_observational.pk %}">
+                <a href="{% url 'build:array' bundle.pk data.pk product_observational.pk %}">
                 {% else %}
                 <a href="{% url 'main:construction' %}">
                 {% endif %}
@@ -227,7 +223,6 @@ The data collection consists of the following subcollections: calibrated data, d
                 <!--/.Card-->
             </div>
             <!--/.Column-->
-            {% endfor %} 
         {% endif %}     
     {% endfor %}
 

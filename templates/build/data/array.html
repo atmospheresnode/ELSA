@@ -35,7 +35,7 @@ Array Data
 <!--Row-->
 <div class="row pt-2">
     <!--Column-->
-    <div class="col-md-12">
+    <div class="col-md-8">
             <!--Card-->
             <div class="button">
                <!--Card content-->
@@ -62,6 +62,24 @@ Array Data
             <!--/.Card-->
     </div>
     <!--/.Column-->
+    <!--Column-->
+    <div class="col-md-4">
+                    {% if dictionary is None %}
+                        <a href="{% url 'build:display_dictionary' bundle.pk product_observational.pk array.pk%}">
+                            <button type="button" class="btn btn-default">
+                                <i class="fa fa-plus"></i>
+                                Add Display Dictionary
+                            </button>
+                        </a>
+                    {% else %}
+                    <!--Title-->
+                    <h5 class="card-title">Display Dictionary: {{ dictionary }}</h5>
+                    <!--/.Title-->
+                    {% endif %}
+                    
+ 
+    </div>
+    <!--/.Column-->
 </div>
 <!--/.Row-->
 <!--Row-->
@@ -73,7 +91,7 @@ Array Data
 <!--/.Row-->
 <!--Row-->
 <div class="row pt-2">
-    {% for array, dictionary in arrays %}
+    {% for array in arrays %}
     <!--Column-->
     <div class="col-md-4">
             <!--Card-->
@@ -96,18 +114,6 @@ Array Data
                       </ul>
                     </p>
                     <!--/.Text-->
-                    {% if dictionary is None %}
-                        <a href="{% url 'build:display_dictionary' bundle.pk product_observational.pk array.pk%}">
-                            <button type="button" class="btn btn-default">
-                                <i class="fa fa-plus"></i>
-                                Add Display Dictionary
-                            </button>
-                        </a>
-                    {% else %}
-                    <!--Title-->
-                    <h5 class="card-title">Display Dictionary: {{ dictionary }}</h5>
-                    <!--/.Title-->
-                    {% endif %}
                     
                 </div>
                 <!--/.Card content-->

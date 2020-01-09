@@ -51,9 +51,10 @@ urlpatterns = [
 
 
     # Data
-    url(r'^(?P<pk_bundle>\d+)/data/$', views.data, name='data'),    
+    url(r'^(?P<pk_bundle>\d+)/data/(?P<pk_data>\d+)/$', views.data, name='data'),    
     url(r'^(?P<pk_bundle>\d+)/data/(?P<pk_product_observational>\d+)/$', views.product_observational, name='product_observational'),
-url(r'^(?P<pk_bundle>\d+)/data/(?P<pk_product_observational>\d+)/array/$', views.array, name='array'),
+
+    url(r'^(?P<pk_bundle>\d+)/data/(?P<pk_data>\d+)/array/$', views.array, name='array'),
     url(r'^(?P<pk_bundle>\d+)/data/(?P<pk_product_observational>\d+)/array/(?P<pk_array>\d+)/display_dictionary/$', views.display_dictionary, name='display_dictionary'),
 
     url(r'^(?P<pk_bundle>\d+)/data/table/(?P<pk_product_observational>\d+)/$', views.table_detail, name='table_detail'),

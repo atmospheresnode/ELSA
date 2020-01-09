@@ -2118,8 +2118,7 @@ class Product_Collection(models.Model):
 
 
     def directory_data(self, data):
-        name_edit = '{0}_{1}'.format(self.collection.lower(), data.processing_level.lower())
-        collection_directory = os.path.join(self.bundle.directory(), name_edit)
+        collection_directory = os.path.join(self.bundle.directory(), data.get_directory_name())
         return collection_directory
 
     """
@@ -2278,7 +2277,10 @@ class Data(models.Model):
 
     # get_directory_name returns the name of the directory for this data object.
     def get_directory_name(self):
-        return 'data_{}_{}'.format(self.processing_level.lower(), self.name.lower())
+        # Edit name for directory
+        # replace all spaces with underscores
+        name = replace_all(self.name.lower(), ' ', '_')
+        return 'data_{}_{}'.format(self.processing_level.lower(), name)
 
 
     # build_directory builds a directory of the form data_<processing_level>.  
@@ -3376,7 +3378,7 @@ The Movie_Display_Settings class provides
 
 
     """
-    array = models.ForeignKey(Array, on_delete=models.CASCADE)
+    data = models.ForeignKey(Data, on_delete=models.CASCADE)
     Color_Display_Settings = models.ForeignKey(Color_Display_Settings, on_delete=models.CASCADE)
     Display_Direction = models.ForeignKey(Display_Direction, on_delete=models.CASCADE)
     #Display_Settings = models.ForeignKey(Display_Settings, on_delete=models.CASCADE)

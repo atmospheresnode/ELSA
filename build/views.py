@@ -154,7 +154,7 @@ def alias_delete(request, pk_bundle, alias):
 
 
 @login_required
-def array(request, pk_bundle, pk_product_observational):
+def array(request, pk_bundle, pk_data):
     print ' \n\n \n\n-------------------------------------------------------------------------'
     print '\n\n---------------- Welcome to Build A Bundle with ELSA --------------------'
     print '------------------------------ DEBUGGER ---------------------------------'
@@ -166,15 +166,14 @@ def array(request, pk_bundle, pk_product_observational):
         # Get forms
         form_array = ArrayForm(request.POST or None)
 
-        # Get (array, dictionary) tuple sets
-        arrays = []
-        array_only = Array.objects.filter(product_observational=product_observational)
-        for array in array_only:
-            try:
-                disp_dict = DisplayDictionary.objects.get(array=array) # Should be only one
-            except DisplayDictionary.DoesNotExist:
-                disp_dict = None
-            arrays.append( (array, disp_dict) )
+        # Get array
+        arrays = Array.objects.filter(product_observational=product_observational)
+        
+        # Get display dictionary
+        try:
+            disp_dict = DisplayDictionary.objects.get(data=data)
+        except DisplayDictionary.DoesNotExist:
+            disp_dict = None
 
         # Declare context_dict for template
         context_dict = {
@@ -182,6 +181,7 @@ def array(request, pk_bundle, pk_product_observational):
             'form_array':form_array,
             'product_observational':product_observational,
             'arrays':arrays,
+            'disp_dict':disp_dict,
         }
 
         # After ELSAs friend hits submit, if the forms are completed correctly, we should enter
@@ -509,26 +509,60 @@ def bundle(request, pk_bundle):
         print '-----------------------BEGIN Bundle Detail VIEW--------------------------.\n'
         print '--------------------------------------------------------------------------\n'
 
-        # get information in regards to current bundle for detailed display
+        # get set of aliases associated with the bundle
         alias_set = Alias.objects.filter(bundle=bundle)
         alias_set_count = len(alias_set)
 
+        # get set of data collections currently associated with the bundle
         data_set = Data.objects.filter(bundle=pk_bundle)
+
+        # get set of observational products currently associated with the bundle
         product_observational_set = []    
         if len(data_set) > 0:
             for data in data_set:
                 product_observational_set.extend(Product_Observational.objects.filter(data=data))
-            
 
+        # Data Form        
+        form_data = DataForm(request.POST or None)
+
+        print "Before form valid"
+        # After ELSA's friend hits submit, if the forms are completed correctly, we should
         context_dict = {
             'bundle':bundle,
             'alias_set':alias_set,
             'alias_set_count':alias_set_count,            
 	    'data_set':data_set,
+            'form_data':form_data,
             'collections': Collections.objects.get(bundle=bundle),
             'product_observational_set':product_observational_set,
         }
 	   
+
+
+        # satisfy this conditional
+        if form_data.is_valid():
+            print 'Creating data object...'
+            # Make Data object
+            data = form_data.save(commit=False)
+            data.bundle = bundle
+            data.save()
+            print 'Data object: {}'.format(data)
+
+            # Make data directory
+            print 'Checking to see if data directory needs to be made'
+            new_directory = data.build_directory()
+
+            # If it's a new directory, we need a product_collection to describe the
+            # collection. *** Currently: Just does base case. Fix in data model.
+            if new_directory:
+                data.build_product_collection()
+
+            # Update data_set
+            context_dict['data_set'] = Data.objects.filter(bundle=pk_bundle)
+            
+            # Refresh page 
+#            return render(request, 'build/bundle/bundle.html', context_dict)
+
 
 
         return render(request, 'build/bundle/bundle.html', context_dict)
@@ -1139,7 +1173,7 @@ def context_search_telescope(request, pk_bundle):
 
 
 @login_required
-def data(request, pk_bundle):
+def data(request, pk_bundle, pk_data):
     print '\n\n'
     print '-------------------------------------------------------------------------'
     print '\n\n---------------------- Add Data with ELSA ---------------------------'
@@ -1151,19 +1185,17 @@ def data(request, pk_bundle):
     if request.user == bundle.user:
         print 'authorized user: {}'.format(request.user)
 
+        # Get Data Object and corresponding products
+        data = Data.objects.get(pk=pk_data)
+        product_observational_set = Product_Observational.objects.filter(data=data)
+
         # Get forms
-        form_data = DataForm(request.POST or None)
         form_product_observational = ProductObservationalForm(request.POST or None)
 
         # After ELSA's friend hits submit, if the forms are completed correctly, we should
         # satisfy this conditional
-        if form_data.is_valid() and form_product_observational.is_valid():
+        if form_product_observational.is_valid():
 
-            # Make Data object
-            data = form_data.save(commit=False)
-            data.bundle = bundle
-            data.save()
-            print 'Data object: {}'.format(data)
 
             # Make Product Observational
             product_observational = form_product_observational.save(commit=False)
@@ -1181,34 +1213,12 @@ def data(request, pk_bundle):
             if new_directory:
                 data.build_product_collection()
             
-        # Get sets for context dictionary
-        data_set = Data.objects.filter(bundle=bundle)
-        calibrated_set = []
-        derived_set = []
-        raw_set = []
-        reduced_set = []
-        for data in data_set:
-            if data.processing_level == 'Calibrated':
-                calibrated_set.extend(Product_Observational.objects.filter(bundle=bundle, data=data))
-            elif data.processing_level == 'Derived':
-                derived_set.extend(Product_Observational.objects.filter(bundle=bundle, data=data))
-            elif data.processing_level == 'Raw':
-                raw_set.extend(Product_Observational.objects.filter(bundle=bundle, data=data))
-            elif data.processing_level == 'Reduced':
-                reduced_set.extend(Product_Observational.objects.filter(bundle=bundle, data=data))
-
-        print "Raw: {},\tCalibrated: {},\tDerived: {},\tReduced:{}".format(raw_set, calibrated_set, derived_set, reduced_set)
-
         # Context Dictionary
         context_dict = {
             'bundle':bundle,
-            'form_data':form_data,
             'form_product_observational':form_product_observational,
-            'data_set': data_set,
-            'calibrated_set': calibrated_set,
-            'derived_set':derived_set,
-            'raw_set':raw_set,
-            'reduced_set':reduced_set,
+            'data': data,
+            'product_observational_set':product_observational_set,
         }
       
         return render(request, 'build/data/data.html', context_dict)
@@ -1283,7 +1293,7 @@ def display_dictionary(request, pk_bundle, pk_product_observational, pk_array):
 
             # Create Display Dictionary parent object for the above objects
             display_dictionary = DisplayDictionary.objects.create(
-                array = Array.objects.get(pk=pk_array),
+                data = Data.objects.get(pk=pk_data),
                 color_display_settings=color_display_settings,
                 display_direction=display_direction,
                 movie_display_settings=movie_display_settings
