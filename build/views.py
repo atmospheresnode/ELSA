@@ -522,21 +522,70 @@ def bundle(request, pk_bundle):
             for data in data_set:
                 product_observational_set.extend(Product_Observational.objects.filter(data=data))
 
-        # Data Form        
+        # Forms present on bundle detail page
+        #     - Alias Form
+        #     - Data Form 
+        form_alias = AliasForm(request.POST or None)       
         form_data = DataForm(request.POST or None)
 
-        print "Before form valid"
-        # After ELSA's friend hits submit, if the forms are completed correctly, we should
+        # Context dictionary for template
         context_dict = {
             'bundle':bundle,
             'alias_set':alias_set,
             'alias_set_count':alias_set_count,            
 	    'data_set':data_set,
+            'form_alias':form_alias,
             'form_data':form_data,
             'collections': Collections.objects.get(bundle=bundle),
             'product_observational_set':product_observational_set,
         }
-	   
+
+
+        # satisfy this conditional
+        if form_alias.is_valid():
+            print 'form_alias is valid for {}.'.format(bundle.user)
+            # Create Alias model object
+            alias = form_alias.save(commit=False)
+            alias.bundle = bundle
+            alias.save()
+            print 'Alias model object: {}'.format(alias)
+
+            # Find appropriate label(s).
+            # Alias gets added to all Product_Bundle & Product_Collection labels.
+            # We first get all labels of these given types except those in the Data collection which
+            # are handled different from the other collections.
+            all_labels = []
+            product_bundle = Product_Bundle.objects.get(bundle=bundle)
+            product_collections_list = Product_Collection.objects.filter(bundle=bundle).exclude(collection='Data')
+            # We need to check for Product_Collections associated with Data products now.
+                    
+            all_labels.append(product_bundle)
+            all_labels.extend(product_collections_list)
+
+            for label in all_labels:
+                # Open appropriate label(s).  
+                print '- Label: {}'.format(label)
+                print ' ... Opening Label ... '
+                label_list = open_label(label.label())
+                label_root = label_list
+                # Build Alias
+                print ' ... Building Label ... '
+                label_root = alias.build_alias(label_root)
+		#alias.alias_list.append(label_root)
+
+
+                # Close appropriate label(s)
+                print ' ... Closing Label ... '
+                close_label(label.label(), label_root)
+
+            #print alias.print_alias_list()
+
+            print '---------------- End Build Alias -----------------------------------' 
+            # Update alias_set
+            alias_set = Alias.objects.filter(bundle=bundle)
+            context_dict['alias_set'] = alias_set
+            context_dict['alias_set_count'] =  len(alias_set)
+
 
 
         # satisfy this conditional

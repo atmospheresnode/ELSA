@@ -175,7 +175,7 @@ r as UTF
     <!--/.Divider-->
     <!--Row-->
     <div class="row">
-        <div class="col-md-12">
+        <div class="col-md-12 ">
             <h3 class="card-header elegant-color white-text text-center z-depth-2">Product_Bundle</h3><br/>
         </div>
     </div>
@@ -186,42 +186,58 @@ r as UTF
     <!--Row-->
     <div class="row">
         <div class="col-md-12">
-            <p class="card-header stylish-color white-text text-left z-depth-2">The Product_Bundle label describes your bundle as a product. Add aliases if your bundle has more than one name. Add citation information so others can cite your bundle.</h3><br/>
+            <p class="card-header stylish-color white-text text-left z-depth-2">The Product_Bundle label describes your bundle as a product. Add aliases if your bundle has more than one name. Add citation information so others can cite your bundle.</p><br/>
         </div>
     </div>
     <!--/.Row-->
+
     <!--Row-->
     <div class="row">
-        <!--Card-->
-        <div class="col-sm-6 col-md-3">
-        <div class="button">
-            <!--Link-->
-            <a href="{% url 'build:alias' bundle.pk %}">
-                <!--Card content-->
-                <div class="card-body">
-                    <!--Title-->
-                    <h4 class="card-title">ALIAS</h4>
-                    <!--/.Title-->
-                    <!--Text-->
-                    {% if alias_set_count == 0 %}
-                        <p class="card-text">No Alias Information Saved</p>
-                    {% else %}
-                    <p class="card-text">
-                        {% for alias in alias_set %} {{alias}} {%endfor%}
-                    </p>
-                    {% endif %}
-                    <p class="card-text">Add an alias if your data has multiple names.<br/><br/><br/></p>
-                    <!--/.Text-->
-                </div>
-                <!--/.Card content-->
-                <!--Image-->
-                <img class="img-fluid" src="{% static 'images/add.png' %}" alt="An image representing addition."/>
-                <!--/.Image-->
-            </a>
-            <!--/.Link-->
-        </div>
-        <!--/.Card-->
+        <div class="col-md-12">
+            <p class="card-header  rgba-grey-strong black-text text-left z-depth-2">
+        {% if alias_set_count == 0 %}
+            <!--Display Case 1: No alias-->
+            Alias: No Alias</br>
+            An alias is not required but is sometimes useful.</br>
+        {% else %}
+            <!--Display Case 2: Aliases associated with bundle-->
+            Alias:
+                {% for alias in alias_set %}
+                    {{ alias }}. 
+                {% endfor %}
+                </br>
 
+        {% endif %}
+           <input type="button" onclick="displayAliasForm()" value="Add Alias" class="btn btn-teal">
+           </p>
+        </div>
+        <!--/.Column-->
+        
+        <div id="displayAliasForm" class="col-md-12 rgba-indigo-slight">
+                  </br>
+                  <div class="rgba-indigo-slight">
+                  <form id="form_data" method="post" action="{% url 'build:bundle' bundle.pk %}">
+                       {% csrf_token %}
+                       <div id="form_data">
+                            {{ form_alias.as_p }}
+                       </div>
+                       <input class="btn btn-default" type="submit" value="Add"/>
+                  </form></br>
+                  </div>
+                </div> 
+
+            </p>
+        </div>
+    </div>
+    <!--/.Row-->
+
+
+    <!--Row-->
+    <div class="row">
+        <!--Column-->
+        <div class="col-md-12 rgba-brown-slight">
+
+        </p>
         </div>
         <!--/.Column-->
         <!--Column-->
