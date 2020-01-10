@@ -5,6 +5,7 @@ from .forms import *
 from .models import *
 #from context.models import *
 from django.contrib.auth.decorators import login_required
+from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import Q
 from django.http import HttpResponse, HttpRequest
 from django.shortcuts import render, redirect
@@ -511,7 +512,9 @@ def bundle(request, pk_bundle):
 
         # get set of aliases associated with the bundle
         alias_set = Alias.objects.filter(bundle=bundle)
-        alias_set_count = len(alias_set)
+
+        # get citation information associated with bundle
+        citation_information_set = Citation_Information.objects.filter(bundle=bundle)
 
         # get set of data collections currently associated with the bundle
         data_set = Data.objects.filter(bundle=pk_bundle)
@@ -525,17 +528,22 @@ def bundle(request, pk_bundle):
         # Forms present on bundle detail page
         #     - Alias Form
         #     - Data Form 
-        form_alias = AliasForm(request.POST or None)       
+        form_alias = AliasForm(request.POST or None)  
+        form_citation_information = CitationInformationForm(request.POST or None)     
         form_data = DataForm(request.POST or None)
 
         # Context dictionary for template
         context_dict = {
             'bundle':bundle,
             'alias_set':alias_set,
-            'alias_set_count':alias_set_count,            
+            'alias_set_count':len(alias_set), 
+            'citation_information_set':citation_information_set,  
+            'citation_information_set_count':len(citation_information_set),          
 	    'data_set':data_set,
             'form_alias':form_alias,
+            'form_citation_information':form_citation_information,
             'form_data':form_data,
+           
             'collections': Collections.objects.get(bundle=bundle),
             'product_observational_set':product_observational_set,
         }
@@ -587,7 +595,48 @@ def bundle(request, pk_bundle):
             context_dict['alias_set_count'] =  len(alias_set)
 
 
+        # After ELSAs friend hits submit, if the forms are completed correctly, we should enter
+        # this conditional.
+        print '\n\n----------------- CITATION_INFORMATION INFO -------------------------'
+        if form_citation_information.is_valid():
+            print 'form_citation_information is valid'
+            # Create Citation_Information model object
+            citation_information = form_citation_information.save(commit=False)
+            citation_information.bundle = bundle
+            citation_information.save()
+            print 'Citation Information model object: {}'.format(citation_information)
 
+            # Find appropriate label(s).  Citation_Information gets added to all Product_Bundle and 
+            # Product_Collection labels in a Bundle.  The Data collection is excluded since it is 
+            # handled different from the other collections.
+            all_labels = []
+            product_bundle = Product_Bundle.objects.get(bundle=bundle)
+            product_collections_list = Product_Collection.objects.filter(bundle=bundle).exclude(collection='Data')
+            all_labels.append(product_bundle)             # Append because a single item
+            all_labels.extend(product_collections_list)   # Extend because a list
+
+            for label in all_labels:
+
+                # Open appropriate label(s).  
+                print '- Label: {}'.format(label)
+                print ' ... Opening Label ... '
+                label_list = open_label(label.label())
+                label_root = label_list
+        
+                # Build Citation Information
+                print ' ... Building Label ... '
+                label_root = citation_information.build_citation_information(label_root)
+
+                # Close appropriate label(s)
+                print ' ... Closing Label ... '
+                close_label(label.label(), label_root)
+
+                print '------------- End Build Citation Information -------------------'        
+            # Update context_dict with the current Citation_Information models associated with the user's bundle
+            citation_information_set = Citation_Information.objects.filter(bundle=bundle)
+            context_dict['citation_information_set'] = citation_information_set
+            context_dict['citation_information_set_count'] = len(citation_information_set)
+            
         # satisfy this conditional
         if form_data.is_valid():
             print 'Creating data object...'

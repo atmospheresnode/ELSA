@@ -12,7 +12,35 @@ Bundle
 
 
 {% block main_header_block %}
-Bundle: {{ bundle.name }}
+
+
+    <!--Grid row-->
+    <div class="row">
+
+        <!--Grid column-->
+            <div class="col-md-3">
+                Bundle: {{ bundle.name }}
+            </div>
+            <div class="col-md-3">
+                <a href="{% url 'build:bundle_download' bundle.pk %}">
+                    <button type="button" class="btn btn-cyan">Download {{ bundle }} Bundle</button>
+                </a>
+            </div>
+            <div class="col-md-3">
+               <a href="https://atmos.nmsu.edu/elsa/archive/{{user.username}}/{{bundle.get_name_directory}}">
+                    <button type="button" class="btn btn-teal">View {{ bundle }} Directory</button>
+                </a>
+            </div>
+            <div class="col-md-3">
+                <a href="{% url 'build:bundle_delete' bundle.pk %}">
+                    <button type="button" class="btn btn-warning">Delete {{ bundle }} Bundle</button>
+                </a>
+            </div>
+<hr>
+        <!--Grid column-->
+
+    </div>
+    <!--/.Row-->
 {% endblock %}
 
 {% block about_header_block %}
@@ -65,57 +93,127 @@ r as UTF
 {% block body_block %}
 
 
-
-    <!--Grid row-->
+    <!--Row-->
     <div class="row">
-
         <!--Grid column-->
-        <div class="col-md-3">
+        <div class="col-md-12">
 
+            <p class="card-header black-text text-left z-depth-2">
 
-            <p class="section-description">
+            <!--p class="section-description"-->
                 <strong>LID: </strong>
-                {{ bundle.lid }}.
-            </p>
-            <p class="section-description">
+                {{ bundle.lid }}.</br>
+            <!--/p-->
+            <!--p class="section-description"-->
                 <strong>Status: </strong>
-                {% if bundle.status == 'b' %} Build.
-                {% elif bundle.status == 'r' %} Review.
-                {% else %} Submit.
+                {% if bundle.status == 'b' %} Build.</br>
+                {% elif bundle.status == 'r' %} Review.</br>
+                {% else %} Submit.</br>
                 {% endif %}
-            </p>
-            <p class="section-description">
+            <!--/p-->
+            <!--p class="section-description"-->
                 <strong>Creator:</strong>
-                {{bundle.user}}.
+                {{bundle.user}}.</br>
             </p>
         </div>
         <!--Grid column-->
-
-        <!--Grid column-->
-
-            <div class="col-md-3">
-                <a href="{% url 'build:bundle_download' bundle.pk %}">
-                    <button type="button" class="btn btn-cyan">Download {{ bundle }} Bundle</button>
-                </a>
-            </div>
-            <div class="col-md-3">
-               <a href="https://atmos.nmsu.edu/elsa/archive/{{user.username}}/{{bundle.get_name_directory}}">
-                    <button type="button" class="btn btn-teal">View {{ bundle }} Directory</button>
-                </a>
-            </div>
-            <div class="col-md-3">
-                <a href="{% url 'build:bundle_delete' bundle.pk %}">
-                    <button type="button" class="btn btn-warning">Delete {{ bundle }} Bundle</button>
-                </a>
-            </div>
-
-
-        <!--Grid column-->
-
-
-
     </div>
-    <!--/.Grid row-->
+    <!--/.Row-->
+
+    <hr>
+    <!--Row-->
+    <div class="row">
+        <div class="col-md-12">
+            <p class="card-header  black-text text-left z-depth-2">
+        {% if alias_set_count == 0 %}
+            <!--Display Case 1: No alias-->
+            <strong>Alias:</strong> None</br>
+            An alias is not required but is sometimes useful.</br>
+        {% else %}
+            <!--Display Case 2: Aliases associated with bundle-->
+            <strong>Alias:</strong>
+                {% for alias in alias_set %}
+                    {{ alias }}. 
+                {% endfor %}
+                </br>
+
+        {% endif %}
+           <input type="button" onclick="displayAliasForm()" value="Add Alias" class="btn btn-teal">
+           </p>
+        </div>
+        <!--/.Column-->
+    </div>
+    <!--/.Row-->
+    <!--Row-->
+    <div class="row">
+        <!--Alias Form-->
+        <div id="displayAliasForm" class="col-md-12 rgba-indigo-slight">
+
+                  </br>
+                  <div class="rgba-indigo-slight">
+                  <form id="form_data" method="post" action="{% url 'build:bundle' bundle.pk %}">
+                       {% csrf_token %}
+                       <div id="form_data">
+                            {{ form_alias.as_p }}
+                       </div>
+                       <input class="btn btn-default" type="submit" value="Add"/>
+                  </form></br>
+                  </div>
+
+        </div>
+        <!--/.Alias Form-->
+    </div>
+    <!--/.Row-->
+    <hr>
+    <!--Row-->
+    <div class="row">
+        <div class="col-md-12">
+            <p class="card-header black-text text-left z-depth-2">
+
+        {% if citation_information_set_count == 0 %}
+            <!--Display Case 1: No Citation Information Added-->
+            <strong>Citation Information:</strong> None</br>
+        {% else %}
+            <!--Display Case 2: Citation Information associated with bundle-->
+            <strong>Citation Information:</strong>
+                {% for citation_information in citation_information_set %}
+                </br>Author List: {{ citation_information.author_list }}
+                </br>Description: {{ citation_information.description }}
+                </br>Editor List: {{ citation_information.editor_list }}
+                </br>Keyword(s): {{ citation_information.editor_list }}
+                </br>Publication Year: {{ citation_information.publication_year }}
+                </br>
+                {% endfor %}
+
+        {% endif %}
+           <input type="button" onclick="displayCitationInformationForm()" value="Add Citation Information" class="btn btn-teal">
+           </p>
+        </div>
+        <!--/.Column-->
+    </div>
+    <!--Row-->
+    <div class="row">
+        <!--Citation Information Form-->
+        <div id="displayCitationInformationForm" class="col-md-12 rgba-indigo-slight">
+
+                  </br>
+                  <div class="rgba-indigo-slight">
+                  <form id="form_data" method="post" action="{% url 'build:bundle' bundle.pk %}">
+                       {% csrf_token %}
+                       <div id="form_data">
+                            {{ form_citation_information.as_p }}
+                       </div>
+                       <input class="btn btn-default" type="submit" value="Add"/>
+                  </form></br>
+                  </div>
+
+        </div>
+        <!--/.Citation Information Form-->
+    </div>
+    <!--/.Row-->
+
+
+
     <!--Divider-->
     <hr class="mb-5">
     <!--/.Divider-->
@@ -173,102 +271,6 @@ r as UTF
     <!--Divider-->
     <hr class="mb-5">
     <!--/.Divider-->
-    <!--Row-->
-    <div class="row">
-        <div class="col-md-12 ">
-            <h3 class="card-header elegant-color white-text text-center z-depth-2">Product_Bundle</h3><br/>
-        </div>
-    </div>
-    <!--/.Row-->
-
-
-    <div id="product_bundle_detail">
-    <!--Row-->
-    <div class="row">
-        <div class="col-md-12">
-            <p class="card-header stylish-color white-text text-left z-depth-2">The Product_Bundle label describes your bundle as a product. Add aliases if your bundle has more than one name. Add citation information so others can cite your bundle.</p><br/>
-        </div>
-    </div>
-    <!--/.Row-->
-
-    <!--Row-->
-    <div class="row">
-        <div class="col-md-12">
-            <p class="card-header  rgba-grey-strong black-text text-left z-depth-2">
-        {% if alias_set_count == 0 %}
-            <!--Display Case 1: No alias-->
-            Alias: No Alias</br>
-            An alias is not required but is sometimes useful.</br>
-        {% else %}
-            <!--Display Case 2: Aliases associated with bundle-->
-            Alias:
-                {% for alias in alias_set %}
-                    {{ alias }}. 
-                {% endfor %}
-                </br>
-
-        {% endif %}
-           <input type="button" onclick="displayAliasForm()" value="Add Alias" class="btn btn-teal">
-           </p>
-        </div>
-        <!--/.Column-->
-        
-        <div id="displayAliasForm" class="col-md-12 rgba-indigo-slight">
-                  </br>
-                  <div class="rgba-indigo-slight">
-                  <form id="form_data" method="post" action="{% url 'build:bundle' bundle.pk %}">
-                       {% csrf_token %}
-                       <div id="form_data">
-                            {{ form_alias.as_p }}
-                       </div>
-                       <input class="btn btn-default" type="submit" value="Add"/>
-                  </form></br>
-                  </div>
-                </div> 
-
-            </p>
-        </div>
-    </div>
-    <!--/.Row-->
-
-
-    <!--Row-->
-    <div class="row">
-        <!--Column-->
-        <div class="col-md-12 rgba-brown-slight">
-
-        </p>
-        </div>
-        <!--/.Column-->
-        <!--Column-->
-        <div class="col-sm-6 col-md-3">
-            <!--Card-->
-            <div class="button">
-                <!--Link-->
-                <a href="{% url 'build:citation_information' bundle.pk %}">
-                    <!--Card content-->
-                    <div class="card-body">
-                        <!--Title-->
-                        <h4 class="card-title">CITATION INFORMATION</h4>
-                        <!--/.Title-->
-                        <!--Text-->
-                        <p class="card-text">Add citation information to your bundle.<br/><br/></p>
-                        <!--/.Text-->
-                    </div>
-                    <!--/.Card content-->
-                    <!--Image-->
-                    <img class="img-fluid" src="{% static 'images/add.png' %}" alt="An image representing addition."/>
-                    <!--/.Image-->
-                </a>
-                <!--/.Link-->
-            </div>
-            <!--/.Card-->
-        </div>
-        <!--/.Column-->
-    </div>
-    <!--/.Row-->
-    </div>
-    <!--/.Product Bundle Detail-->
 
 
     <!--Divider-->
@@ -323,7 +325,7 @@ r as UTF
     </div>
     <!--/.Document Collection Detail-->
 
-
+{% if bundle.collections.has_data %}
     <div id="data_collection_detail">
     <!--Row-->
     <div class="row">
@@ -335,7 +337,6 @@ r as UTF
     <!--Row-->
     <div class="row">
 
-        {% if bundle.collections.has_data %}
         <!--Display Add Data Form-->
 
         <!--Column-->
@@ -386,14 +387,13 @@ r as UTF
         <!--/.Column-->
         {% endfor %}
 
-        {% endif %}
-
-
     <!--/.Row-->
     </div>
     <!--/.Data Collection Detail-->
+{% endif %}
 
 
+{% if bundle.collections.has_geometry %}
     <div id="geometry_collection_detail">
     <!--Row-->
     <div class="row">
@@ -404,7 +404,6 @@ r as UTF
     <!--/.Row-->
     <!--Row-->
     <div class="row">
-        {% if bundle.collections.has_geometry %}
         <!--Column-->
         <div class="col-sm-6 col-md-3">
             <!--Card-->
@@ -429,12 +428,12 @@ r as UTF
             <!--/.Link-->
         </div>
         <!--/.Card-->
-        {% endif %}
 
     </div>
     <!--/.Row-->
     </div>
     <!--/.Geometry Collection Detail-->
+{% endif %}
 
 
 
