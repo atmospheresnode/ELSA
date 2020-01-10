@@ -531,6 +531,7 @@ def bundle(request, pk_bundle):
         form_alias = AliasForm(request.POST or None)  
         form_citation_information = CitationInformationForm(request.POST or None)     
         form_data = DataForm(request.POST or None)
+        form_document = ProductDocumentForm(request.POST or None)
 
         # Context dictionary for template
         context_dict = {
@@ -543,9 +544,10 @@ def bundle(request, pk_bundle):
             'form_alias':form_alias,
             'form_citation_information':form_citation_information,
             'form_data':form_data,
-           
+            'form_document':form_document,
             'collections': Collections.objects.get(bundle=bundle),
             'product_observational_set':product_observational_set,
+            'documents':Product_Document.objects.filter(bundle=bundle)
         }
 
 
@@ -662,6 +664,62 @@ def bundle(request, pk_bundle):
 #            return render(request, 'build/bundle/bundle.html', context_dict)
 
 
+
+        # After ELSAs friend hits submit, if the forms are completed correctly, we should enter
+        # this conditional.  We must do [] things: 1. Create the Document model object, 2. Add a Product_Document label to the Document Collection, 3. Add the Document as an Internal_Reference to the proper labels (like Product_Bundle and Product_Collection).
+        print '\n\n---------------------- DOCUMENT INFO -------------------------------'
+        if form_document.is_valid():
+            print 'form_product_document is valid'  
+
+            # Create Document Model Object
+            product_document = form_document.save(commit=False)
+            product_document.bundle = bundle
+            product_document.save()
+            print 'Product_Document model object: {}'.format(product_document)
+
+            # Build Product_Document label using the base case template found
+            # in templates/pds4/basecase
+            print '\n---------------Start Build Product_Document Base Case------------------------'
+            product_document.build_base_case()
+            # Open label - returns a list where index 0 is the label object and 1 is the tree
+            print ' ... Opening Label ... '
+            label_list = open_label(product_document.label())
+            label_root = label_list
+            # Fill label - fills 
+            print ' ... Filling Label ... '
+            #label_root = bundle.version.fill_xml_schema(label_root)
+            label_root = product_document.fill_base_case(label_root)
+            # Close label    
+            print ' ... Closing Label ... '
+            close_label(label_object, label_root)          
+            print '---------------- End Build Product_Document Base Case -------------------------' 
+
+            # Add Document info to proper labels.  For now, I simply have Product_Bundle and Product_Collection with a correction for the data collection.  The variable all_labels_kill_data means all Product_Collection labels except those associated with data.  Further below, you will see the correction for the data collection where our label set is now data_labels.
+            print '\n---------------Start Build Internal_Reference for Document-------------------'
+            all_labels = []
+            product_bundle = Product_Bundle.objects.get(bundle=bundle)
+            product_collections_list = Product_Collection.objects.filter(bundle=bundle)
+
+            all_labels.append(product_bundle)
+            all_labels.extend(product_collections_list)  
+
+            for label in all_labels:
+                print '- Label: {}'.format(label)
+                print ' ... Opening Label ... '
+                label_list = open_label(label.label())
+                label_root = label_list
+        
+                # Build Internal_Reference
+                print ' ... Building Internal_Reference ... '
+                label_root = label.build_internal_reference(label_root, product_document)
+
+                # Close appropriate label(s)
+                print ' ... Closing Label ... '
+                close_label(label.label(), label_root)
+            print '\n----------------End Build Internal_Reference for Document-------------------'
+
+
+            context_dict['documents'] = Product_Document.objects.filter(bundle=bundle)    
 
         return render(request, 'build/bundle/bundle.html', context_dict)
 

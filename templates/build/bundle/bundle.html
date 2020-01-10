@@ -230,7 +230,14 @@ r as UTF
     <!--Row-->
     <div class="row">
         <div class="col-md-12">
-            <p class="card-header stylish-color white-text text-left z-depth-2">Adding context products entails associating your bundle with the missions, facilities, telescopes, instruments, the hosts of those instruments, targets, and the like that relate to the data within your bundle.</h3><br/>
+            <p class="card-header black-text text-left z-depth-2">Adding context products entails associating your bundle with the missions, facilities, telescopes, instruments, the hosts of those instruments, targets, and the like that relate to the data within your bundle.</br>
+
+           <a href="{% url 'build:context_search' bundle.pk %}">
+           <input type="button" value="Add Context Products" class="btn btn-teal">
+           </a>
+           </p>
+
+</p><br/>
         </div>
     </div>
     <!--/.Row-->
@@ -239,28 +246,7 @@ r as UTF
         <!--/.Column-->
         <!--Column-->
         <div class="col-sm-6 col-md-3">
-            <!--Card-->
-            <div class="button">
-                <!--Link-->
-		    <a href="{% url 'build:context_search' bundle.pk %}">
-                <!--<a href="{% url 'main:construction' %}">-->
-                    <!--Card content-->
-                    <div class="card-body">
-                        <!--Title-->
-                        <h4 class="card-title">CONTEXT</h4>
-                        <!--/.Title-->
-                        <!--Text-->
-                        <p class="card-text">Add facility, mission information.<br/><br/><br/></p>
-                        <!--/.Text-->
-                    </div>
-                    <!--/.Card content-->
-                    <!--Image-->
-                    <img class="img-fluid" src="{% static 'images/add.png' %}" alt="An image representing an arrow."/>
-                    <!--/.Image-->
-                </a>
-                <!--/.Link-->
-            </div>
-            <!--/.Card-->
+            Display Context Products Here
 
         </div>
         <!--/.Column-->
@@ -287,60 +273,74 @@ r as UTF
     <div id="collections_detail">
 
 
-    <div id="document_collection_detail">
     <!--Row-->
     <div class="row">
-        <div class="col-md-12">
+        <div class="col-md-12" id="document_collection" onclick="displayDocumentSection()">
             <p class="card-header stylish-color white-text text-center z-depth-2">Document Collection</p><br/>
         </div>
     </div>
     <!--/.Row-->
+
+
+    <div id="document_collection_detail">
     <!--Row-->
     <div class="row">
-        <!--Column-->
-        <div class="col-sm-6 col-md-3">
-            <!--Card-->
-            <div class="button">
-            <!--Link-->
-            <a href="{% url 'build:document'  bundle.pk %}">
-                <!--Card content-->
-                <div class="card-body">
-                    <!--Title-->
-                    <h4 class="card-title">DOCUMENT</h4>
-                    <!--/.Title-->
-                    <!--Text-->
-                    <p class="card-text">Add textual information about data.</p>
-                    <!--/.Text-->
-                </div>
-                <!--/.Card content-->
-                <!--Image-->
-                <img class="img-fluid" src="{% static 'images/arrow.png' %}" alt="An image representing an arrow."/>
-                <!--/.Image-->
-            </a>
-            <!--/.Link-->
-            </div>
-            <!--/.Card-->
+        <div class="col-md-12">
+            <p class="card-header black-text text-left z-depth-2">Documents include any textual or text-based information supplied to assist the user in understanding, interpreting, calibrating, or otherwise manipulating the data. Documents may themselves be data products. Frequently documents include graphics and/or images to assist in comprehension.</br>
+
+           <input type="button" onclick="displayDocumentForm()"  value="Add Document Products" class="btn btn-teal">
+
+           </p>
+           <br/>
         </div>
-        <!--/.Column-->
+    </div>
+    <!--/.Row-->
+
+    <!--Row-->
+    <div class="row">
+        <!--Citation Information Form-->
+        <div id="displayDocumentForm" class="col-md-12 rgba-indigo-slight">
+
+                  </br>
+                  <div class="rgba-indigo-slight">
+                  <form id="form_document" method="post" action="{% url 'build:bundle' bundle.pk %}">
+                       {% csrf_token %}
+                       <div id="form_document">
+                            {{ form_document.as_p }}
+                       </div>
+                       <input class="btn btn-default" type="submit" value="Add"/>
+                  </form></br>
+                  </div>
+
+        </div>
+        <!--/.Citation Information Form-->
     </div>
     <!--/.Row-->
     </div>
-    <!--/.Document Collection Detail-->
 
+    <!--Row-->
+    <div class="row">
+        Display document products here.
+    </div>
+    <!--/.Row-->
+    <!--/.Document Collection Detail-->
+    <hr>
 
 
 
 
 {% if bundle.collections.has_data %}
-    <div id="data_collection_detail">
     <!--Row-->
     <div class="row">
-        <div class="col-md-12">
+        <div class="col-md-12" id="data_collection" onclick="displayDataSection()">
             <p class="card-header stylish-color white-text text-center z-depth-2">Data Collection</p><br/>
         </div>
     </div>
     <!--/.Row-->
 
+
+
+    <div id="data_collection_detail">
     <!--Row-->
     <div class="row">
 
