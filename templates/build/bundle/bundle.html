@@ -341,6 +341,40 @@ r as UTF
         </div>
     </div>
     <!--/.Row-->
+
+    <!--Row-->
+    <div class="row">
+
+        <!--Display Add Data Form-->
+        <div class="col-md-12">
+            <p class="card-header black-text text-left z-depth-2">
+
+                Add collections of data to your bundle. Collections are separated by processing level, like raw data, calibrated data, and so on. Multiple collections of the same processing level can be created within a bundle, for instance two different collections of calibrated data.
+                </br>
+           <input type="button" onclick="displayDataForm()" value="Add Data" class="btn btn-teal">
+           </p>
+        </div>
+        <!--Column-->
+        <div class="col-md-12 rgba-indigo-slight" id="displayDataForm">
+
+                  </br>
+                  <div class="rgba-indigo-slight">
+            <form id="form_data" method="post" action="{% url 'build:bundle' bundle.pk %}">
+                {% csrf_token %}
+
+                <div id="form_data">
+                    {{ form_data.as_p }}
+                </div>
+
+                <input class="btn btn-default" type="submit" value="Add"/>
+
+            </form>
+                </div>
+        </div>
+        <!--/.Column-->
+    </div>
+    <!--/.Row-->
+
     <!--Row-->
     <div class="row">
         {% for data in data_set %} <!-- WE WANT THIS TO BE DATA LEVEL -->
@@ -373,38 +407,6 @@ r as UTF
         <!--/.Column-->
         {% endfor %}
     </div>
-    <!--/.Row-->
-    <!--Row-->
-    <div class="row">
-
-        <!--Display Add Data Form-->
-        <div class="col-md-12">
-            <p class="card-header black-text text-left z-depth-2">
-
-                Add collections of data to your bundle. Collections are separated by processing level, like raw data, calibrated data, and so on. Multiple collections of the same processing level can be created within a bundle, for instance two different collections of calibrated data.
-                </br>
-           <input type="button" onclick="displayDataForm()" value="Add Data" class="btn btn-teal">
-           </p>
-        </div>
-        <!--Column-->
-        <div class="col-md-12 rgba-indigo-slight" id="displayDataForm">
-
-                  </br>
-                  <div class="rgba-indigo-slight">
-            <form id="form_data" method="post" action="{% url 'build:bundle' bundle.pk %}">
-                {% csrf_token %}
-
-                <div id="form_data">
-                    {{ form_data.as_p }}
-                </div>
-
-                <input class="btn btn-default" type="submit" value="Add"/>
-
-            </form>
-                </div>
-        </div>
-        <!--/.Column-->
-
     <!--/.Row-->
     </div>
     <!--/.Data Collection Detail-->
