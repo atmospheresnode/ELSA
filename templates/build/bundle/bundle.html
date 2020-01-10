@@ -219,9 +219,9 @@ r as UTF
     <!--/.Divider-->
     <!--Row-->
     <div class="row">
-        <div class="col-md-12">
+        <div class="col-md-12" id="context" onclick="displayContextSection()">
           <h3 class="card-header elegant-color white-text text-center z-depth-2">
-	      Context
+             Context
           </h3><br/>
         </div>
     </div>
@@ -262,7 +262,7 @@ r as UTF
             </div>
             <!--/.Card-->
 
-    </div>
+        </div>
         <!--/.Column-->
 
 
@@ -270,22 +270,21 @@ r as UTF
     <!--/.Grid row-->
     <!--Divider-->
     <hr class="mb-5">
-    <!--/.Divider-->
+    </div>
+    <!--/.End context detail-->
 
 
-    <!--Divider-->
-    <hr class="mb-5">
-    <!--/.Divider-->
+
     <!--Row-->
     <div class="row pt-2">
-        <div class="col-md-12">
+        <div class="col-md-12" id="collections" onclick="displayCollectionsSection()">
             <h3 class="card-header elegant-color white-text text-center z-depth-2">Collections</h3><br/>
         </div>
     </div>
     <!--/.Row-->
 
 
-
+    <div id="collections_detail">
 
 
     <div id="document_collection_detail">
@@ -413,7 +412,8 @@ r as UTF
 {% endif %}
 
 
-
+    </div>
+    <!--/.End collections detail-->
 
 
 
