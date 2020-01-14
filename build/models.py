@@ -2023,6 +2023,8 @@ class Product_Bundle(models.Model):
         instrument, instrument_host, target, resource, associate.
     """
     def build_internal_reference(self, root, relation):
+        print '---DEBUG---'
+        print 'Root: {}'.format(root)
 
         Reference_List = root.find('{}Reference_List'.format(NAMESPACE))
 
@@ -2141,12 +2143,17 @@ class Product_Collection(models.Model):
        label returns the physical label location in ELSAs archive
     """
     def label(self):
-        return os.path.join(self.directory(), self.name_label_case())
+        if self.collection == 'Data':
+            pass                         # Need to fix with new data collection changes
+        else:
+            return os.path.join(self.directory(), self.name_label_case())
 
 
     """
     """
     def build_base_case(self):
+        if self.collection == 'Data':
+            pass
         
         # Locate base case Product_Collection template found in templates/pds4_labels/base_case/
         source_file = os.path.join(PDS4_LABEL_TEMPLATE_DIRECTORY, 'base_case')
@@ -2193,6 +2200,8 @@ class Product_Collection(models.Model):
                   self (like itself).
     """
     def fill_base_case(self, root):
+        if self.collection == 'Data':
+            pass
         Product_Collection = root
          
         # Fill in Identification_Area

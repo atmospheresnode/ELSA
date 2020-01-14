@@ -16,7 +16,7 @@ created = []
 
 # The following is a variable containing a string representation of the URL where JPL's Starbase
 # repository holds the context products
-STARBASE_CONTEXT = 'https://starbase.jpl.nasa.gov/pds4/context-pds4/'
+STARBASE_CONTEXT = 'https://pds.nasa.gov/data/pds4/context-pds4/'
 
 # The following is a variable containing a list of current version ids (vids) found for products in 
 # Starbase

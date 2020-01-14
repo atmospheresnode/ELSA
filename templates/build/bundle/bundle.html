@@ -41,16 +41,24 @@ Bundle
 
     </div>
     <!--/.Row-->
+
 {% endblock %}
 
 {% block about_header_block %}
-{% endblock %}
-
-{% block standards_reference_block %} <!-- Should make a question mark where people can expand to read this -- Look at base-k-se template for more details. Base-k-se is where the actual collapsing should happen, not in an individual template -->
-Design labels for data products, documents, and any additional material from this bundle detail page.
-</br></br>
+    <!--Row-->
+    <div class="row">
+      <!--Column-->
+      <div class="col-sm-3">
+        <!--Help Button-->
+          
+           <input type="button" onclick="displayHelpSection()" value="View Bundle Specification" class="btn btn-teal">     
+     </div>
+     <div class="col-sm-9">    
+        <!--Help Detail-->
+        <div id="help_detail" class="col-md-12 rgba-indigo-slight">
+<p>
 <strong>2A.1 Bundles</strong>
- </br>
+</br>
 A 
 bundle
  is the default logical construct for archiving digital data in the PDS.
@@ -86,12 +94,24 @@ bit ASCII text o
 r as UTF
 -8 text
 .   
+</p>
+        </div>
+        <!--/.Help Detail-->
+      </div>
+      <!--/.Column-->
+
+    </div>
+    <!--/.Row-->
+{% endblock %}
+
+{% block standards_reference_block %} <!-- New Help Detail. Remove These -->
+
+        <!--/.Help Detail-->
 {% endblock %}
 
 
 
 {% block body_block %}
-
 
     <!--Row-->
     <div class="row">
@@ -245,8 +265,17 @@ r as UTF
     <div class="row">
         <!--/.Column-->
         <!--Column-->
-        <div class="col-sm-6 col-md-3">
-            Display Context Products Here
+        <div class="col-sm-12">
+            {% if instruments %}
+                Instruments Displayed Here</br>
+            {% else %}
+                No Instruments Associated with Bundle</br>
+            {% endif %}
+            {% if targets %}
+                Targets Displayed Here</br>
+            {% else %}
+                No Targets Associated with Bundle</br>
+            {% endif %}
 
         </div>
         <!--/.Column-->
@@ -316,13 +345,37 @@ r as UTF
         <!--/.Citation Information Form-->
     </div>
     <!--/.Row-->
-    </div>
+
 
     <!--Row-->
     <div class="row">
-        Display document products here.
+        <!--Column-->
+        <div class="col-md-12  rgba-grey-strong  black-text text-center z-depth-2" onclick="displayDocuments()">
+           View Document Products
+
+            <!--/.Column-->
+            {% if documents %}
+              {% for document in documents %}
+                <!--Column-->
+                <div class="col-md-3" id="documents_detail">
+                    document</br>
+                </div>
+                <!--/.Column-->
+              {% endfor %}
+
+            {% else %}
+              <!--Column-->
+              <div class="col-md-3" id="documents_detail">
+                 No Documents
+              </div>
+              <!--/.Column-->
+            {% endif %}
+        </div>
+        <!--/.Column-->
+        
     </div>
     <!--/.Row-->
+    </div>
     <!--/.Document Collection Detail-->
     <hr>
 
@@ -376,6 +429,12 @@ r as UTF
 
     <!--Row-->
     <div class="row">
+        <!--Column-->
+        <div class="col-md-12  rgba-grey-strong  black-text text-center z-depth-2" onclick="displayDataCollections()">
+           View Data Products
+
+   <!--Row-->
+    <div class="row" id="data_collections_detail">
         {% for data in data_set %} <!-- WE WANT THIS TO BE DATA LEVEL -->
         <!--Column-->
         <div class="col-sm-6 col-md-3">
@@ -407,6 +466,15 @@ r as UTF
         {% endfor %}
     </div>
     <!--/.Row-->
+        </div>
+        <!--/.Column-->
+        
+    </div>
+    <!--/.Row-->
+
+
+
+
     </div>
     <!--/.Data Collection Detail-->
 {% endif %}

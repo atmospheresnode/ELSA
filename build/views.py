@@ -345,11 +345,11 @@ def build(request):
 	    # Open label - returns a list where index 0 is the label object and 1 is the tree
             print ' ... Opening Label ... '
             label_list = open_label(product_bundle.label()) #list = [label_object, label_root]
-            label_root = label_list
+            label_root = label_list[1]
             # Fill label - fills
             print ' ... Filling Label ... '
             #label_root = bundle.version.fill_xml_schema(label_root)
-            label_root = product_bundle.fill_base_case(label_root)
+            label_root = product_bundle.fill_base_case(label_root)  ## Fix for new data collections
             # Close label
             print ' ... Closing Label ... '
             close_label(product_bundle.label(), label_root) 
@@ -403,7 +403,7 @@ def build(request):
                     # Open Product_Collection label
                     print ' ... Opening Label ... '
                     label_list = open_label(product_collection.label())
-                    label_root = label_list
+                    label_root = label_list[1]
 
                     # Fill label
                     print ' ... Filling Label ... '
@@ -546,6 +546,8 @@ def bundle(request, pk_bundle):
             'form_data':form_data,
             'form_document':form_document,
             'collections': Collections.objects.get(bundle=bundle),
+            'instruments': bundle.instruments.all(),
+            'targets': bundle.targets.all(),
             'product_observational_set':product_observational_set,
             'documents':Product_Document.objects.filter(bundle=bundle)
         }
@@ -684,30 +686,32 @@ def bundle(request, pk_bundle):
             # Open label - returns a list where index 0 is the label object and 1 is the tree
             print ' ... Opening Label ... '
             label_list = open_label(product_document.label())
-            label_root = label_list
+            label_root = label_list[1]
             # Fill label - fills 
             print ' ... Filling Label ... '
             #label_root = bundle.version.fill_xml_schema(label_root)
             label_root = product_document.fill_base_case(label_root)
             # Close label    
             print ' ... Closing Label ... '
-            close_label(label_object, label_root)          
+            close_label(label_list[0], label_root)          
             print '---------------- End Build Product_Document Base Case -------------------------' 
 
             # Add Document info to proper labels.  For now, I simply have Product_Bundle and Product_Collection with a correction for the data collection.  The variable all_labels_kill_data means all Product_Collection labels except those associated with data.  Further below, you will see the correction for the data collection where our label set is now data_labels.
             print '\n---------------Start Build Internal_Reference for Document-------------------'
             all_labels = []
             product_bundle = Product_Bundle.objects.get(bundle=bundle)
-            product_collections_list = Product_Collection.objects.filter(bundle=bundle)
+            product_collections_list = Product_Collection.objects.filter(bundle=bundle).exclude(collection='Data')
 
             all_labels.append(product_bundle)
             all_labels.extend(product_collections_list)  
 
+
             for label in all_labels:
+                
                 print '- Label: {}'.format(label)
                 print ' ... Opening Label ... '
                 label_list = open_label(label.label())
-                label_root = label_list
+                label_root = label_list[1]
         
                 # Build Internal_Reference
                 print ' ... Building Internal_Reference ... '
@@ -1522,6 +1526,7 @@ def document(request, pk_bundle):
             # Open label - returns a list where index 0 is the label object and 1 is the tree
             print ' ... Opening Label ... '
             label_list = open_label(product_document.label())
+            print label_list
             label_root = label_list
             # Fill label - fills 
             print ' ... Filling Label ... '
@@ -1529,7 +1534,7 @@ def document(request, pk_bundle):
             label_root = product_document.fill_base_case(label_root)
             # Close label    
             print ' ... Closing Label ... '
-            close_label(label_object, label_root)          
+            close_label(label_list, label_root)          
             print '---------------- End Build Product_Document Base Case -------------------------' 
 
             # Add Document info to proper labels.  For now, I simply have Product_Bundle and Product_Collection with a correction for the data collection.  The variable all_labels_kill_data means all Product_Collection labels except those associated with data.  Further below, you will see the correction for the data collection where our label set is now data_labels.

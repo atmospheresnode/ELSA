@@ -121,7 +121,7 @@ def open_label(label_path):
     parser = etree.XMLParser(remove_blank_text=False, remove_comments=False)
     tree = etree.parse(label_path, parser)
     label_root = tree.getroot()
-    return label_root
+    return [label_path, label_root]
 
 
 
