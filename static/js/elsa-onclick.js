@@ -1,6 +1,17 @@
 // Section Displays
 
+document.getElementById("help_detail").style.display = "none";
+document.getElementById("documents_detail").style.display = "none";
+document.getElementById("data_collections_detail").style.display = "none";
 
+function displayHelpSection() {
+  var x = document.getElementById("help_detail");
+  if (x.style.display === "none") {
+    x.style.display = "block";
+  } else {
+    x.style.display = "none";
+  }
+} 
 function displayContextSection() {
   var x = document.getElementById("context_detail");
   if (x.style.display === "none") {
@@ -28,6 +39,15 @@ function displayDocumentSection() {
   }
 } 
 
+function displayDocuments() {
+  var x = document.getElementById("documents_detail");
+  if (x.style.display === "none") {
+    x.style.display = "block";
+  } else {
+    x.style.display = "none";
+  }
+}
+
 
 function displayDataSection() {
   var x = document.getElementById("data_collection_detail");
@@ -38,6 +58,14 @@ function displayDataSection() {
   }
 } 
 
+function displayDataCollections() {
+  var x = document.getElementById("data_collections_detail");
+  if (x.style.display === "none") {
+    x.style.display = "block";
+  } else {
+    x.style.display = "none";
+  }
+}
 
 
 

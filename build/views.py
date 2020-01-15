@@ -12,6 +12,7 @@ from django.shortcuts import render, redirect
 from django.template import RequestContext
 from django import forms
 from django.forms import modelformset_factory
+from django.views.generic.edit import UpdateView, DeleteView
 
 
 
@@ -25,7 +26,7 @@ from django.forms import modelformset_factory
 #
 # -------------------------------------------------------------------------------------------------- #
 @login_required
-def alias(request, pk_bundle):
+def alias(request, pk_bundle):  ## DEPRECATED: to be replaced by edit alias
     print ' \n\n \n\n-------------------------------------------------------------------------'
     print '\n\n---------------------- Add an Alias with ELSA ---------------------------'
     print '------------------------------ DEBUGGER ---------------------------------'
@@ -106,6 +107,55 @@ def alias(request, pk_bundle):
 
 
 
+
+@login_required
+def alias_edit(request, pk_bundle, pk_alias):  ## DEPRECATED: to be replaced by edit alias
+    print ' \n\n \n\n-------------------------------------------------------------------------'
+    print '\n\n---------------------- Add an Alias with ELSA ---------------------------'
+    print '------------------------------ DEBUGGER ---------------------------------'
+
+    # Get Bundle
+    bundle = Bundle.objects.get(pk=pk_bundle)
+#    collections = Collections.objects.get(bundle=bundle)
+
+    # Secure ELSA by seeing if the user logged in is the same user associated with the Bundle
+    if request.user == bundle.user:
+        print 'authorized user: {}'.format(request.user)
+
+        # Get Alias and its form
+        alias = Alias.objects.get(pk=pk_alias)
+        initial_alias = {
+            'atlernate_id':alias.alternate_id,
+            'alternate_title':alias.alternate_title,
+            'comment':alias.comment,
+        }
+        form_alias = AliasForm(request.POST or None, initial=initial_alias)
+
+        if form_alias.is_valid and form_alias.has_changed:
+            print 'Changed: {}'.format(form_alias.changed_data)
+
+            for change in form_alias.changed_data:
+                if change == 'alternate_id':
+                   alias.alternate_id = form_alias['alternate_id'].value()
+                elif change == 'alternate_title':
+                   alias.alternate_title = form_alias['alternate_title'].value()
+                elif change == 'comment':
+                   alias.comment = form_alias['comment'].value()
+                alias.save()
+                
+
+        # Declare context_dict for templating language used in ELSAs templates
+        context_dict = {
+            'alias':alias,
+            'bundle':bundle,
+            'form_alias':form_alias,
+
+        }
+
+        return render(request, 'build/alias/alias_edit.html',context_dict)
+    else:
+        print 'unauthorized user attempting to access a restricted area.'
+        return redirect('main:restricted_access')
 
 
 
@@ -579,7 +629,7 @@ def bundle(request, pk_bundle):
                 print '- Label: {}'.format(label)
                 print ' ... Opening Label ... '
                 label_list = open_label(label.label())
-                label_root = label_list
+                label_root = label_list[1]
                 # Build Alias
                 print ' ... Building Label ... '
                 label_root = alias.build_alias(label_root)

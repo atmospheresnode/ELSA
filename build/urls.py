@@ -13,10 +13,9 @@ from . import views
 app_name='build'
 urlpatterns = [
     # Alias
-    url(r'^(?P<pk_bundle>\d+)/alias/$', views.alias, name='alias'),
+    url(r'^(?P<pk_bundle>\d+)/alias_edit/(?P<pk_alias>[-\w]+)/$', views.alias_edit, name='alias_edit'),
 
     # Alias_Delete
-    url(r'^(?P<pk_bundle>\d+)/(?P<alias>[-\w]+)/alias_delete/$', views.alias_delete, name='alias_delete'),
 
     # Build
     url(r'^$', views.build, name='build'),

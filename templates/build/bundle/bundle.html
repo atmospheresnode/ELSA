@@ -153,7 +153,20 @@ r as UTF
             <!--Display Case 2: Aliases associated with bundle-->
             <strong>Alias:</strong>
                 {% for alias in alias_set %}
-                    {{ alias }}. 
+            <!--Link-->
+            <a href="{% url 'build:alias_edit' bundle.pk alias.pk %}" >
+                <!--Card content-->
+
+                    <!--Title-->
+                    </br>{{ alias.alternate_title }}: {{ alias.comment }}
+
+
+
+                <!--/.Card content-->
+            
+            </a>
+            <!--/.Link-->
+                     
                 {% endfor %}
                 </br>
 
