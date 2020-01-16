@@ -44,10 +44,89 @@ Data
                     <!--Card content-->
                     <div class="card-body">
                         <!--Title-->
-                        <h4 class="card-title">{{ data.name }}</h4>
+                        <h4 class="card-title">{{ data.name }} Collection</h4>
                         <!--Text-->
                         <p class="card-text"><strong>Processing Level:</strong> {{ data.processing_level }}</p>
-                        <p class="card-text"><Strong>Dictionary:</strong>Show display dictionary or add display dictionary option</p>
+                        <p class="card-text"><Strong>Dictionary:</strong>
+
+
+      <!--Row-->
+      <div class="row">
+         <!--Column-->
+         <div class="col-md-12  black-text text-center z-depth-2">
+            <!--/.Column-->
+            {% if display_dictionary %}
+
+            <strong>View Dictionary   <i class="fa fa-eye"></i></strong>
+
+
+            <!--Row-->
+            <div class="row" id="documents_detail">
+
+               <!--Column-->
+               <div class="col-sm-6 col-sm-1">
+                  <!--Card-->
+                  <div class="button">
+                     <!--Link-->
+                     <a href="#">
+                        <!--Card content-->
+                        <div class="card-body">
+                           <!--Title-->
+                           <h4 class="card-title">{{ display_dictionary }}</h4>
+                           <!--/.Title-->
+                           <!--Text-->
+                           <!--<p class="card-text">{{ data.name }}</p>-->
+                           <!--<p class="card-text">{{ product.type_of }}</p>-->
+                           <!--/.Text-->
+                        </div>
+                        <!--/.Card content-->
+                        <!--Image-->
+                        <img class="img-fluid" src="{% static 'images/arrow.png' %}" alt="An image representing an arrow."/>
+                        <!--/.Image-->
+                     </a>
+                     <!--/.Link-->
+                  </div>
+                  <!--/.Card-->
+               </div>
+               <!--/.Column-->
+            </div>
+            <!--/.Row-->
+
+
+
+
+
+
+
+
+            {% else %}
+            <strong><i class="fa fa-plus"></i></strong>  Add Display Dictionary   
+
+            <!--Column-->
+            <div class="col-md-3" id="add_display_dictionary">
+               {{ form_display_dictionary.as_p }}
+
+            </div>
+            <!--/.Column-->
+            {% endif %}
+         </div>
+         <!--/.Column-->
+      </div>
+      <!--/.Row-->
+
+
+
+
+
+
+
+
+
+
+
+
+
+
                         <p class="card-text">Below you will find the observational products listed within this collection.</p>
                         <p class="card-text">To add more observational products, fill out the form to the right.</p>
                         <!--Buttons-->

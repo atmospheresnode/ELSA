@@ -220,7 +220,7 @@ def array(request, pk_bundle, pk_data):
         # Get array
         arrays = Array.objects.filter(product_observational=product_observational)
         
-        # Get display dictionary
+        # Get display dictionary to show what it says to the user
         try:
             disp_dict = DisplayDictionary.objects.get(data=data)
         except DisplayDictionary.DoesNotExist:
@@ -568,6 +568,7 @@ def bundle(request, pk_bundle):
 
         # get set of data collections currently associated with the bundle
         data_set = Data.objects.filter(bundle=pk_bundle)
+        print '---DEBUG--- Data set: {}'.format(data_set)
 
         # get set of observational products currently associated with the bundle
         product_observational_set = []    
@@ -1384,6 +1385,14 @@ def context_search_telescope(request, pk_bundle):
 
 @login_required
 def data(request, pk_bundle, pk_data):
+    """
+    The data page displays a data object pk_data associated with bundle pk_bundle.
+    The detail of the data page displays objects related to this particular data collection.
+    The objects related to this collection are:
+        1. Display Dictionary: None or 1
+        2. Product Observational: None or More
+        3. 
+    """
     print '\n\n'
     print '-------------------------------------------------------------------------'
     print '\n\n---------------------- Add Data with ELSA ---------------------------'
@@ -1395,14 +1404,31 @@ def data(request, pk_bundle, pk_data):
     if request.user == bundle.user:
         print 'authorized user: {}'.format(request.user)
 
-        # Get Data Object and corresponding products
+        # Get Data Object 
         data = Data.objects.get(pk=pk_data)
+
+        # Get related Display Dictionary
+        # Get display dictionary to show what it says to the user
+        try:
+            display_dictionary = DisplayDictionary.objects.get(data=data)
+        except DisplayDictionary.DoesNotExist:
+            display_dictionary = None
+
+        # Get related Product Observationals
         product_observational_set = Product_Observational.objects.filter(data=data)
 
         # Get forms
+        form_display_dictionary = DisplayDictionaryForm(request.POST or None)
         form_product_observational = ProductObservationalForm(request.POST or None)
 
-        # After ELSA's friend hits submit, if the forms are completed correctly, we should
+        # After ELSA's friend hits submit, if the form is completed correctly, we should
+        # satisfy this conditional
+        if form_display_dictionary.is_valid():
+            display_dictionary = display_dictionary.save(commit=False)
+            display_dictionary.data = data
+            display_dictionary.save()
+
+        # After ELSA's friend hits submit, if the form is completed correctly, we should
         # satisfy this conditional
         if form_product_observational.is_valid():
 
@@ -1422,12 +1448,19 @@ def data(request, pk_bundle, pk_data):
             # collection. *** Currently: Just does base case. Fix in data model.
             if new_directory:
                 data.build_product_collection()
+
+            # Regardless if it's a new directory or not, we create the product_observational
+            # to describe the current observations in the product
+            product_observational.build_base_case()
+            ## Get Root: product_observational.fill_base_case()
             
         # Context Dictionary
         context_dict = {
             'bundle':bundle,
+            'form_display_dictionary':form_display_dictionary,
             'form_product_observational':form_product_observational,
             'data': data,
+            'display_dictionary':display_dictionary,
             'product_observational_set':product_observational_set,
         }
       

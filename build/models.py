@@ -2549,7 +2549,7 @@ class Product_Observational(models.Model):
     # Label Constructors
     def build_base_case(self):
         
-        # Locate base case Product_Collection template found in templates/pds4_labels/base_case/
+        # Locate base case Product_Observational template found in templates/pds4_labels/base_case/
         source_file = os.path.join(PDS4_LABEL_TEMPLATE_DIRECTORY, 'base_case')
         source_file = os.path.join(source_file, 'product_observational.xml')
 
@@ -3158,6 +3158,35 @@ class Array(models.Model):
 
 
 
+
+@python_2_unicode_compatible
+class DisplayDictionary(models.Model):
+    """
+    This dictionary describes how to display Array data on a display device
+
+The Color_Display_Settings class provides
+        guidance to data users on how to display a multi-banded Array
+        object on a color-capable display device.
+The Display_Direction class specifies how two of
+        the dimensions of an Array object should be displayed in the
+        vertical (line) and horizontal (sample) dimensions of a display
+        device.
+The Display_Settings class contains one or more
+        classes describing how data should be displayed on a display
+        device.
+The Movie_Display_Settings class provides
+        default values for the display of a multi-banded Array using a
+        software application capable of displaying video
+        content.
+
+
+    """
+    data = models.OneToOneField(Data, on_delete=models.CASCADE, primary_key=True,)
+
+    def __str__(self):
+        return "How you actually make a dictionary >.<"
+
+
 @python_2_unicode_compatible
 class Color_Display_Settings(models.Model):
     """
@@ -3183,7 +3212,8 @@ The red_channel_band attribute identifies the
         by default, into the red channel of a display device. The first
         band along the band axis has band number 1.
     """
-    array = models.ForeignKey(Array, on_delete=models.CASCADE)
+
+    display_dictionary = models.OneToOneField(DisplayDictionary, on_delete=models.CASCADE)
     color_display_axis = models.PositiveIntegerField(
         validators=[
             MaxValueValidator(255)
@@ -3245,7 +3275,7 @@ The vertical_display_direction attribute
         ('bottom_to_top','Bottom to Top'),
         ('top_to_bottom','Top to Bottom'),
     ]
-    array = models.ForeignKey(Array, on_delete=models.CASCADE)
+    display_dictionary = models.OneToOneField(DisplayDictionary, on_delete=models.CASCADE)
     comment_display_direction = models.CharField(max_length=MAX_CHAR_FIELD)
     horizontal_display_axis = models.PositiveIntegerField(
         validators=[
@@ -3334,7 +3364,7 @@ The time_display_axis attribute identifies, by
         ('julian day','julian day'),
         ('yr','year'),
     ]
-    array = models.ForeignKey(Array, on_delete=models.CASCADE)
+    display_dictionary = models.OneToOneField(DisplayDictionary, on_delete=models.CASCADE)
     time_display_axis = models.PositiveIntegerField(
         validators=[
             MaxValueValidator(255)
@@ -3363,40 +3393,6 @@ The time_display_axis attribute identifies, by
     def __str__(self):
         return "How you actually make a dictionary >.<"
 
-
-
-@python_2_unicode_compatible
-class DisplayDictionary(models.Model):
-    """
-    This dictionary describes how to display Array data on a display device
-
-The Color_Display_Settings class provides
-        guidance to data users on how to display a multi-banded Array
-        object on a color-capable display device.
-The Display_Direction class specifies how two of
-        the dimensions of an Array object should be displayed in the
-        vertical (line) and horizontal (sample) dimensions of a display
-        device.
-The Display_Settings class contains one or more
-        classes describing how data should be displayed on a display
-        device.
-The Movie_Display_Settings class provides
-        default values for the display of a multi-banded Array using a
-        software application capable of displaying video
-        content.
-
-
-    """
-    data = models.ForeignKey(Data, on_delete=models.CASCADE)
-    Color_Display_Settings = models.ForeignKey(Color_Display_Settings, on_delete=models.CASCADE)
-    Display_Direction = models.ForeignKey(Display_Direction, on_delete=models.CASCADE)
-    #Display_Settings = models.ForeignKey(Display_Settings, on_delete=models.CASCADE)
-    Movie_Display_Settings = models.ForeignKey(Movie_Display_Settings, on_delete=models.CASCADE)
-
-
-    #Color_Display_Settings
-    def __str__(self):
-        return "How you actually make a dictionary >.<"
 
 
 
