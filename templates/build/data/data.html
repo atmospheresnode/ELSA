@@ -1,346 +1,179 @@
+
+
 {% extends 'base-k-se.html' %}
 {% load static %}
-
 {% block css_style_block %}
 <link rel="stylesheet" type="text/css" href="{% static 'css/elsa-toggle-select.css' %}" />
 {% endblock %}
-
-
 {% block title_block %}
 Data
 {% endblock %}
-
 {% block main_header_block %}
 {{ data.processing_level }} Data Collection: {{ data.title }}
 {% endblock %}
-
 {% block about_header_block %}
 {% endblock %}
-
 {% block standards_reference_block %}
- Each collection of data contains a Product_Observational label. The Product_Observational is broken into 5 pieces. The first 4 are required and the 5th one is optional:</br>
-            
-            </br>1. Identification Area: uniquely identifies this product from all other products
-            </br>2. Observation Area: describes the observation and subsequent processing at a high level
-            </br>3. Reference List: cross references internal products like documents or calibration observations
-            </br>4. File Area: identifies the data file(s) contained in the data collection as well as defines the data structures. Multiple file areas can be added to an observational product.
-            </br>5. Supplemental File Area: identifies data file(s) that are supplemental to the observational data, like reduced-precision browse images. This section is optional and also contains additional data structures.
-        
+Each collection of data contains a Product_Observational label. The Product_Observational is broken into 5 pieces. The first 4 are required and the 5th one is optional:</br>
+</br>1. Identification Area: uniquely identifies this product from all other products
+</br>2. Observation Area: describes the observation and subsequent processing at a high level
+</br>3. Reference List: cross references internal products like documents or calibration observations
+</br>4. File Area: identifies the data file(s) contained in the data collection as well as defines the data structures. Multiple file areas can be added to an observational product.
+</br>5. Supplemental File Area: identifies data file(s) that are supplemental to the observational data, like reduced-precision browse images. This section is optional and also contains additional data structures.
 {% endblock %}
-
-
-
 {% block body_block %}
-<hr/><!--Divider-->
+<hr/>
+<!--Divider-->
 <!--Row-->
 <div class="row pt-2">
-    <!--Column-->
-    <div class="col-md-4">
-                <!--Card-->       
-                <div class="card">
-                    <!--Card image-->
-                    <!--img class="img-fluid" src="{% static 'images/calibrated.png' %}" alt="Data Image"-->
-
-                    <!--Card content-->
-                    <div class="card-body">
-                        <!--Title-->
-                        <h4 class="card-title">{{ data.name }} Collection</h4>
-                        <!--Text-->
-                        <p class="card-text"><strong>Processing Level:</strong> {{ data.processing_level }}</p>
-                        <p class="card-text"><Strong>Dictionary:</strong>
-
-
-      <!--Row-->
-      <div class="row">
-         <!--Column-->
-         <div class="col-md-12  black-text text-center z-depth-2">
-            <!--/.Column-->
-            {% if display_dictionary %}
-
-            <strong>View Dictionary   <i class="fa fa-eye"></i></strong>
-
-
-            <!--Row-->
-            <div class="row" id="documents_detail">
-
-               <!--Column-->
-               <div class="col-sm-6 col-sm-1">
-                  <!--Card-->
-                  <div class="button">
-                     <!--Link-->
-                     <a href="#">
-                        <!--Card content-->
-                        <div class="card-body">
-                           <!--Title-->
-                           <h4 class="card-title">{{ display_dictionary }}</h4>
-                           <!--/.Title-->
-                           <!--Text-->
-                           <!--<p class="card-text">{{ data.name }}</p>-->
-                           <!--<p class="card-text">{{ product.type_of }}</p>-->
-                           <!--/.Text-->
-                        </div>
-                        <!--/.Card content-->
-                        <!--Image-->
-                        <img class="img-fluid" src="{% static 'images/arrow.png' %}" alt="An image representing an arrow."/>
-                        <!--/.Image-->
-                     </a>
-                     <!--/.Link-->
-                  </div>
-                  <!--/.Card-->
+   <!--Column-->
+   <div class="col-md-12 card-body">
+      <!--Title-->
+      <h4 class="card-title">{{ data.name }} Collection</h4>
+      <!--Text-->
+      <p class="card-text"><strong>Processing Level:</strong> {{ data.processing_level }}</p>
+      <p>
+         <Strong>Dictionary:</strong>
+      </p>
+      {% if display_dictionary %}
+      <strong>View Dictionary   <i class="fa fa-eye"></i></strong>
+      <!--Column-->
+      <div class="col-sm-6">
+         <!--Card-->
+         <div class="button">
+            <!--Link-->
+            <a href="#">
+               <!--Card content-->
+               <div class="card-body">
+                  <!--Title-->
+                  <h4 class="card-title">{{ display_dictionary }}</h4>
+                  <!--/.Title-->
+                  <!--Text-->
+                  <!--<p class="card-text">{{ data.name }}</p>-->
+                  <!--<p class="card-text">{{ product.type_of }}</p>-->
+                  <!--/.Text-->
                </div>
-               <!--/.Column-->
-            </div>
-            <!--/.Row-->
-
-
-
-
-
-
-
-
-            {% else %}
-            <strong><i class="fa fa-plus"></i></strong>  Add Display Dictionary   
-
-            <!--Column-->
-            <div class="col-md-3" id="add_display_dictionary">
-               {{ form_display_dictionary.as_p }}
-
-            </div>
-            <!--/.Column-->
-            {% endif %}
+               <!--/.Card content-->
+               <!--Image-->
+               <img class="img-fluid" src="{% static 'images/arrow.png' %}" alt="An image representing an arrow."/>
+               <!--/.Image-->
+            </a>
+            <!--/.Link-->
          </div>
-         <!--/.Column-->
+         <!--/.Card-->
       </div>
-      <!--/.Row-->
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-                        <p class="card-text">Below you will find the observational products listed within this collection.</p>
-                        <p class="card-text">To add more observational products, fill out the form to the right.</p>
-                        <!--Buttons-->
-                        <a href="{% url 'main:construction' %}">
-                            <button type="button" class="btn btn-danger">Delete</button> 
-                        </a>
-                    </div>
-                </div>
-                <!--/.Card-->
-    </div>
-    <!--/.Column-->
-    <!--Column-->
-    <div class="col-md-8">
-        <form id="form_product_document" method="post" action="">  <!--Might change this name later-->
-            {% csrf_token %}
-
-            <h3>Add Product Observational Information</h3>       
-            <div id="form_product_document">
-
-                {{ form_product_observational.as_p }}
-            </div>
-            <input class="btn btn-default" type="submit" value="Add"/>
-        </form>
-    </div>
-    <!--/.Column-->
-</div>
-<!--/.Second row-->
-<hr/><!--/.Divider-->
-
-<!--Row-->
-<div class="row pt-2">
-    <!--Column-->
-    <div class="col-md-12">
-        <h3 class="card-header elegant-color white-text text-center z-depth-2">Current Observational Products</h3>
-    </div>
-    <!--/.Column-->
-</div>
-<!--/.Second row-->
-<!--Row-->
-<div class="row pt-2">
-
-{% if product_observational_set %} 
-    {% for product_observational in product_observational_set %}
-        {% if data.processing_level == 'Calibrated' %}
-            </hr>
-            <div class="col-sm-6 col-md-3">
-                <!--Card-->
-                {% if product_observational.type_of == 'Table' %}
-                <a href="{% url 'build:table_detail' bundle.pk product_observational.pk %}">
-                {% elif product_observational.type_of == 'Array' %}
-                <!--
-                <a href="{% url 'build:array' bundle.pk data.pk product_observational.pk %}">
-                -->
-                <a href="{% url 'main:construction' %}
-                {% else %}
-                <a href="{% url 'main:construction' %}">
-                {% endif %}
-                <div class="card">
-                    <!--Card image-->
-                    <img class="img-fluid" src="{% static 'images/calibrated.png' %}" alt="Data Image">
-
-                    <!--Card content-->
-                    <div class="card-body">
-                        <!--Title-->
-                        <h4 class="card-title">{{ product_observational.title }}</h4>
-                        <!--Text-->
-                        <p class="card-text">{{ product_observational.domain }}</p>
-                        <p class="card-text">Processing Level: {{ product_observational.data.processing_level }}</p>
-                        <p class="card-text">Structure: {{ product_observational.type_of }}</p>
-                        <!--Buttons-->
-                        <a href="{% url 'main:construction' %}">
-                            <button type="button" class="btn btn-danger">Remove</button> 
-                        </a>
-                    </div>
-                </div>
-                </a>
-                <!--/.Card-->
-            </div>
-            <!--/.Column-->
-        {% elif data.processing_level == 'Derived' %}
-            </hr>
-            <!--Column-->
-            <div class="col-sm-6 col-md-3">
-                <!--Card-->
-                <a href="{% url 'build:product_observational' bundle.pk product_observational.pk %}">
-                <div class="card">
-                    <!--Card image-->
-                    <img class="img-fluid" src="{% static 'images/derived.png' %}" alt="Data Image">
-
-                    <!--Card content-->
-                    <div class="card-body">
-                        <!--Title-->
-                        <h4 class="card-title">{{ product_observational.title }}</h4>
-                        <!--Text-->
-                        <p class="card-text">{{ product_observational.domain }}</p>
-                        <p class="card-text">Processing Level: {{ product_observational.data.processing_level }}</p>
-                        <p class="card-text">Structure: {{ product_observational.type_of }}</p>
-                        <!--Buttons-->
-                        <a href="{% url 'main:construction' %}">
-                            <button type="button" class="btn btn-danger">Remove</button> 
-                        </a>
-                    </div>
-                </div>
-                </a>
-                <!--/.Card-->
-            </div>
-            <!--/.Column-->
-        {% elif data.processing_level == 'Raw' %}
-            </hr>
-            <!--Column-->
-            <div class="col-sm-6 col-md-3">
-                <!--Card-->
-                {% if product_observational.type_of == 'Table' %}
-                <a href="{% url 'build:table_detail' bundle.pk product_observational.pk %}">
-                {% elif product_observational.type_of == 'Array' %}
-                <a href="{% url 'build:array' bundle.pk product_observational.pk %}">
-                {% else %}
-                <a href="{% url 'main:construction' %}">
-                {% endif %}
-                <div class="card">
-                    <!--Card image-->
-                    <img class="img-fluid" src="{% static 'images/raw.png' %}" alt="Data Image">
-
-                    <!--Card content-->
-                    <div class="card-body">
-                        <!--Title-->
-                        <h4 class="card-title">{{ product_observational.title }}</h4>
-                        <!--Text-->
-                        <p class="card-text">{{ product_observational.domain }}</p>
-                        <p class="card-text">Processing Level: {{ product_observational.data.processing_level }}</p>
-                        <p class="card-text">Structure: {{ product_observational.type_of }}</p>
-                        <!--Buttons-->
-                        <a href="{% url 'main:construction' %}">
-                            <button type="button" class="btn btn-danger">Remove</button> 
-                        </a>
-                    </div>
-                </div>
-                </a>
-                <!--/.Card-->
-            </div>
-            <!--/.Column-->
-        {% elif data.processing_level == 'Reduced' %}
-            </hr>
-            <!--Column-->
-            <div class="col-sm-6 col-md-3">
-                <!--Card-->
-                {% if product_observational.type_of == 'Table' %}
-                <a href="{% url 'build:table_detail' bundle.pk product_observational.pk %}">
-                {% elif product_observational.type_of == 'Array' %}
-                <a href="{% url 'build:array' bundle.pk data.pk product_observational.pk %}">
-                {% else %}
-                <a href="{% url 'main:construction' %}">
-                {% endif %}
-                <div class="card">
-                    <!--Card image-->
-                    <img class="img-fluid" src="{% static 'images/reduced.png' %}" alt="Data Image">
-
-                    <!--Card content-->
-                    <div class="card-body">
-                        <!--Title-->
-                        <h4 class="card-title">{{ product_observational.title }}</h4>
-                        <!--Text-->
-                        <p class="card-text">{{ product_observational.domain }}</p>
-                        <p class="card-text">Processing Level: {{ product_observational.data.processing_level }}</p>
-                        <p class="card-text">Structure: {{ product_observational.type_of }}</p>
-                        <!--Buttons-->
-                        <a href="{% url 'main:construction' %}">
-                            <button type="button" class="btn btn-danger">Remove</button> 
-                        </a>
-                    </div>
-                </div>
-                </a>
-                <!--/.Card-->
-            </div>
-            <!--/.Column-->
-        {% endif %}     
-    {% endfor %}
-
-
-{% else %}
-    <!--Column-->
-    <div class="col-sm-6 col-md-3">
-        <!--Card-->
-        <div class="card">
-            <!--Card image-->
-            <img class="img-fluid" src="{% static 'images/null.png' %}" alt="Instrument Image">
-            <!--Card content-->
-            <div class="card-body">
-                <!--Title-->
-                <h4 class="card-title">Null</h4>
-                <!--Text-->
-                <p class="card-text">No data is associated with {{ bundle }}.</p>
-            </div>
-        </div>
-        <!--/.Card-->
-    </div>
-    <!--/.Column-->
-{% endif %}
+      <!--/.Column-->
+      {% else %}
+      </br>
+      <input type="button" onclick="displayDisplayDictionaryForm()" value="+ Add Display Dictionary" class="btn btn-teal">
+      <!--Column-->
+      <div class="col-md-3" id="displayDisplayDictionaryForm">
+         {{ form_display_dictionary.as_p }}
+      </div>
+      <!--/.Column-->
+      {% endif %}
+   </div>
+   <!--/.Column-->
 </div>
 <!--/.Row-->
+<!--Row-->
+<div class="row">
+   <div class="col-md-12" id="data_collection" onclick="displayProductObservationalSection()">
+      <p class="card-header stylish-color white-text text-center z-depth-2">Observational Products</p>
+      <br/>
+   </div>
+</div>
+<!--/.Row-->
+<!--Product Observational detail-->
+<div id="product_observational_detail">
+   <!--Row-->
+   <div class="row">
+      <!--Column-->
+      <div class="col-md-12">
+         <p class="card-header black-text text-left z-depth-2">
+            Product Observational description here
+            </br>
+            <input type="button" onclick="displayProductObservationalForm()" value="+ Add Observational Product" class="btn btn-teal">
+         </p>
+      </div>
+      <!--/.Column-->
+      <!--Column-->
+      <div class="col-md-12 rgba-indigo-slight" id="displayProductObservationalForm">
+         </br>
+         <div class="rgba-indigo-slight">
+            <form id="form_product_observational" method="post" action="#">
+               {% csrf_token %}
+               <div id="form_data">
+                  {{ form_product_observational.as_p }}
+               </div>
+               <input class="btn btn-default" type="submit" value="Submit"/>
+            </form>
+         </div>
+      </div>
+      <!--/.Column-->
+   </div>
+   <!--/.Row-->
+   <hr>
+   <!--Row-->
+   <div class="row">
+      <!--Column-->
+      <div class="col-md-12    black-text text-center z-depth-2" onclick="displayProductObservational()">
+         <strong>View Observational Products   <i class="fa fa-eye"></i></strong>
+      </div>
+      <!--/.Column-->
+   </div>
+   <!--/.Row-->
+   <hr>
+   <!--Row-->
+   <div class="row" id="product_observational">
+      {% for product_observational in product_observational_set %} 
+      <!--Column-->
+      <div class="col-sm-6 col-md-3">
+         {% if product_observational.type_of == 'Table' %}
+         <a href="{% url 'main:construction' %}">
+         {% elif product_observational.type_of == 'Array' %}
+         <a href="{% url 'build:array' bundle.pk data.pk product_observational.pk %}">
+         {% endif %}
+            <!--Card-->
+            <div class="card">
+               <!--Card image-->
+               <img class="img-fluid" src="{% static 'images/derived.png' %}" alt="Data Image">
+               <!--Card content-->
+               <div class="card-body">
+                  <!--Title-->
+                  <h4 class="card-title">{{ product_observational.title }}</h4>
+                  <!--Text-->
+                  <p class="card-text">{{ product_observational.domain }}</p>
+                  <p class="card-text">Processing Level: {{ product_observational.data.processing_level }}</p>
+                  <p class="card-text">Structure: {{ product_observational.type_of }}</p>
+               </div>
+               <!--/.Card content-->
+            </div>
+            <!--/.Card-->
+         </a>
+      </div>
+      <!--/.Column-->
+      {% endfor %}
+   </div>
+   <!--/.Row-->
+</div>
+<!--/.Product Observational Detail-->
 <hr/>
 <!--Row-->
 <div class="row pt-2">
-    <!--Column-->
-    <div class="col-md-12">
-        <a href="{{ bundle.absolute_url }}">
-        <button type="button" class="btn btn-default">
-            <i class="fa fa-arrow-circle-left"></i>
-            Back to {{ bundle }}'s Bundle Detail
-        </button>
-        </a>
-    </div>
-    <!--/.Column-->
+   <!--Column-->
+   <div class="col-md-12">
+      <a href="{{ bundle.absolute_url }}">
+      <button type="button" class="btn btn-default">
+      <i class="fa fa-arrow-circle-left"></i>
+      Back to {{ bundle }}'s Bundle Detail
+      </button>
+      </a>
+   </div>
+   <!--/.Column-->
 </div>
 <!--/.Row-->
 <hr/>
 {% endblock %}
+
+

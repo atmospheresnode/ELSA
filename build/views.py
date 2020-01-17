@@ -205,7 +205,7 @@ def alias_delete(request, pk_bundle, alias):
 
 
 @login_required
-def array(request, pk_bundle, pk_data):
+def array(request, pk_bundle, pk_data, pk_product_observational):
     print ' \n\n \n\n-------------------------------------------------------------------------'
     print '\n\n---------------- Welcome to Build A Bundle with ELSA --------------------'
     print '------------------------------ DEBUGGER ---------------------------------'
@@ -222,7 +222,7 @@ def array(request, pk_bundle, pk_data):
         
         # Get display dictionary to show what it says to the user
         try:
-            disp_dict = DisplayDictionary.objects.get(data=data)
+            disp_dict = DisplayDictionary.objects.get(data=pk_data)
         except DisplayDictionary.DoesNotExist:
             disp_dict = None
 

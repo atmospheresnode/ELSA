@@ -1,8 +1,21 @@
 // Section Displays
+if ( document.getElementById("help_detail") ){
+    document.getElementById("help_detail").style.display = "none";
+}
 
-document.getElementById("help_detail").style.display = "none";
-document.getElementById("documents_detail").style.display = "none";
-document.getElementById("data_collections_detail").style.display = "none";
+if ( document.getElementById("documents_detail") ){
+    document.getElementById("documents_detail").style.display = "none";
+}
+
+if ( document.getElementById("data_collections_detail") ){
+    document.getElementById("data_collections_detail").style.display = "none";
+}
+
+
+if ( document.getElementById("product_observational") ){
+    document.getElementById("product_observational").style.display = "none";
+}
+
 
 function displayHelpSection() {
   var x = document.getElementById("help_detail");
@@ -67,15 +80,53 @@ function displayDataCollections() {
   }
 }
 
+function displayProductObservational() {
+  var x = document.getElementById("product_observational");
+  if (x.style.display === "none") {
+    x.style.display = "block";
+  } else {
+    x.style.display = "none";
+  }
+}
+
+function displayProductObservationalSection() {
+  var x = document.getElementById("product_observational_detail");
+  if (x.style.display === "none") {
+    x.style.display = "block";
+  } else {
+    x.style.display = "none";
+  }
+}
 
 
 
 
 // Form Displays
-document.getElementById("displayAliasForm").style.display = "none";
-document.getElementById("displayCitationInformationForm").style.display = "none";
-document.getElementById("displayDataForm").style.display = "none";
-document.getElementById("displayDocumentForm").style.display = "none";
+if ( document.getElementById("displayAliasForm") && document.getElementById("alias_detail") ){
+    document.getElementById("displayAliasForm").style.display = "none";
+}
+
+if ( document.getElementById("displayCitationInformationForm") ){
+    document.getElementById("displayCitationInformationForm").style.display = "none";
+}
+
+if ( document.getElementById("displayDataForm") ){
+    document.getElementById("displayDataForm").style.display = "none";
+}
+
+if ( document.getElementById("displayDocumentForm") ){
+    document.getElementById("displayDocumentForm").style.display = "none";
+}
+
+if ( document.getElementById("displayDisplayDictionaryForm") ){
+    document.getElementById("displayDisplayDictionaryForm").style.display = "none";
+}
+if ( document.getElementById("displayProductObservationalForm") ){
+    document.getElementById("displayProductObservationalForm").style.display = "none";
+}
+if ( document.getElementById("displayDisplayDictionaryForm") ) {
+    document.getElementById("displayDisplayDictionaryForm").style.display = "none";
+}
 
 function displayAliasForm() {
   var x = document.getElementById("displayAliasForm");
@@ -106,6 +157,24 @@ function displayDataForm() {
  
 function displayDocumentForm() {
   var x = document.getElementById("displayDocumentForm");
+  if (x.style.display === "none") {
+    x.style.display = "block";
+  } else {
+    x.style.display = "none";
+  }
+} 
+
+function displayDisplayDictionaryForm() {
+  var x = document.getElementById("displayDisplayDictionaryForm");
+  if (x.style.display === "none") {
+    x.style.display = "block";
+  } else {
+    x.style.display = "none";
+  }
+} 
+
+function displayProductObservationalForm() {
+  var x = document.getElementById("displayProductObservationalForm");
   if (x.style.display === "none") {
     x.style.display = "block";
   } else {
