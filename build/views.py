@@ -1410,23 +1410,31 @@ def data(request, pk_bundle, pk_data):
         # Get related Display Dictionary
         # Get display dictionary to show what it says to the user
         try:
+            print 'Trying display get'
             display_dictionary = DisplayDictionary.objects.get(data=data)
         except DisplayDictionary.DoesNotExist:
+            print 'Displaying get did not work'
             display_dictionary = None
 
         # Get related Product Observationals
         product_observational_set = Product_Observational.objects.filter(data=data)
 
         # Get forms
-        form_display_dictionary = DisplayDictionaryForm(request.POST or None)
+        form_dictionary = DictionaryForm(request.POST or None)
+        #form_display_dictionary = DisplayDictionaryForm(request.POST or None)
         form_product_observational = ProductObservationalForm(request.POST or None)
 
         # After ELSA's friend hits submit, if the form is completed correctly, we should
         # satisfy this conditional
-        if form_display_dictionary.is_valid():
-            display_dictionary = display_dictionary.save(commit=False)
-            display_dictionary.data = data
-            display_dictionary.save()
+        print 'Before If - Type: {}'.format( request.POST.get('dictionary_type') )
+        if form_dictionary.is_valid():
+#            print 'Type: {}'.format(form_dictionary['dictionary_type'].value())
+            if request.POST.get('dictionary_type') == 'Display':
+                display_dictionary = DisplayDictionary(data=data)
+                display_dictionary.save()
+        #    display_dictionary = display_dictionary.save(commit=False)
+        #    display_dictionary.data = data
+        #    display_dictionary.save()
 
         # After ELSA's friend hits submit, if the form is completed correctly, we should
         # satisfy this conditional
@@ -1457,7 +1465,7 @@ def data(request, pk_bundle, pk_data):
         # Context Dictionary
         context_dict = {
             'bundle':bundle,
-            'form_display_dictionary':form_display_dictionary,
+            'form_dictionary':form_dictionary,
             'form_product_observational':form_product_observational,
             'data': data,
             'display_dictionary':display_dictionary,
@@ -1475,7 +1483,7 @@ def data(request, pk_bundle, pk_data):
 
 
 @login_required
-def display_dictionary(request, pk_bundle, pk_product_observational, pk_array):
+def display_dictionary(request, pk_bundle, pk_data, pk_display_dictionary):
     print ' \n\n \n\n-------------------------------------------------------------------------'
     print '\n\n------------------- Add Display Dictionary with ELSA --------------------------'
     print '------------------------------ DEBUGGER ---------------------------------'

@@ -3184,7 +3184,7 @@ The Movie_Display_Settings class provides
     data = models.OneToOneField(Data, on_delete=models.CASCADE, primary_key=True,)
 
     def __str__(self):
-        return "How you actually make a dictionary >.<"
+        return "Display Dictionary"
 
 
 @python_2_unicode_compatible

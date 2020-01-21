@@ -60,7 +60,10 @@ urlpatterns = [
     ),
 
 
-    url(r'^(?P<pk_bundle>\d+)/data/(?P<pk_product_observational>\d+)/array/(?P<pk_array>\d+)/display_dictionary/$', views.display_dictionary, name='display_dictionary'),
+    url(r'^(?P<pk_bundle>\d+)/data/(?P<pk_data>\d+)/display_dictionary/(?P<pk_display_dictionary>\d+)/$', views.display_dictionary, name='display_dictionary'),
+
+
+
 
     url(r'^(?P<pk_bundle>\d+)/data/table/(?P<pk_product_observational>\d+)/$', views.table_detail, name='table_detail'),
     url(r'^(?P<pk_bundle>\d+)/(?P<data_object>\d+)/table_creation/$', views.Table_Creation, name='table_creation'),

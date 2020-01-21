@@ -32,21 +32,21 @@ Each collection of data contains a Product_Observational label. The Product_Obse
       <h4 class="card-title">{{ data.name }} Collection</h4>
       <!--Text-->
       <p class="card-text"><strong>Processing Level:</strong> {{ data.processing_level }}</p>
-      <p>
-         <Strong>Dictionary:</strong>
-      </p>
+\
       {% if display_dictionary %}
-      <strong>View Dictionary   <i class="fa fa-eye"></i></strong>
+      <p>
+         <Strong>Dictionaries (select to edit/remove):</strong>
+      </p> 
       <!--Column-->
       <div class="col-sm-6">
          <!--Card-->
          <div class="button">
             <!--Link-->
-            <a href="#">
+            <a href="{% url 'build:display_dictionary' bundle.pk data.pk display_dictionary.pk %}">
                <!--Card content-->
                <div class="card-body">
                   <!--Title-->
-                  <h4 class="card-title">{{ display_dictionary }}</h4>
+                  <p class="card-text">{{ display_dictionary }}</p>
                   <!--/.Title-->
                   <!--Text-->
                   <!--<p class="card-text">{{ data.name }}</p>-->
@@ -54,8 +54,6 @@ Each collection of data contains a Product_Observational label. The Product_Obse
                   <!--/.Text-->
                </div>
                <!--/.Card content-->
-               <!--Image-->
-               <img class="img-fluid" src="{% static 'images/arrow.png' %}" alt="An image representing an arrow."/>
                <!--/.Image-->
             </a>
             <!--/.Link-->
@@ -64,11 +62,18 @@ Each collection of data contains a Product_Observational label. The Product_Obse
       </div>
       <!--/.Column-->
       {% else %}
+      <p>
+         <Strong>Dictionaries:</strong> None
+      </p>
       </br>
-      <input type="button" onclick="displayDisplayDictionaryForm()" value="+ Add Display Dictionary" class="btn btn-teal">
+      <input type="button" onclick="displayDictionaryForm()" value="+ Add Dictionary" class="btn btn-teal">
       <!--Column-->
-      <div class="col-md-3" id="displayDisplayDictionaryForm">
-         {{ form_display_dictionary.as_p }}
+      <div class="col-md-3" id="displayDictionaryForm">
+         <form id="form_dictionary" method="post" action="{% url 'build:data' bundle.pk data.pk %}">
+             {% csrf_token %}
+             {{ form_dictionary.as_p }}
+             <input class="btn btn-default" type="submit" value="Submit"/>
+         </form>
       </div>
       <!--/.Column-->
       {% endif %}
@@ -137,7 +142,7 @@ Each collection of data contains a Product_Observational label. The Product_Obse
             <!--Card-->
             <div class="card">
                <!--Card image-->
-               <img class="img-fluid" src="{% static 'images/derived.png' %}" alt="Data Image">
+               <!--img class="img-fluid" src="{% static 'images/derived.png' %}" alt="Data Image"-->
                <!--Card content-->
                <div class="card-body">
                   <!--Title-->

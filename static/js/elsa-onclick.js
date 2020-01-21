@@ -124,8 +124,8 @@ if ( document.getElementById("displayDisplayDictionaryForm") ){
 if ( document.getElementById("displayProductObservationalForm") ){
     document.getElementById("displayProductObservationalForm").style.display = "none";
 }
-if ( document.getElementById("displayDisplayDictionaryForm") ) {
-    document.getElementById("displayDisplayDictionaryForm").style.display = "none";
+if ( document.getElementById("displayDictionaryForm") ) {
+    document.getElementById("displayDictionaryForm").style.display = "none";
 }
 
 function displayAliasForm() {
@@ -164,8 +164,8 @@ function displayDocumentForm() {
   }
 } 
 
-function displayDisplayDictionaryForm() {
-  var x = document.getElementById("displayDisplayDictionaryForm");
+function displayDictionaryForm() {
+  var x = document.getElementById("displayDictionaryForm");
   if (x.style.display === "none") {
     x.style.display = "block";
   } else {

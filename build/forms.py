@@ -713,7 +713,7 @@ The time_display_axis attribute identifies, by
 
 
 
-class DisplayDictionaryForm(forms.ModelForm):
+#class DisplayDictionaryForm(forms.ModelForm):
     """
     This dictionary describes how to display Array data on a display device
 The Color_Display_Settings class provides
@@ -734,11 +734,19 @@ The Movie_Display_Settings class provides
 
 
 
-    class Meta:
-        model = DisplayDictionary
-        exclude = ('array',)
+#    class Meta:
+#        model = DisplayDictionary
+#        exclude = ('array',)
 
 
+
+"""
+    Confirm
+"""
+class DictionaryForm(forms.Form):
+    CHOICES = [('Display','Display') , ('testing','testing'),]
+    dictionary_type = forms.MultipleChoiceField(choices=CHOICES, widget=forms.CheckboxSelectMultiple())
+    
 
 
 
