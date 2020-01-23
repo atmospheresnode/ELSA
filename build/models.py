@@ -1943,18 +1943,19 @@ class Product_Bundle(models.Model):
         return name_edit
 
     
-    """
-        label gives the physical location of the label on atmos (or wherever).  Since Product_Bundle is located within the bundle directory, our path is .../user_directory_here/bundle_directory_here/product_bundle_label_here.xml.
-    """
+
     def label(self):
+        """
+        label gives the physical location of the label on atmos (or wherever).  Since Product_Bundle is located within the bundle directory, our path is .../user_directory_here/bundle_directory_here/product_bundle_label_here.xml.
+        """
         return os.path.join(self.bundle.directory(), self.name_file_case())
 
 
-    """
-        build_base_case copies the base case product_bundle template (versionless) into bundle dir
-    """
-    def build_base_case(self):
 
+    def build_base_case(self):
+        """
+        build_base_case copies the base case product_bundle template (versionless) into bundle dir
+        """
         
         # Locate base case Product_Bundle template found in templates/pds4_labels/base_case/product_bundle
         source_file = os.path.join(settings.TEMPLATE_DIR, 'pds4_labels')
@@ -2015,14 +2016,15 @@ class Product_Bundle(models.Model):
         
         return Product_Bundle
 
-    """
+
+    def build_internal_reference(self, root, relation):
+        """
         build_internal_reference builds and fills the Internal_Reference information within the 
         Reference_List of Product_Bundle.  The relation is used within reference_type to associate what 
         the bundle is related to, like bundle_to_document.  Therefore, relation is a model object in 
         ELSA, like Document.  The possible relations as of V1A00 are errata, document, investigation, 
         instrument, instrument_host, target, resource, associate.
-    """
-    def build_internal_reference(self, root, relation):
+        """
         print '---DEBUG---'
         print 'Root: {}'.format(root)
 
@@ -2546,6 +2548,9 @@ class Product_Observational(models.Model):
 
 
 
+
+
+
     # Label Constructors
     def build_base_case(self):
         
@@ -2605,20 +2610,7 @@ class Product_Observational(models.Model):
 
         return root
 
-    """
-        Fillers follow a set flow.
-            1. Input the root element of an XML label.
-                - We want the root because we can access all areas of the document through it's root.
-            2. Find the areas you want to fill.
-                - Always do find over a static search to ensure we are always on the right element.
-                  (  ex. of static search ->    root[0] = Identification_Area in fill_base_case    )
-                  Originally, ELSA used a static search for faster performance, but we found out
-                  that comments in the XML label through the code off and we were pulling incorrect
-                  elements.
-            3. Fill those areas.
-                - Fill is easy.  Just fill it.. with the information from the model it was called on,
-                  self (like itself).
-    """
+
     def fill_observational(self, label_root, observational):
         Product_Observational = label_root
 
@@ -2667,12 +2659,34 @@ class Product_Observational(models.Model):
 
         # End
         return Product_Observational
+
+    def fill_display_dictionary(self, root):
+        """
+        build_internal_reference builds and fills the Internal_Reference information within the 
+        Reference_List of Product_Bundle.  The relation is used within reference_type to associate what 
+        the bundle is related to, like bundle_to_document.  Therefore, relation is a model object in 
+        ELSA, like Document.  The possible relations as of V1A00 are errata, document, investigation, 
+        instrument, instrument_host, target, resource, associate.
+        """
+        print '---DEBUG---'
+        print 'Root: {}'.format(root)
+
+
+        # Change the xml-model processing instruction  --- Needs a fix
+        text = 'href=https://pds.nasa.gov/pds4/disp/v1/PDS4_DISP_1B00.sch'
+          
+        root.addprevious(etree.ProcessingInstruction('xml-model', text=text))
+        print 'Tree: {}'.format(etree.tostring(root))
+ 
+
+        return root
         
-    """
-    """
+
     # Meta
     def __str__(self):
-        
+        """
+        Returns the title of the observational product
+        """        
         return "Product_Observational at: {}".format(self.title)
 
 
@@ -3185,6 +3199,19 @@ The Movie_Display_Settings class provides
 
     def __str__(self):
         return "Display Dictionary"
+
+    def _write_schema_namespace(self):
+        """
+        write_schema_namespace
+
+        inputs:
+
+        outputs:
+
+        purpose:
+
+
+        """
 
 
 @python_2_unicode_compatible

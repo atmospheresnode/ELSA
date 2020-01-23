@@ -123,6 +123,13 @@ def open_label(label_path):
     label_root = tree.getroot()
     return [label_path, label_root]
 
+# open_label opens an xml label given the path to the xml label and returns an open label object and a tree.
+def open_label_with_tree(label_path):
+    parser = etree.XMLParser(remove_blank_text=False, remove_comments=False)
+    tree = etree.parse(label_path, parser)
+    label_root = tree.getroot()
+    return [label_path, tree]
+
 
 
 

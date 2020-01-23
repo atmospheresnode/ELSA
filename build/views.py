@@ -15,6 +15,9 @@ from django.forms import modelformset_factory
 from django.views.generic.edit import UpdateView, DeleteView
 
 
+from lxml import etree # debug product obs only
+
+
 
 
 
@@ -676,7 +679,7 @@ def bundle(request, pk_bundle):
                 print '- Label: {}'.format(label)
                 print ' ... Opening Label ... '
                 label_list = open_label(label.label())
-                label_root = label_list
+                label_root = label_list[1]
         
                 # Build Citation Information
                 print ' ... Building Label ... '
@@ -1426,12 +1429,38 @@ def data(request, pk_bundle, pk_data):
 
         # After ELSA's friend hits submit, if the form is completed correctly, we should
         # satisfy this conditional
-        print 'Before If - Type: {}'.format( request.POST.get('dictionary_type') )
         if form_dictionary.is_valid():
 #            print 'Type: {}'.format(form_dictionary['dictionary_type'].value())
             if request.POST.get('dictionary_type') == 'Display':
                 display_dictionary = DisplayDictionary(data=data)
                 display_dictionary.save()
+
+                # The xml schema declaration needs to be added to each currently existing
+                # observational product that is an array and each new one added. Each new
+                # one added should add the dictionary if it exists upon creation of the array.
+
+                # Given each product in the product observational set
+                for product_observational in product_observational_set:
+
+                    # 1. Open appropriate label(s).  
+                    print '- Label: {}'.format(product_observational.label())
+                    print ' ... Opening Label ... '
+                    label_list = open_label(product_observational.label())
+                    label_root = label_list[1]
+        
+                    # Build display dictionary within the label
+                    print ' ... Building Label ... '
+                    print 'Debug: Tree ---\n{}'.format(etree.tostring(label_root))
+                    label_root = product_observational.fill_display_dictionary(label_root)
+
+                    print 'Debug: Tree ---\n{}'.format(etree.tostring(label_root))
+
+                    # Close appropriate label(s)
+                    print ' ... Closing Label ... '
+                    close_label(product_observational.label(), label_root)
+                    # 1. Get root of product_observational label
+                
+
         #    display_dictionary = display_dictionary.save(commit=False)
         #    display_dictionary.data = data
         #    display_dictionary.save()
