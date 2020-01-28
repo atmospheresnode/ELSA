@@ -590,7 +590,7 @@ The red_channel_band attribute identifies the
 
     class Meta:
         model = Color_Display_Settings
-        exclude = ('array',)
+        exclude = ('display_dictionary',)
 
 
 
@@ -624,7 +624,7 @@ The vertical_display_direction attribute
 
     class Meta:
         model = Display_Direction
-        exclude = ('array',)
+        exclude = ('display_dictionary',)
 
 
 
@@ -660,7 +660,7 @@ The time_display_axis attribute identifies, by
 
     class Meta:
         model = Display_Settings
-        exclude = ('array',)
+        exclude = ('display_dictionary',)
 
 
 
@@ -709,7 +709,7 @@ The time_display_axis attribute identifies, by
 
     class Meta:
         model = Movie_Display_Settings
-        exclude = ('array',)
+        exclude = ('display_dictionary',)
 
 
 

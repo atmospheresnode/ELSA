@@ -164,7 +164,7 @@ def alias_edit(request, pk_bundle, pk_alias):  ## DEPRECATED: to be replaced by 
 
 
 @login_required
-def alias_delete(request, pk_bundle, alias):
+def alias_delete(request, pk_bundle, pk_alias):
 
     print ' \n\n \n\n-------------------------------------------------------------------------'
     print '\n\n---------------------- Remove an Alias with ELSA ---------------------------'
@@ -174,16 +174,20 @@ def alias_delete(request, pk_bundle, alias):
 
     if request.user == bundle.user:
 	print "authorized user"
+
+        #alias = Alias.objects.get(pk=pk_alias)
+
         delete_alias = request.POST.get('Delete')
+        
 
 
         context_dict = {
-	    'alias':alias,
+	    'alias':pk_alias,
   	    'bundle':bundle,
 	    'delete_alias':delete_alias,
         }
 
-        print alias
+        print pk_alias
         print request
         print bundle
     
@@ -214,6 +218,7 @@ def array(request, pk_bundle, pk_data, pk_product_observational):
     print '------------------------------ DEBUGGER ---------------------------------'
 
     bundle = Bundle.objects.get(pk=pk_bundle)
+    data = Data.objects.get(pk=pk_data)
     product_observational = Product_Observational.objects.get(pk=pk_product_observational)
 
     if request.user == bundle.user:
@@ -232,6 +237,7 @@ def array(request, pk_bundle, pk_data, pk_product_observational):
         # Declare context_dict for template
         context_dict = {
 	    'bundle':bundle,
+            'data':data,
             'form_array':form_array,
             'product_observational':product_observational,
             'arrays':arrays,
@@ -253,23 +259,27 @@ def array(request, pk_bundle, pk_data, pk_product_observational):
             # Find appropriate label(s).
             # Array gets added to... some... Product_Observational labels.
             # We first get all labels of these given types.
-            all_labels = []
+            label = array.product_observational.label()
 
-            for label in all_labels:
-                # Open appropriate label(s).  
-                print '- Label: {}'.format(label)
-                print ' ... Opening Label ... '
-                label_list = open_label(label.label())
-                label_root = label_list
-                # Build Array
-                print ' ... Building Label ... '
-                #label_root = array.build_array(label_root)
-		#array.array_list.append(label_root) <~-- just stole this from alias ?? idk what does
+            # Open appropriate label(s).  
+            print '- Label: {}'.format(label)
+            print ' ... Opening Label ... '
+            label_list = open_label(label)
+            label_root = label_list[1]
+            print 'Label List: {}\nLabel Root: {}'.format(label_list, label_root)
+
+            # Build Array
+            print ' ... Building Label ... '
+            #label_root = array.build_array(label_root)
+            #array.array_list.append(label_root) <~-- just stole this from alias ?? idk what does
 
 
-                # Close appropriate label(s)
-                print ' ... Closing Label ... '
-                close_label(label.label(), label_root)
+            # Close appropriate label(s)
+            print ' ... Closing Label ... '
+            close_label(label, label_root)
+
+        else:
+            print "Form array is not valid"
 
         return render(request, 'build/data/array.html', context_dict)
 
@@ -1524,20 +1534,64 @@ def display_dictionary(request, pk_bundle, pk_data, pk_display_dictionary):
     # Secure ELSA by seeing if the user logged in is the same user associated with the Bundle
     if request.user == bundle.user:
         print 'authorized user: {}'.format(request.user)
+        display_dictionary = DisplayDictionary.objects.get(pk=pk_display_dictionary)
 
         # ELSA's current user is the bundle user so begin view logic
         # Get forms
-        form_color_display_settings = ColorDisplaySettingsForm(request.POST or None)
-        form_display_direction = DisplayDirectionForm(request.POST or None)
-        form_display_settings = DisplaySettingsForm(request.POST or None)
-        form_movie_display_settings = MovieDisplaySettingsForm(request.POST or None)
+        try:
+            cds = Color_Display_Settings.objects.get(display_dictionary=display_dictionary)
+            initial_cds = {
+                'color_display_axis':cds.color_display_axis,
+                'comment_color_display':cds.comment_color_display,
+                'red_channel_band':cds.red_channel_band,
+                'green_channel_band':cds.green_channel_band,
+                'blue_channel_band':cds.blue_channel_band,
+            }
+            form_color_display_settings = ColorDisplaySettingsForm(request.POST or None, initial=initial_cds)
+        
+        except Color_Display_Settings.DoesNotExist:
+            form_color_display_settings = ColorDisplaySettingsForm(request.POST or None)
+
+        try:
+            dd = Display_Direction.objects.get(display_dictionary=display_dictionary)
+            initial_dd = {
+                'comment_display_direction':dd.comment_display_direction,
+                'horizontal_display_axis':dd.horizontal_display_axis,
+                'horizontal_display_direction':dd.horizontal_display_direction,
+                'vertical_display_axis':dd.vertical_display_axis,
+                'vertical_display_direction':dd.vertical_display_direction,
+            }
+            form_display_direction = DisplayDirectionForm(request.POST or None, initial=initial_dd)
+
+        except Display_Direction.DoesNotExist:
+            form_display_direction = DisplayDirectionForm(request.POST or None)
+
+        try:
+            mds = Movie_Display_Settings.objects.get(display_dictionary=display_dictionary)
+            initial_mds = {
+                'time_display_axis':mds.time_display_axis,
+                'comment':mds.comment,
+                'frame_rate':mds.frame_rate,
+                'loop_flag':mds.loop_flag,
+                'loop_count':mds.loop_count,
+                'loop_delay':mds.loop_delay,
+                'loop_delay_unit':mds.loop_delay_unit,
+                'loop_back_and_forth_flag':mds.loop_back_and_forth_flag,
+            }
+            form_movie_display_settings = MovieDisplaySettingsForm(request.POST or None, initial=initial_mds)
+
+        except Movie_Display_Settings.DoesNotExist:
+            form_movie_display_settings = MovieDisplaySettingsForm(request.POST or None)
+
+
+
+
 
         # Declare context_dict for templating language used in ELSAs templates
         context_dict = {
             'bundle':bundle,
             'form_color_display_settings':form_color_display_settings,
             'form_display_direction':form_display_direction,
-            'form_display_settings':form_display_settings,
             'form_movie_display_settings':form_movie_display_settings,
 
         }
@@ -1553,12 +1607,12 @@ def display_dictionary(request, pk_bundle, pk_data, pk_display_dictionary):
 
             # Create Color_Display_Settings model object
             color_display_settings = form_color_display_settings.save(commit=False)
-            # Add association
+            color_display_settings.display_dictionary = display_dictionary
             color_display_settings.save()
 
             # Create Display_Direction model object
             display_direction = form_display_direction.save(commit=False)
-            # Add association
+            display_direction.display_dictionary = display_dictionary
             display_direction.save()
 
             # Create Display_Settings model object
@@ -1568,16 +1622,9 @@ def display_dictionary(request, pk_bundle, pk_data, pk_display_dictionary):
 
             # Create Movie_Display_Direction model object
             movie_display_settings = form_movie_display_settings.save(commit=False)
-            # Add association
+            movie_display_settings.display_dictionary = display_dictionary
             movie_display_settings.save()
 
-            # Create Display Dictionary parent object for the above objects
-            display_dictionary = DisplayDictionary.objects.create(
-                data = Data.objects.get(pk=pk_data),
-                color_display_settings=color_display_settings,
-                display_direction=display_direction,
-                movie_display_settings=movie_display_settings
-            )
 
             # Find appropriate label(s).
             print '---------------- End Build Display Dictionary ------------------------------'  

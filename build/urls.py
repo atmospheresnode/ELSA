@@ -14,7 +14,7 @@ app_name='build'
 urlpatterns = [
     # Alias
     url(r'^(?P<pk_bundle>\d+)/alias_edit/(?P<pk_alias>[-\w]+)/$', views.alias_edit, name='alias_edit'),
-
+    url(r'^(?P<pk_bundle>\d+)/alias_delete/(?P<pk_alias>[-\w]+)/$', views.alias_delete, name='alias_delete'),
     # Alias_Delete
 
     # Build

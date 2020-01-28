@@ -32,11 +32,11 @@ Display Dictionary
             {% csrf_token %}
             <div id="form_product_document">
                 <h3>Color Display Settings</h3>
-                {{ form_color_display_settings }}
+                {{ form_color_display_settings.as_p }}
                 <hr/>
 
                 <h3>Display Direction</h3>
-                {{ form_display_direction }}
+                {{ form_display_direction.as_p }}
                 <hr/>
 
 <!--
@@ -45,9 +45,9 @@ Display Dictionary
                 <hr/>
 -->
                 <h3>Movie Display Settings</h3>
-                {{ form_movie_display_settings }}
+                {{ form_movie_display_settings.as_p }}
             </div>
-            <input class="btn btn-default" type="submit" value="Add"/>
+            <input class="btn btn-default" type="submit" value="Update"/>
         </form>
     </div>
     <!--/.Column-->

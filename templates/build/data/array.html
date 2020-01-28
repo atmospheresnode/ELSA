@@ -1,6 +1,7 @@
 
 
-{% extends 'main/base-k.html' %}
+
+{% extends 'base-k-se.html' %}
 {% load static %}
 {% block title_block %}
 Array Data
@@ -65,14 +66,14 @@ Array Data
 <div id="collections_detail">
    <!--Row-->
    <div class="row">
-      <div class="col-md-12" id="data_collection" onclick="displayDataSection()">
+      <div class="col-md-12" id="data_collection" onclick="displayArraySection()">
          <p class="card-header stylish-color white-text text-center z-depth-2">Array</p>
          <br/>
       </div>
    </div>
    <!--/.Row-->
    <!--Data collection detail-->
-   <div id="data_collection_detail">
+   <div id="array_detail">
       <!--Row-->
       <div class="row">
          <!--Column-->
@@ -80,15 +81,15 @@ Array Data
             <p class="card-header black-text text-left z-depth-2">
                Add arrays to your observational product
                </br>
-               <input type="button" onclick="displayDataForm()" value="+ Add Array" class="btn btn-teal">
+               <input type="button" onclick="displayArrayForm()" value="+ Add Array" class="btn btn-teal">
             </p>
          </div>
          <!--/.Column-->
          <!--Column-->
-         <div class="col-md-6 rgba-indigo-slight" id="displayDataForm">
+         <div class="col-md-12 " id="displayArrayForm">
             </br>
             <div class="rgba-indigo-slight">
-               <form id="form_data" method="post" action="{% url 'build:bundle' bundle.pk %}">
+               <form id="form_data" method="post" action="{% url 'build:array' bundle.pk data.pk product_observational.pk %}">
                   {% csrf_token %}
                   <div id="form_data">
                      {{ form_array.as_p }}
@@ -99,11 +100,11 @@ Array Data
          </div>
          <!--/.Column-->
          <!--Column-->
-         <div class="col-md-4 help">
+         <!--<div class="col-md-4 help">
             <div class="array">
                <p>Array help here.</p>
             </div>
-         </div>
+         </div>-->
          <!--/.Column-->
       </div>
       <!--/.Row-->
@@ -111,10 +112,10 @@ Array Data
       <!--Row-->
       <div class="row">
          <!--Column-->
-         <div class="col-md-12    black-text text-center z-depth-2" onclick="displayDataCollections()">
+         <div class="col-md-12    black-text text-center z-depth-2" onclick="displayArraySet()">
             <strong>View Array Products   <i class="fa fa-eye"></i></strong>
             <!--Row-->
-            <div class="row" id="data_collections_detail">
+            <div class="row" id="array_set">
                {% for array in arrays %}
                <!--Column-->
                <div class="col-md-4">
@@ -127,15 +128,21 @@ Array Data
                         <!--/.Title-->
                         <!--Text-->
                         <p class="card-text">
-                        <ul>
-                           <li>Dimensions: {{ array.array_dimensions }}</li>
-                           <li>Type: {{ array.array_type }}</li>
-                           <li>LID: {{ array.local_identifier }}</li>
-                           <li>Offset: {{ array.offset }}</li>
-                           <li>Axes: {{ array.axes }}</li>
-                           <li>Axis Index Order: {{ array.axis_index_order }}</li>
-                           <li>Description: {{ array.description }}</li>
-                        </ul>
+                        
+                           Dimensions: {{ array.array_dimensions }}</br>
+                           Type: {{ array.array_type }}</br>
+                           LID: {{ array.local_identifier }}</br>
+                           Offset: {{ array.offset }}</br>
+                           Axes: {{ array.axes }}</br>
+                           Axis Index Order: {{ array.axis_index_order }}</br>
+                           Description: {{ array.description }}</br>
+
+
+      <a href="{% url 'main:construction' %}">
+      <input class="btn btn-danger" type="submit" value="Delete Alias"/>
+      </a>
+
+                        
                         </p>
                         <!--/.Text-->
                      </div>

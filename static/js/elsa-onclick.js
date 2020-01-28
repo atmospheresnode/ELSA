@@ -3,18 +3,8 @@ if ( document.getElementById("help_detail") ){
     document.getElementById("help_detail").style.display = "none";
 }
 
-if ( document.getElementById("documents_detail") ){
-    document.getElementById("documents_detail").style.display = "none";
-}
-
-if ( document.getElementById("data_collections_detail") ){
-    document.getElementById("data_collections_detail").style.display = "none";
-}
 
 
-if ( document.getElementById("product_observational") ){
-    document.getElementById("product_observational").style.display = "none";
-}
 
 
 function displayHelpSection() {
@@ -25,6 +15,25 @@ function displayHelpSection() {
     x.style.display = "none";
   }
 } 
+
+function displayArraySection() {
+  var x = document.getElementById("array_detail");
+  if (x.style.display === "none") {
+    x.style.display = "block";
+  } else {
+    x.style.display = "none";
+  }
+} 
+
+function displayArraySet() {
+  var x = document.getElementById("array_set");
+  if (x.style.display === "none") {
+    x.style.display = "block";
+  } else {
+    x.style.display = "none";
+  }
+} 
+
 function displayContextSection() {
   var x = document.getElementById("context_detail");
   if (x.style.display === "none") {
@@ -106,6 +115,10 @@ if ( document.getElementById("displayAliasForm") && document.getElementById("ali
     document.getElementById("displayAliasForm").style.display = "none";
 }
 
+if ( document.getElementById("displayArrayForm") ){
+    document.getElementById("displayArrayForm").style.display = "none";
+}
+
 if ( document.getElementById("displayCitationInformationForm") ){
     document.getElementById("displayCitationInformationForm").style.display = "none";
 }
@@ -136,6 +149,15 @@ function displayAliasForm() {
     x.style.display = "none";
   }
 } 
+
+function displayArrayForm() {
+  var x = document.getElementById("displayArrayForm");
+  if (x.style.display === "none") {
+    x.style.display = "block";
+  } else {
+    x.style.display = "none";
+  }
+}
 
 function displayCitationInformationForm() {
   var x = document.getElementById("displayCitationInformationForm");
