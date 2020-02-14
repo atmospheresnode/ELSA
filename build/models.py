@@ -3169,7 +3169,44 @@ class Array(models.Model):
 
     # fillers
 
+    def build_array(self, label_root):
+        
+         
+        # Find File_Area_Observational
+        File_Area_Observational = label_root.find('{}File_Area_Observational'.format(NAMESPACE))
 
+        # Add Array to File_Area_Observational given the dimension and type of the array.
+      
+        if self.array_dimensions == 'Array_2D' and self.array_type == 'Image':
+            Array = etree.SubElement(File_Area_Observational, 'Array_2D_Image')
+        elif self.array_dimensions == 'Array_2D' and self.array_type == 'Map':
+            Array = etree.SubElement(File_Area_Observational, 'Array_2D_Map')
+        elif self.array_dimensions == 'Array_2D' and self.array_type == 'Spectrum':
+            Array = etree.SubElement(File_Area_Observational, 'Array_2D_Spectrum')
+        elif self.array_dimensions == 'Array_3D' and self.array_type == 'Image':
+            Array = etree.SubElement(File_Area_Observational, 'Array_3D_Image')
+        elif self.array_dimensions == 'Array_3D' and self.array_type == 'Map':
+            Array = etree.SubElement(File_Area_Observational, 'Array_3D_Map')
+        elif self.array_dimensions == 'Array_3D' and self.array_type == 'Spectrum':
+            Array = etree.SubElement(File_Area_Observational, 'Array_3D_Spectrum')
+
+
+        # Add Array information
+        if self.offset:
+            offset = etree.SubElement(Array, 'offset')
+            offset.text = self.offset
+        if self.axes:
+            axes = etree.SubElement(Array, 'axes')
+            axes.text = self.axes
+        if self.axis_index_order:
+            axis_index_order = etree.SubElement(Array, 'axis_index_order')
+            axis_index_order.text = self.axis_index_order
+        if self.description:
+            description = etree.SubElement(Array, 'description')
+            description.text = self.description
+        
+        
+        return label_root
 
 
 

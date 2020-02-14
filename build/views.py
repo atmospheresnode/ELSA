@@ -270,7 +270,7 @@ def array(request, pk_bundle, pk_data, pk_product_observational):
 
             # Build Array
             print ' ... Building Label ... '
-            #label_root = array.build_array(label_root)
+            label_root = array.build_array(label_root)
             #array.array_list.append(label_root) <~-- just stole this from alias ?? idk what does
 
 
