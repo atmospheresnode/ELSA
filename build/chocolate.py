@@ -120,8 +120,9 @@ def is_product_collection(xml_path):
 def open_label(label_path):
     parser = etree.XMLParser(remove_blank_text=False, remove_comments=False)
     tree = etree.parse(label_path, parser)
+    label_object = open(label_path, 'w')
     label_root = tree.getroot()
-    return [label_path, label_root]
+    return [label_object, label_root]
 
 # open_label opens an xml label given the path to the xml label and returns an open label object and a tree.
 def open_label_with_tree(label_path):
@@ -135,26 +136,12 @@ def open_label_with_tree(label_path):
 
 
 # close_label closes an xml label given the label object and the root of the tree.
-def close_label(label_path, label_root):
-    label_object = open(label_path, "r")
-    lines = label_object.readlines()
-    label_object.close
-    label_object = open(label_path, "w")
-    tree = etree.tostring(label_root, pretty_print=False, encoding="UTF-8", xml_declaration=False)
-    label_object.write(lines[0]+lines[1]+tree)
-    label_object.close() 
+def close_label(label_object, label_root):
 
-
-
-
-
-#    Tests
-# We can test the above functions by making function calls.  To make a function call, simply state the name of the function and give it paramaters.  Por ejemplo: name_of_function(parameter1, parameter2).  When the computer reads this line, it grabs the function defined above named name_of_function.  It then passes two parameters, namely parameter1 and parameter2.  By running this script in the terminal, we can see the output of the stated function.  The output is normally whatever the function returns but this isn't always the case.  The output could also include the creation of new model objects in the database, new labels or directories in the archive, or a deletion of a model object in a directory, or a deletion of labels or directories in the archive, ... .  
-is_product_bundle('/export/atmos1/htdocs/elsa/archive/test_user_01/development_test_bundle/bundle_development_test.xml')
-
-
-
-
+ 
+    tree = etree.tostring(label_root, pretty_print=True, encoding='utf-8', xml_declaration=True)
+    label_object.write(tree)
+    label_object.close()  
 
 
 

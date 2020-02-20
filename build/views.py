@@ -415,7 +415,7 @@ def build(request):
             label_root = product_bundle.fill_base_case(label_root)  ## Fix for new data collections
             # Close label
             print ' ... Closing Label ... '
-            close_label(product_bundle.label(), label_root) 
+            close_label(label_list[0], label_root) 
 
             print '---------------- End Build Product_Bundle Base Case -------------------------'
   
@@ -426,12 +426,12 @@ def build(request):
             print '\nCollections model object:    {}'.format(collections)
 
 
-	    bundle.save()
             
             # Create PDS4 compliant directories for each collection within the bundle.            
             collections.build_directories()
 
-            # Each collection in collections needs a model and a label
+            # Each collection in collections needs 1) a model, 2) a bundle member entry in product
+            # bundle, 3) a directory for the collection, and 4) its own product collection label
             for collection in collections.list():
                 print collection
 
@@ -458,6 +458,14 @@ def build(request):
                 product_collection.save()
                 print '\n\n{} Collection Directory:    {}'.format(collection, product_collection.directory())
 
+                # Fill Product_Bundle with Collection Bundle Member Entries
+                label_list = open_label(product_bundle.label()) #list = [label_object, label_root]
+                label_root = label_list[1]
+                print ' ... Adding Bundle Member Entries ... '
+                label_root = product_bundle.build_bundle_member_entry(label_root, product_collection)
+                close_label(label_list[0], label_root)
+                print ' ... Bundle Member Entry Added: {} ...'.format(product_collection.lid)               
+
                 # Build Product_Collection label for all labels other than those found in the data collection.
                 print '-------------Start Build Product_Collection Base Case-----------------'
                 if collection != 'data':
@@ -475,7 +483,7 @@ def build(request):
 
                     # Close label
                     print ' ... Closing Label ... '
-                    close_label(product_collection.label(), label_root)
+                    close_label(label_list[0], label_root)
                     print '-------------End Build Product_Collection Base Case-----------------'
            
             # Further develop context_dict entries for templates            

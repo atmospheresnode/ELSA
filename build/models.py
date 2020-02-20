@@ -2013,6 +2013,9 @@ class Product_Bundle(models.Model):
         #     information_model_version
         #information_model_version = Identification_Area.find('{}information_model_version'.format(NAMESPACE))
         #information_model_version = self.bundle.version.name_with_dots()
+
+        # Fill in Bundle
+        
         
         return Product_Bundle
 
@@ -2039,6 +2042,33 @@ class Product_Bundle(models.Model):
         reference_type.text = 'bundle_to_{}'.format(relation.reference_type())   
 
         return root   
+
+
+    def build_bundle_member_entry(self, root, collection):
+        """
+        build_internal_reference builds and fills the Internal_Reference information within the 
+        Reference_List of Product_Bundle.  The relation is used within reference_type to associate what 
+        the bundle is related to, like bundle_to_document.  Therefore, relation is a model object in 
+        ELSA, like Document.  The possible relations as of V1A00 are errata, document, investigation, 
+        instrument, instrument_host, target, resource, associate.
+        """
+        print '---DEBUG---'
+        print 'Root: {}'.format(root)
+
+        
+        Bundle_Member_Entry = etree.SubElement(root, 'Bundle_Member_Entry')
+
+        lid_reference = etree.SubElement(Bundle_Member_Entry, 'lid_reference')
+        lid_reference.text = '{}:{}'.format(self.bundle.lid(), collection.collection.lower())
+
+        member_status = etree.SubElement(Bundle_Member_Entry, 'member_status')
+        member_status.text = 'Primary'
+
+        reference_type = etree.SubElement(Bundle_Member_Entry, 'reference_type')
+        reference_type.text = 'bundle_has_{}_collection'.format(collection.collection.lower())   
+
+        return root   
+
 
 
     def base_case(self):
@@ -2110,6 +2140,15 @@ class Product_Collection(models.Model):
 #    def __str__(self):
 
 #        return "{0}\nProduct Collection for {1} Collection".format(self.collections.bundle, self.collection)
+
+    def lid(self):
+        """Builds lid for collection
+        """
+        if self.collection != 'Data':
+            collection_lid = '{0}:{1}'.format(self.bundle.lid, self.collection.lower())
+        else:
+            collection_lid = '{0}:data_<DATA_TYPE_HERE>'.format(self.bundle.lid)
+        return collection_lid
 
     """
         This returns the directory path of all collections but the data collection.
