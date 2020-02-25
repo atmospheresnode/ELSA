@@ -28,14 +28,17 @@ CURRENT_VIDS = ['1.0', '1.1'] # max vid so far is 1.13
 
 
 
+
+def list_of_tuples(list1, list2):
 """
 Takes two lists and makes them one list of 2-tuples.
 Example: list1 = [ 0, 1, 2], list2 = [ 'a', 'b', 'c'], list3 = ['elsa', 'pds', 'atmos']
 		The returned list is then [ (0, 'a', 'elsa'), (1, 'b', 'pds'), (2, 'c', 'atmos') ]
 """
-def list_of_tuples(list1, list2):
     return list(map(lambda x, y: (x,y), list1, list2))
 
+
+def get_product_list(context_type):
 
 """
 get_product_list(string)
@@ -45,7 +48,6 @@ input: a string containing the type of context product the user is looking for
 
 output: a list of all products for that context type
 """
-def get_product_list(context_type):
     STARBASE_PRODUCTS = STARBASE_CONTEXT + context_type
     html_arr = urllib2.urlopen(STARBASE_PRODUCTS).readlines()
     product_list = []
@@ -56,6 +58,9 @@ def get_product_list(context_type):
             product_list.append(product.text)
     return product_list
 
+
+def get_product_dict(url):
+
 """
 get_product_dict(url)
 
@@ -63,10 +68,7 @@ input: a string representation of the url where the product label is located
 
 output: a dictionary containing the product's url, lid, vid, and internal references.
 
-"""
-def get_product_dict(url):
-
-    product_dict = {}
+"""    product_dict = {}
     lid_references = []
     reference_types = []
 
@@ -128,6 +130,9 @@ def get_product_dict(url):
     return product_dict
 
 
+
+def get_internal_references(product_dict, source_product, target_product):
+"""
 # get_internal_refs
 # This function finds a specific type of internal reference from a given type of product.
 # It will return a list, empty or nonempty.
@@ -141,7 +146,8 @@ def get_product_dict(url):
 # 
 # output:
 #     a list of objects of type target_product that are related to source_product
-def get_internal_references(product_dict, source_product, target_product):
+"""
+
 
     # Declare list of internal references to be returned to the user containing
     # all of the internal references that match the given source product to target product
@@ -182,6 +188,7 @@ def get_lid_to_object_queryset(product_type, lid):
     if product_type == 'investigation':
         product = Investigation.objects.get_or_create(lid=lid)
         # If we end up creating an object at this point, we have an error in Starbase.
+        # Specifically that the product has an investigation that does not exist in Starbase.
         # ELSA takes a top down approach while crawling. If we are finding a queryset
         # for investigation objects, then we are asking to do so in something like
         # instrument host, instrument, or target so that we can reference the product
@@ -202,15 +209,22 @@ def get_lid_to_object_queryset(product_type, lid):
     else:
         print "Lid to object queryset error: Uknown object"
     
-# Constructs the Starbase url for a product of a given name and type
+
 def get_starbase_url(product_type, product_name):
+"""
+# Constructs the Starbase url for a product of a given name and type
+"""
     return STARBASE_CONTEXT + product_type + '/' + product_name
 
+
+def get_product_detail(product_name):
+"""
 # Gets a detail of the product given the product name found on Starbase
 #   definition:
 #     investigation_detail = [type_of, name, ..., version, file extension]
 #
-def get_product_detail(product_name):
+"""
+
         product_detail = product_name.split('.')
         print product_detail
         product_detail[2] = float(product_detail[-3][-1:] + '.' + product_detail[-2])
@@ -269,10 +283,11 @@ def investigation_crawl():
         product_dict = get_product_dict(investigation_url)
 
         # if the object was created, then it is the first product of its name
-        # and investigation type so we want to do a few things:
-        #     1. Save and append object to our created list so we can
-        #        print what was created later for our own sanity
+        # and investigation type so we want to save the object
         if i[1] == True:
+
+            # 1. Save and append object to our created list so we can
+            #    print what was created later for our own sanity
             i[0].vid = product_dict['vid']
             i[0].lid = product_dict['lid']
             i[0].starbase_label = investigation_url
