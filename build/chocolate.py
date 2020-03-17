@@ -138,7 +138,8 @@ def open_label_with_tree(label_path):
 # close_label closes an xml label given the label object and the root of the tree.
 def close_label(label_object, label_root):
 
- 
+    print 'Label object: {}'.format(label_object)
+
     tree = etree.tostring(label_root, pretty_print=True, encoding='utf-8', xml_declaration=True)
     label_object.write(tree)
     label_object.close()  

@@ -122,6 +122,9 @@ class CitationInformationForm(forms.ModelForm):
 
     description = forms.CharField(required=True)
     publication_year = forms.DateField(required=True, input_formats=['%Y'])
+    author_list = forms.CharField(required=False)
+    editor_list = forms.CharField(required=False)
+    keyword = forms.CharField(required=False)
 
     class Meta:
         model = Citation_Information

@@ -2876,7 +2876,7 @@ class Product_Document(models.Model):
         Identification_Area = Product_Document.find('{}Identification_Area'.format(NAMESPACE))
 
         logical_identifier = Identification_Area.find('{}logical_identifier'.format(NAMESPACE))
-        logical_identifier.text =  'urn:{0}:{1}:{2}:{3}'.format(self.bundle.user.userprofile.agency, self.bundle.name_lid_case(), 'document', self.document_name) # where agency is something like nasa:pds
+        logical_identifier.text =  self.lid()
 
         version_id = Identification_Area.find('{}version_id'.format(NAMESPACE))
         version_id.text = '1.0'  # Can make this better
@@ -3097,10 +3097,10 @@ Referenced from	Identification_Area
 class Citation_Information(models.Model):
 
     bundle = models.ForeignKey(Bundle, on_delete=models.CASCADE)
-    author_list = models.CharField(max_length=MAX_CHAR_FIELD)
-    description = models.CharField(max_length=MAX_CHAR_FIELD)
-    editor_list = models.CharField(max_length=MAX_CHAR_FIELD)
-    keyword = models.CharField(max_length=MAX_CHAR_FIELD)
+    author_list = models.CharField(max_length=MAX_CHAR_FIELD, blank=True)
+    description = models.CharField(max_length=MAX_TEXT_FIELD)
+    editor_list = models.CharField(max_length=MAX_CHAR_FIELD, blank=True)
+    keyword = models.CharField(max_length=MAX_CHAR_FIELD, blank=True)
     publication_year = models.CharField(max_length=MAX_CHAR_FIELD)
     
     # Builders
@@ -3136,8 +3136,6 @@ class Citation_Information(models.Model):
     # Meta
     def __str__(self):
         return 'Need to finish this.'
-
-
 
 
 

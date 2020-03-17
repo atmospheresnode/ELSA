@@ -660,7 +660,7 @@ def bundle(request, pk_bundle):
 
                 # Close appropriate label(s)
                 print ' ... Closing Label ... '
-                close_label(label.label(), label_root)
+                close_label(label_list[0], label_root)
 
             #print alias.print_alias_list()
 
@@ -705,13 +705,16 @@ def bundle(request, pk_bundle):
 
                 # Close appropriate label(s)
                 print ' ... Closing Label ... '
-                close_label(label.label(), label_root)
+                close_label(label_list[0], label_root)
 
                 print '------------- End Build Citation Information -------------------'        
             # Update context_dict with the current Citation_Information models associated with the user's bundle
             citation_information_set = Citation_Information.objects.filter(bundle=bundle)
             context_dict['citation_information_set'] = citation_information_set
             context_dict['citation_information_set_count'] = len(citation_information_set)
+            form_citation_information = CitationInformationForm()
+            context_dict['form_citation_information'] = form_citation_information
+
             
         # satisfy this conditional
         if form_data.is_valid():
@@ -791,10 +794,11 @@ def bundle(request, pk_bundle):
 
                 # Close appropriate label(s)
                 print ' ... Closing Label ... '
-                close_label(label.label(), label_root)
+                close_label(label_list[0], label_root)
             print '\n----------------End Build Internal_Reference for Document-------------------'
 
-
+            form_document = ProductDocumentForm()
+            context_dict['form_document'] = form_document
             context_dict['documents'] = Product_Document.objects.filter(bundle=bundle)    
 
         return render(request, 'build/bundle/bundle.html', context_dict)
@@ -1762,10 +1766,67 @@ def product_document(request, pk_bundle, pk_product_document):
     if request.user == bundle.user:
         print 'authorized user: {}'.format(request.user)
 
+
         product_document = Product_Document.objects.get(pk=pk_product_document)
+
+        initial_product = {
+            'acknowledgement_text':product_document.acknowledgement_text,
+            'author_list':product_document.author_list,
+            'copyright':product_document.copyright,
+            'description':product_document.description,
+            'document_editions':product_document.document_editions,
+            'document_name':product_document.document_name,
+            'doi':product_document.doi,
+            'editor_list':product_document.editor_list,
+            'publication_date':product_document.publication_date,
+            'revision_id':product_document.revision_id,
+        }
+        form_product_document = ProductDocumentForm(request.POST or None, initial=initial_product)
+
+        if form_product_document.is_valid and form_product_document.has_changed:
+            print 'Changed: {}'.format(form_product_document.changed_data)
+
+            for change in form_product_document.changed_data:
+
+                if change == 'acknowledgement_text':
+                   product_document.acknowledgement_text = form_product_document['acknowledgement_text'].value()
+
+                elif change == 'author_list':
+                   product_document.author_list = form_product_document['author_list'].value()
+
+
+                elif change == 'copyright':
+                   product_document.copyright = form_product_document['copyright'].value()
+
+                elif change == 'description':
+                   product_document.description = form_product_document['description'].value()
+
+                elif change == 'document_editions':
+                   product_document.document_editions = form_product_document['document_editions'].value()
+
+                elif change == 'document_name':
+                   product_document.document_name = form_product_document['document_name'].value()
+
+                elif change == 'doi':
+                   product_document.doi = form_product_document['doi'].value()
+
+                elif change == 'editor_list':
+                   product_document.editor_list = form_product_document['editor_list'].value()
+
+                elif change == 'publication_date':
+                   product_document.publication_date = form_product_document['publication_date'].value()
+
+                elif change == 'revision_id':
+                   product_document.revision_id = form_product_document['revision_id'].value()
+
+
+        documents = Product_Document.objects.filter(bundle=bundle)
+
         context_dict = {
             'bundle':bundle,
-            'product_observational':product_observational,
+            'documents':documents,
+            'form_product_document':form_product_document,
+            'product_document':product_document,
         }
 
         return render(request, 'build/document/product_document.html', context_dict)
